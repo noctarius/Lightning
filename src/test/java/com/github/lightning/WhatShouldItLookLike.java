@@ -1,14 +1,28 @@
 package com.github.lightning;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+
 import com.github.lightning.base.AbstractMarshaller;
-import com.github.lightning.base.AbstractSerializerFactory;
+import com.github.lightning.base.AbstractSerializerDefinition;
 
 public class WhatShouldItLookLike {
 
-	public class BookingEngineSerializerFactory extends AbstractSerializerFactory {
+	public static void main(String[] args) {
+		Serializer serializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
+		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+
+		Serializer remoteSerializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
+		remoteSerializer.setClassDefinitionContainer(container);
+
+	}
+
+	public static class BookingEngineSerializerFactory extends AbstractSerializerDefinition {
 
 		@Override
-		public void configure() {
+		protected void configure() {
+			define(Foo.class).byMarshaller(BarMarshaller.class);
+
 			bind(Foo.class).with(Attribute.class).exclude("value");
 			bind(Foo.class).field("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
 			bind(Foo.class).field("enumValue").byMarshaller(BarMarshaller.class);
@@ -17,15 +31,17 @@ public class WhatShouldItLookLike {
 		}
 	}
 
-	public class SomeChildSerializerFactory extends AbstractSerializerFactory {
+	public static class SomeChildSerializerFactory extends AbstractSerializerDefinition {
 
 		@Override
 		public void configure() {
+			describesAttributes(Attribute.class);
+
 			bind(Foo.class).attributes(); // like .with(Attribute.class)
 		}
 	}
 
-	public class Foo {
+	public static class Foo {
 
 		private String first;
 		private String second;
@@ -79,21 +95,37 @@ public class WhatShouldItLookLike {
 		}
 	}
 
-	public enum Bar {
+	public static enum Bar {
 		Value1,
 		Value2
 	}
 
-	public @interface Attribute {
+	public static @interface Attribute {
 
 		boolean required() default false;
 	}
 
-	public class BarMarshaller extends AbstractMarshaller {
+	public static class BarMarshaller extends AbstractMarshaller<Bar> {
 
+		@Override
+		public void marshall(Bar value, DataOutput dataOutput) {
+		}
+
+		@Override
+		public Bar unmarshall(Bar value, DataInput dataInput) {
+			return value;
+		}
 	}
 
-	public class SomeSpecialIntegerMarshaller extends AbstractMarshaller {
+	public static class SomeSpecialIntegerMarshaller extends AbstractMarshaller<Integer> {
 
+		@Override
+		public void marshall(Integer value, DataOutput dataOutput) {
+		}
+
+		@Override
+		public Integer unmarshall(Integer value, DataInput dataInput) {
+			return value;
+		}
 	}
 }
