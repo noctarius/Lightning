@@ -1,16 +1,21 @@
 package com.github.lightning.io;
 
-import java.io.FilterInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.InputStream;
 
-public class SerializerInputStream extends FilterInputStream {
+import com.github.lightning.Serializer;
 
-	public SerializerInputStream(InputStream in) {
+public class SerializerInputStream extends DataInputStream {
+
+	private final Serializer serializer;
+
+	public SerializerInputStream(InputStream in, Serializer serializer) {
 		super(in);
+		this.serializer = serializer;
 	}
 
 	public <T> T readObject() {
-		return null;
+		return serializer.deserialize((DataInput) this);
 	}
-
 }

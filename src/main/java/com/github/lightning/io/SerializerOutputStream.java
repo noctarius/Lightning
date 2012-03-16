@@ -1,15 +1,21 @@
 package com.github.lightning.io;
 
-import java.io.FilterOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.OutputStream;
 
-public class SerializerOutputStream extends FilterOutputStream {
+import com.github.lightning.Serializer;
 
-	public SerializerOutputStream(OutputStream out) {
+public class SerializerOutputStream extends DataOutputStream {
+
+	private final Serializer serializer;
+
+	public SerializerOutputStream(OutputStream out, Serializer serializer) {
 		super(out);
+		this.serializer = serializer;
 	}
 
 	public void writeObject(Object object) {
-
+		serializer.serialize(object, (DataOutput) this);
 	}
 }
