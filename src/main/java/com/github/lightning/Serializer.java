@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
 public interface Serializer {
 
@@ -20,7 +20,7 @@ public interface Serializer {
 
 	<V> void serialize(V value, Writer writer);
 
-	<V> void serialize(V value, Buffer buffer);
+	<V> void serialize(V value, ByteBuffer buffer);
 
 	<V> V deserialize(DataInput dataInput);
 
@@ -28,6 +28,6 @@ public interface Serializer {
 
 	<V> V deserialize(Reader reader);
 
-	<V> V deserialize(Buffer buffer);
+	<V> V deserialize(ByteBuffer buffer);
 
 }

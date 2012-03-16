@@ -2,9 +2,12 @@ package com.github.lightning.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.github.lightning.Attribute;
+import com.github.lightning.ClassDefinition;
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.SerializationStrategy;
 import com.github.lightning.Serializer;
 import com.github.lightning.SerializerDefinition;
@@ -46,7 +49,8 @@ public final class InternalSerializerCreator {
 
 	public Serializer build() {
 		// TODO implementation missing
-		return null;
+		ClassDefinitionContainer classDefinitionContainer = new InternalClassDefinitionContainer(Collections.<ClassDefinition> emptyList());
+		return new InternalSerializer(classDefinitionContainer);
 	}
 
 }

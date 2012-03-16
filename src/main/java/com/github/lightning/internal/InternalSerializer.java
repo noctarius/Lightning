@@ -1,12 +1,14 @@
 package com.github.lightning.internal;
 
 import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -14,6 +16,10 @@ import com.github.lightning.ClassDefinition;
 import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.ClassDefinitionNotConstistentException;
 import com.github.lightning.Serializer;
+import com.github.lightning.internal.io.BufferInputStream;
+import com.github.lightning.internal.io.BufferOutputStream;
+import com.github.lightning.internal.io.ReaderInputStream;
+import com.github.lightning.internal.io.WriterOutputStream;
 
 class InternalSerializer implements Serializer {
 
@@ -46,20 +52,20 @@ class InternalSerializer implements Serializer {
 
 	@Override
 	public <V> void serialize(V value, OutputStream outputStream) {
-		// TODO Auto-generated method stub
-
+		if (outputStream instanceof DataOutput)
+			serialize(value, (DataOutput) outputStream);
+		else
+			serialize(value, (DataOutput) new DataOutputStream(outputStream));
 	}
 
 	@Override
 	public <V> void serialize(V value, Writer writer) {
-		// TODO Auto-generated method stub
-
+		serialize(value, (DataOutput) new DataOutputStream(new WriterOutputStream(writer, "UTF-8")));
 	}
 
 	@Override
-	public <V> void serialize(V value, Buffer buffer) {
-		// TODO Auto-generated method stub
-
+	public <V> void serialize(V value, ByteBuffer buffer) {
+		serialize(value, (DataOutput) new DataOutputStream(new BufferOutputStream(buffer)));
 	}
 
 	@Override
@@ -70,20 +76,21 @@ class InternalSerializer implements Serializer {
 
 	@Override
 	public <V> V deserialize(InputStream inputStream) {
-		// TODO Auto-generated method stub
-		return null;
+		if (inputStream instanceof DataInput) {
+			return deserialize((DataInput) inputStream);
+		}
+
+		return deserialize((DataInput) new DataInputStream(inputStream));
 	}
 
 	@Override
 	public <V> V deserialize(Reader reader) {
-		// TODO Auto-generated method stub
-		return null;
+		return deserialize((DataInput) new DataInputStream(new ReaderInputStream(reader, "UTF-8")));
 	}
 
 	@Override
-	public <V> V deserialize(Buffer buffer) {
-		// TODO Auto-generated method stub
-		return null;
+	public <V> V deserialize(ByteBuffer buffer) {
+		return deserialize((DataInput) new DataInputStream(new BufferInputStream(buffer)));
 	}
 
 	private void consistencyCheckClassChecksums(ClassDefinitionContainer oldClassDefinitionContainer, ClassDefinitionContainer classDefinitionContainer) {
