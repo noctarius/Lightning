@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import org.objectweb.asm.Type;
 
 import com.github.lightning.PropertyAccessor;
+import com.github.lightning.PropertyDescriptor;
 
 public final class BeanUtil {
 
@@ -19,7 +20,15 @@ public final class BeanUtil {
 		return StringUtil.toLowerCamelCase(extractPropertyName(methodName));
 	}
 
-	public static <T> String buildInternalSignature(String propertyName, PropertyAccessor<T> propertyAccessor) {
+	public static String buildInternalSignature(Iterable<PropertyDescriptor> propertyDescriptors) {
+		StringBuilder internalSignature = new StringBuilder();
+		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+			internalSignature.append(propertyDescriptor.getInternalSignature());
+		}
+		return internalSignature.toString();
+	}
+
+	public static <T> String buildInternalSignature(String propertyName, PropertyAccessor propertyAccessor) {
 		String type = Type.getDescriptor(propertyAccessor.getType());
 		return new StringBuilder("(").append(propertyName).append(")::").append(type).toString();
 	}

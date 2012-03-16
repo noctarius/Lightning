@@ -5,15 +5,15 @@ import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.util.BeanUtil;
 import com.github.lightning.internal.util.StringUtil;
 
-class InternalPropertyDescriptor<T> implements PropertyDescriptor<T> {
+class InternalPropertyDescriptor implements PropertyDescriptor, Comparable<PropertyDescriptor> {
 
 	private final String name;
 	private final String propertyName;
 	private final String internalSignature;
 
-	private final PropertyAccessor<T> propertyAccessor;
+	private final PropertyAccessor propertyAccessor;
 
-	InternalPropertyDescriptor(String propertyName, PropertyAccessor<T> propertyAccessor) {
+	InternalPropertyDescriptor(String propertyName, PropertyAccessor propertyAccessor) {
 		this.name = StringUtil.toUpperCamelCase(propertyName);
 		this.propertyName = propertyName;
 		this.propertyAccessor = propertyAccessor;
@@ -26,7 +26,7 @@ class InternalPropertyDescriptor<T> implements PropertyDescriptor<T> {
 	}
 
 	@Override
-	public PropertyAccessor<T> getPropertyAccessor() {
+	public PropertyAccessor getPropertyAccessor() {
 		return propertyAccessor;
 	}
 
@@ -48,5 +48,10 @@ class InternalPropertyDescriptor<T> implements PropertyDescriptor<T> {
 	@Override
 	public String getInternalSignature() {
 		return internalSignature;
+	}
+
+	@Override
+	public int compareTo(PropertyDescriptor o) {
+		return propertyName.compareTo(o.getPropertyName());
 	}
 }

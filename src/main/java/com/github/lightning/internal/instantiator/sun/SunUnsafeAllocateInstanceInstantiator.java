@@ -1,26 +1,12 @@
 package com.github.lightning.internal.instantiator.sun;
 
-import java.lang.reflect.Field;
-
 import com.github.lightning.internal.instantiator.ObjectInstantiator;
+import com.github.lightning.internal.util.UnsafeUtil;
 
+@SuppressWarnings("restriction")
 public class SunUnsafeAllocateInstanceInstantiator implements ObjectInstantiator {
 
-	private static final sun.misc.Unsafe UNSAFE;
-
-	static {
-		sun.misc.Unsafe unsafe;
-		try {
-			Field unsafeField = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-			unsafeField.setAccessible(true);
-			unsafe = (sun.misc.Unsafe) unsafeField.get(null);
-		}
-		catch (Exception e) {
-			unsafe = null;
-		}
-
-		UNSAFE = unsafe;
-	}
+	private static final sun.misc.Unsafe UNSAFE = UnsafeUtil.getUnsafe();
 
 	protected final Class<?> type;
 

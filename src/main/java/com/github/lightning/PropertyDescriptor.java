@@ -1,10 +1,10 @@
 package com.github.lightning;
 
-public interface PropertyDescriptor<T> {
+public interface PropertyDescriptor {
 
 	Class<?> getDeclaringClass();
 
-	PropertyAccessor<T> getPropertyAccessor();
+	PropertyAccessor getPropertyAccessor();
 
 	String getName();
 

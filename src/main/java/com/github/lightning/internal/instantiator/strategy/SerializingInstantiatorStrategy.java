@@ -24,7 +24,7 @@ import com.github.lightning.internal.instantiator.basic.ObjectStreamClassInstant
 import com.github.lightning.internal.instantiator.gcj.GCJSerializationInstantiator;
 import com.github.lightning.internal.instantiator.perc.PercSerializationInstantiator;
 import com.github.lightning.internal.instantiator.sun.Sun13SerializationInstantiator;
-import com.github.lightning.internal.instantiator.sun.SunUnsafeAllocateInstanceInstantiator;
+import com.github.lightning.internal.util.InternalUtil;
 
 /**
  * Guess the best serializing instantiator for a given class. The returned
@@ -46,21 +46,6 @@ import com.github.lightning.internal.instantiator.sun.SunUnsafeAllocateInstanceI
  */
 public class SerializingInstantiatorStrategy extends BaseInstantiatorStrategy {
 
-	private static final boolean UNSAFE_AVAILABLE;
-
-	static {
-		boolean unsafeAvailable = false;
-		try {
-			Class.forName("sun.misc.Unsafe");
-			unsafeAvailable = true;
-		}
-		catch (Exception e) {
-			// Intentionally left blank
-		}
-
-		UNSAFE_AVAILABLE = unsafeAvailable;
-	}
-
 	/**
 	 * Return an {@link ObjectInstantiator} allowing to create instance
 	 * following the java
@@ -79,8 +64,8 @@ public class SerializingInstantiatorStrategy extends BaseInstantiatorStrategy {
 			if (VM_VERSION.startsWith("1.3")) {
 				return new Sun13SerializationInstantiator(type);
 			}
-			else if (UNSAFE_AVAILABLE) {
-				return new SunUnsafeAllocateInstanceInstantiator(type);
+			else if (InternalUtil.isUnsafeAvailable()) {
+				return InternalUtil.buildSunUnsafeInstantiator(type);
 			}
 		}
 		else if (JVM_NAME.startsWith(GNU)) {
