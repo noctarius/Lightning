@@ -22,8 +22,10 @@ import com.github.lightning.internal.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**
- * Instantiates a class by making a call to internal Perc private methods. It is only supposed to
- * work on Perc JVMs. This instantiator will not call any constructors. The code was provided by
+ * Instantiates a class by making a call to internal Perc private methods. It is
+ * only supposed to
+ * work on Perc JVMs. This instantiator will not call any constructors. The code
+ * was provided by
  * Aonix Perc support team.
  * 
  * @author Henri Tremblay
@@ -44,18 +46,20 @@ public class PercInstantiator implements ObjectInstantiator {
 					new Class[] { Class.class, Boolean.TYPE });
 			newInstanceMethod.setAccessible(true);
 		}
-      catch(RuntimeException e) {
+		catch (RuntimeException e) {
 			throw new ObjenesisException(e);
 		}
-      catch(NoSuchMethodException e) {
-         throw new ObjenesisException(e);
-      }
+		catch (NoSuchMethodException e) {
+			throw new ObjenesisException(e);
+		}
 	}
 
+	@Override
 	public Object newInstance() {
 		try {
 			return newInstanceMethod.invoke(null, typeArgs);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new ObjenesisException(e);
 		}
 	}

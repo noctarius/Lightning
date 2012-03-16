@@ -24,20 +24,26 @@ import com.github.lightning.internal.instantiator.strategy.SerializingInstantiat
  */
 public class ObjenesisSerializer extends ObjenesisBase {
 
-   /**
-    * Default constructor using the {@link com.github.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy}
-    */
-   public ObjenesisSerializer() {
-      super(new SerializingInstantiatorStrategy());
-   }
+	/**
+	 * Default constructor using the
+	 * {@link com.github.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy}
+	 */
+	public ObjenesisSerializer() {
+		super(new SerializingInstantiatorStrategy());
+	}
 
-   /**
-    * Instance using the {@link com.github.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy} with or without caching
-    * {@link com.github.lightning.internal.instantiator.ObjectInstantiator}s
-    * 
-    * @param useCache If {@link com.github.lightning.internal.instantiator.ObjectInstantiator}s should be cached
-    */
-   public ObjenesisSerializer(boolean useCache) {
-      super(new SerializingInstantiatorStrategy(), useCache);
-   }
+	/**
+	 * Instance using the
+	 * {@link com.github.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy}
+	 * with or without caching
+	 * {@link com.github.lightning.internal.instantiator.ObjectInstantiator}s
+	 * 
+	 * @param useCache
+	 *            If
+	 *            {@link com.github.lightning.internal.instantiator.ObjectInstantiator}
+	 *            s should be cached
+	 */
+	public ObjenesisSerializer(boolean useCache) {
+		super(new SerializingInstantiatorStrategy(), useCache);
+	}
 }

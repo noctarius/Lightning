@@ -19,8 +19,10 @@ import com.github.lightning.internal.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**
- * Instantiates a class by making a call to internal JRockit private methods. It is only supposed to
- * work on JRockit 7.0 JVMs, which are compatible with Java API 1.3.1. This instantiator will not
+ * Instantiates a class by making a call to internal JRockit private methods. It
+ * is only supposed to
+ * work on JRockit 7.0 JVMs, which are compatible with Java API 1.3.1. This
+ * instantiator will not
  * call any constructors.
  * 
  * @author Leonardo Mesquita
@@ -28,62 +30,63 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  */
 public class JRockit131Instantiator implements ObjectInstantiator {
 
-   private Constructor mungedConstructor;
+	private Constructor mungedConstructor;
 
-   private static Method newConstructorForSerializationMethod;
+	private static Method newConstructorForSerializationMethod;
 
-   private static void initialize() {
-      if(newConstructorForSerializationMethod == null) {
-         Class cl;
-         try {
-            cl = Class.forName("COM.jrockit.reflect.MemberAccess");
-            newConstructorForSerializationMethod = cl.getDeclaredMethod(
-               "newConstructorForSerialization", new Class[] {Constructor.class, Class.class});
-            newConstructorForSerializationMethod.setAccessible(true);
-         }
-         catch(RuntimeException e) {
-            throw new ObjenesisException(e);
-         }
-         catch(ClassNotFoundException e) {
-            throw new ObjenesisException(e);
-         }
-         catch(NoSuchMethodException e) {
-            throw new ObjenesisException(e);
-         }
-      }
-   }
+	private static void initialize() {
+		if (newConstructorForSerializationMethod == null) {
+			Class cl;
+			try {
+				cl = Class.forName("COM.jrockit.reflect.MemberAccess");
+				newConstructorForSerializationMethod = cl.getDeclaredMethod(
+						"newConstructorForSerialization", new Class[] { Constructor.class, Class.class });
+				newConstructorForSerializationMethod.setAccessible(true);
+			}
+			catch (RuntimeException e) {
+				throw new ObjenesisException(e);
+			}
+			catch (ClassNotFoundException e) {
+				throw new ObjenesisException(e);
+			}
+			catch (NoSuchMethodException e) {
+				throw new ObjenesisException(e);
+			}
+		}
+	}
 
-   public JRockit131Instantiator(Class type) {
-      initialize();
+	public JRockit131Instantiator(Class type) {
+		initialize();
 
-      if(newConstructorForSerializationMethod != null) {
+		if (newConstructorForSerializationMethod != null) {
 
-         Constructor javaLangObjectConstructor;
+			Constructor javaLangObjectConstructor;
 
-         try {
-            javaLangObjectConstructor = Object.class.getConstructor((Class[]) null);
-         }
-         catch(NoSuchMethodException e) {
-            throw new Error("Cannot find constructor for java.lang.Object!");
-         }
+			try {
+				javaLangObjectConstructor = Object.class.getConstructor((Class[]) null);
+			}
+			catch (NoSuchMethodException e) {
+				throw new Error("Cannot find constructor for java.lang.Object!");
+			}
 
-         try {
-            mungedConstructor = (Constructor) newConstructorForSerializationMethod.invoke(null,
-               new Object[] {javaLangObjectConstructor, type});
-         }
-         catch(Exception e) {
-        	 throw new ObjenesisException(e);
-         }
-      }
+			try {
+				mungedConstructor = (Constructor) newConstructorForSerializationMethod.invoke(null,
+						new Object[] { javaLangObjectConstructor, type });
+			}
+			catch (Exception e) {
+				throw new ObjenesisException(e);
+			}
+		}
 
-   }
+	}
 
-   public Object newInstance() {
-      try {
-         return mungedConstructor.newInstance((Object[]) null);
-      }
-      catch(Exception e) {
-         throw new ObjenesisException(e);
-      }
-   }
+	@Override
+	public Object newInstance() {
+		try {
+			return mungedConstructor.newInstance((Object[]) null);
+		}
+		catch (Exception e) {
+			throw new ObjenesisException(e);
+		}
+	}
 }

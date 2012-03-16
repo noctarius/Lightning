@@ -5,20 +5,22 @@ is hereby granted without fee, provided that the above copyright notice appear i
 that both that copyright notice and this permission notice appear in supporting documentation. 
 CERN makes no representations about the suitability of this software for any purpose. 
 It is provided "as is" without expressed or implied warranty.
-*/
+ */
 package com.github.lightning.internal.bundle.cern.colt;
 
 /**
- * Interface for an object that knows how to swap elements at two positions (a,b).
- *
+ * Interface for an object that knows how to swap elements at two positions
+ * (a,b).
+ * 
  * @see com.github.lightning.internal.bundle.cern.colt.GenericSorting
- *
+ * 
  * @author wolfgang.hoschek@cern.ch
  * @version 1.0, 03-Jul-99
  */
 public interface Swapper {
-/**
- * Swaps the generic data g[a] with g[b].
- */
-public abstract void swap(int a, int b);
+
+	/**
+	 * Swaps the generic data g[a] with g[b].
+	 */
+	public abstract void swap(int a, int b);
 }

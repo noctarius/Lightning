@@ -5,19 +5,23 @@ is hereby granted without fee, provided that the above copyright notice appear i
 that both that copyright notice and this permission notice appear in supporting documentation. 
 CERN makes no representations about the suitability of this software for any purpose. 
 It is provided "as is" without expressed or implied warranty.
-*/
+ */
 package com.github.lightning.internal.bundle.cern.colt.function;
 
 /**
- * Interface that represents a function object: a function that takes two arguments.
+ * Interface that represents a function object: a function that takes two
+ * arguments.
  */
 public interface IntDoubleFunction {
-/**
- * Applies a function to two arguments.
- *
- * @param first   first argument passed to the function.
- * @param second  second argument passed to the function.
- * @return the result of the function.
- */
-abstract public double apply(int first, double second);
+
+	/**
+	 * Applies a function to two arguments.
+	 * 
+	 * @param first
+	 *            first argument passed to the function.
+	 * @param second
+	 *            second argument passed to the function.
+	 * @return the result of the function.
+	 */
+	abstract public double apply(int first, double second);
 }

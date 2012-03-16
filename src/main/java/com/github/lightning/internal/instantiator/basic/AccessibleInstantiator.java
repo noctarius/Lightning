@@ -16,8 +16,10 @@
 package com.github.lightning.internal.instantiator.basic;
 
 /**
- * Instantiates a class by grabbing the no-args constructor, making it accessible and then calling
- * Constructor.newInstance(). Although this still requires no-arg constructors, it can call
+ * Instantiates a class by grabbing the no-args constructor, making it
+ * accessible and then calling
+ * Constructor.newInstance(). Although this still requires no-arg constructors,
+ * it can call
  * non-public constructors (if the security manager allows it).
  * 
  * @author Joe Walnes
@@ -25,10 +27,10 @@ package com.github.lightning.internal.instantiator.basic;
  */
 public class AccessibleInstantiator extends ConstructorInstantiator {
 
-   public AccessibleInstantiator(Class type) {
-      super(type);
-      if(constructor != null) {
-         constructor.setAccessible(true);
-      }
-   }
+	public AccessibleInstantiator(Class type) {
+		super(type);
+		if (constructor != null) {
+			constructor.setAccessible(true);
+		}
+	}
 }

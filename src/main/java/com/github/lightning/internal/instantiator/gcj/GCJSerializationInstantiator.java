@@ -19,28 +19,32 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
 import com.github.lightning.internal.instantiator.SerializationInstantiatorHelper;
 
 /**
- * Instantiates a class by making a call to internal GCJ private methods. It is only supposed to
- * work on GCJ JVMs. This instantiator will create classes in a way compatible with serialization,
+ * Instantiates a class by making a call to internal GCJ private methods. It is
+ * only supposed to
+ * work on GCJ JVMs. This instantiator will create classes in a way compatible
+ * with serialization,
  * calling the first non-serializable superclass' no-arg constructor.
  * 
  * @author Leonardo Mesquita
  * @see com.github.lightning.internal.instantiator.ObjectInstantiator
  */
 public class GCJSerializationInstantiator extends GCJInstantiatorBase {
-   private Class superType;
 
-   public GCJSerializationInstantiator(Class type) {
-      super(type);
-      this.superType = SerializationInstantiatorHelper.getNonSerializableSuperClass(type);
-   }
+	private Class superType;
 
-   public Object newInstance() {
-      try {
-         return newObjectMethod.invoke(dummyStream, new Object[] {type, superType});
-      }
-      catch(Exception e) {
-         throw new ObjenesisException(e);
-      }
-   }
+	public GCJSerializationInstantiator(Class type) {
+		super(type);
+		this.superType = SerializationInstantiatorHelper.getNonSerializableSuperClass(type);
+	}
+
+	@Override
+	public Object newInstance() {
+		try {
+			return newObjectMethod.invoke(dummyStream, new Object[] { type, superType });
+		}
+		catch (Exception e) {
+			throw new ObjenesisException(e);
+		}
+	}
 
 }

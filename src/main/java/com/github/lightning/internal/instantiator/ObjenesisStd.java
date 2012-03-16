@@ -18,26 +18,35 @@ package com.github.lightning.internal.instantiator;
 import com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy;
 
 /**
- * Objenesis implementation using the {@link com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}.
+ * Objenesis implementation using the
+ * {@link com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
+ * .
  * 
  * @author Henri Tremblay
  */
 public class ObjenesisStd extends ObjenesisBase {
 
-   /**
-    * Default constructor using the {@link com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
-    */
-   public ObjenesisStd() {
-      super(new StdInstantiatorStrategy());
-   }
+	/**
+	 * Default constructor using the
+	 * {@link com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
+	 */
+	public ObjenesisStd() {
+		super(new StdInstantiatorStrategy());
+	}
 
-   /**
-    * Instance using the {@link com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy} with or without
-    * caching {@link com.github.lightning.internal.instantiator.ObjectInstantiator}s
-    * 
-    * @param useCache If {@link com.github.lightning.internal.instantiator.ObjectInstantiator}s should be cached
-    */
-   public ObjenesisStd(boolean useCache) {
-      super(new StdInstantiatorStrategy(), useCache);
-   }
+	/**
+	 * Instance using the
+	 * {@link com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
+	 * with or without
+	 * caching
+	 * {@link com.github.lightning.internal.instantiator.ObjectInstantiator}s
+	 * 
+	 * @param useCache
+	 *            If
+	 *            {@link com.github.lightning.internal.instantiator.ObjectInstantiator}
+	 *            s should be cached
+	 */
+	public ObjenesisStd(boolean useCache) {
+		super(new StdInstantiatorStrategy(), useCache);
+	}
 }

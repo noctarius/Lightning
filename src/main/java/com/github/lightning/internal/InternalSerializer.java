@@ -12,15 +12,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Serializer;
 
-
 class InternalSerializer implements Serializer {
 
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
-	
+
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer) {
-		
+
 	}
-	
+
 	@Override
 	public ClassDefinitionContainer getClassDefinitionContainer() {
 		return classDefinitionContainer.get();
@@ -28,7 +27,7 @@ class InternalSerializer implements Serializer {
 
 	@Override
 	public void setClassDefinitionContainer(ClassDefinitionContainer classDefinitionContainer) {
-		// precheck if checksums of remote classes passing 
+		// precheck if checksums of remote classes passing
 
 	}
 

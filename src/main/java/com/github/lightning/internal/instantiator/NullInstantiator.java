@@ -22,10 +22,11 @@ package com.github.lightning.internal.instantiator;
  */
 public class NullInstantiator implements ObjectInstantiator {
 
-   /**
-    * @return Always null
-    */
-   public Object newInstance() {
-      return null;
-   }
+	/**
+	 * @return Always null
+	 */
+	@Override
+	public Object newInstance() {
+		return null;
+	}
 }
