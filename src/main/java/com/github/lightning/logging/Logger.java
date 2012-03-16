@@ -1,4 +1,4 @@
-package com.github.lightning;
+package com.github.lightning.logging;
 
 public interface Logger {
 

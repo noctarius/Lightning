@@ -23,6 +23,13 @@ class InternalClassDefinition implements ClassDefinition {
 		this.id = Crc64Util.checksum(classData);
 	}
 
+	InternalClassDefinition(long id, Class<?> type, byte[] checksum) {
+		this.canonicalName = type.getCanonicalName();
+		this.type = type;
+		this.id = id;
+		this.checksum = checksum;
+	}
+
 	@Override
 	public String getCanonicalName() {
 		return canonicalName;

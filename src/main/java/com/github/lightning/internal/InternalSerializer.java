@@ -7,9 +7,12 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.Buffer;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.lightning.ClassDefinition;
 import com.github.lightning.ClassDefinitionContainer;
+import com.github.lightning.ClassDefinitionNotConstistentException;
 import com.github.lightning.Serializer;
 
 class InternalSerializer implements Serializer {
@@ -17,7 +20,7 @@ class InternalSerializer implements Serializer {
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
 
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer) {
-
+		this.classDefinitionContainer.set(classDefinitionContainer);
 	}
 
 	@Override
@@ -27,8 +30,12 @@ class InternalSerializer implements Serializer {
 
 	@Override
 	public void setClassDefinitionContainer(ClassDefinitionContainer classDefinitionContainer) {
-		// precheck if checksums of remote classes passing
+		// Pre-check if checksums of remote classes passing
+		ClassDefinitionContainer oldClassDefinitionContainer = getClassDefinitionContainer();
+		consistencyCheckClassChecksums(oldClassDefinitionContainer, classDefinitionContainer);
 
+		// Set new ClassDefinitionContainer if checking succeed
+		this.classDefinitionContainer.set(classDefinitionContainer);
 	}
 
 	@Override
@@ -79,4 +86,18 @@ class InternalSerializer implements Serializer {
 		return null;
 	}
 
+	private void consistencyCheckClassChecksums(ClassDefinitionContainer oldClassDefinitionContainer, ClassDefinitionContainer classDefinitionContainer) {
+		for (ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions()) {
+			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition.getCanonicalName());
+			if (oldClassDefinition == null) {
+				throw new ClassDefinitionNotConstistentException("No classDefinition for class " + classDefinition.getCanonicalName() + " was found");
+			}
+
+			byte[] checksum = classDefinition.getChecksum();
+			byte[] oldChecksum = oldClassDefinition.getChecksum();
+			if (!Arrays.equals(checksum, oldChecksum)) {
+				throw new ClassDefinitionNotConstistentException("Signature checksum of class " + classDefinition.getCanonicalName() + " is not constistent");
+			}
+		}
+	}
 }

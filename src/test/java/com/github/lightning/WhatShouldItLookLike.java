@@ -15,6 +15,11 @@ public class WhatShouldItLookLike {
 		Serializer remoteSerializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
 		remoteSerializer.setClassDefinitionContainer(container);
 
+		Serializer serializer2 = Lightning.newBuilder().serializerDefinitions(new BookingEngineSerializerFactory()).build();
+		ClassDefinitionContainer container2 = serializer2.getClassDefinitionContainer();
+
+		Serializer remoteSerializer2 = Lightning.newBuilder().serializerDefinitions(new BookingEngineSerializerFactory()).build();
+		remoteSerializer2.setClassDefinitionContainer(container2);
 	}
 
 	public static class BookingEngineSerializerFactory extends AbstractSerializerDefinition {

@@ -1,6 +1,5 @@
-package com.github.lightning.base;
+package com.github.lightning.logging;
 
-import com.github.lightning.Logger;
 
 public class LoggerAdapter implements Logger {
 

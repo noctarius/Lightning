@@ -8,4 +8,8 @@ public interface ClassDefinitionContainer {
 
 	Class<?> getClassById(long id);
 
+	ClassDefinition getClassDefinitionByCanonicalName(String canonicalName);
+
+	ClassDefinition getClassDefinitionById(long id);
+
 }
