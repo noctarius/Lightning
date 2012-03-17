@@ -1,5 +1,6 @@
 package com.github.lightning;
 
+@SuppressWarnings("serial")
 public class IllegalAccessorException extends RuntimeException {
 
 	public IllegalAccessorException() {

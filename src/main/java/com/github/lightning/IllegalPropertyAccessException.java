@@ -1,5 +1,6 @@
 package com.github.lightning;
 
+@SuppressWarnings("serial")
 public class IllegalPropertyAccessException extends RuntimeException {
 
 	public IllegalPropertyAccessException() {
