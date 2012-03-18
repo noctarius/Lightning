@@ -20,12 +20,13 @@ import com.github.lightning.internal.io.BufferInputStream;
 import com.github.lightning.internal.io.BufferOutputStream;
 import com.github.lightning.internal.io.ReaderInputStream;
 import com.github.lightning.internal.io.WriterOutputStream;
+import com.github.lightning.logging.Logger;
 
 class InternalSerializer implements Serializer {
 
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
 
-	InternalSerializer(ClassDefinitionContainer classDefinitionContainer) {
+	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, Logger logger) {
 		this.classDefinitionContainer.set(classDefinitionContainer);
 	}
 

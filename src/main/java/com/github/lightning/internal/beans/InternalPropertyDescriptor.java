@@ -1,5 +1,6 @@
 package com.github.lightning.internal.beans;
 
+import com.github.lightning.Marshaller;
 import com.github.lightning.PropertyAccessor;
 import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.util.BeanUtil;
@@ -12,11 +13,13 @@ class InternalPropertyDescriptor implements PropertyDescriptor, Comparable<Prope
 	private final String internalSignature;
 
 	private final PropertyAccessor propertyAccessor;
+	private final Marshaller<?> marshaller;
 
-	InternalPropertyDescriptor(String propertyName, PropertyAccessor propertyAccessor) {
+	InternalPropertyDescriptor(String propertyName, Marshaller<?> marshaller, PropertyAccessor propertyAccessor) {
 		this.name = StringUtil.toUpperCamelCase(propertyName);
 		this.propertyName = propertyName;
 		this.propertyAccessor = propertyAccessor;
+		this.marshaller = marshaller;
 		this.internalSignature = BeanUtil.buildInternalSignature(propertyName, propertyAccessor);
 	}
 
@@ -48,6 +51,11 @@ class InternalPropertyDescriptor implements PropertyDescriptor, Comparable<Prope
 	@Override
 	public String getInternalSignature() {
 		return internalSignature;
+	}
+
+	@Override
+	public Marshaller<?> getMarshaller() {
+		return marshaller;
 	}
 
 	@Override

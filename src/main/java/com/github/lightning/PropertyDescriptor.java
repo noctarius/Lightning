@@ -14,4 +14,6 @@ public interface PropertyDescriptor {
 
 	String getInternalSignature();
 
+	Marshaller<?> getMarshaller();
+
 }

@@ -30,7 +30,7 @@ public final class Lightning {
 
 		private Set<SerializerDefinition> serializerDefinitions = new HashSet<SerializerDefinition>();
 		private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
-		private Class<? extends Annotation> attributeAnnotation = Attribute.class;
+		private Class<? extends Annotation> attributeAnnotation = null;
 		private Logger logger = new LoggerAdapter();
 
 		private Builder() {
@@ -63,8 +63,8 @@ public final class Lightning {
 		}
 
 		public Serializer build() {
-			return new InternalSerializerCreator().setLogger(logger).setSerializationStrategy(serializationStrategy).setAttributeAnnotation(attributeAnnotation)
-					.addSerializerDefinitions(serializerDefinitions).build();
+			return new InternalSerializerCreator().setLogger(logger).setSerializationStrategy(serializationStrategy)
+					.setAttributeAnnotation(attributeAnnotation).addSerializerDefinitions(serializerDefinitions).build();
 		}
 	}
 

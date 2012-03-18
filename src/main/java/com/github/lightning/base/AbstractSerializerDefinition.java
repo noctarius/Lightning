@@ -5,30 +5,55 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import com.github.lightning.Attribute;
 import com.github.lightning.DefinitionVisitor;
 import com.github.lightning.Marshaller;
-import com.github.lightning.PropertyAccessor;
+import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.SerializerDefinition;
 import com.github.lightning.SerializerDefinitionException;
 import com.github.lightning.bindings.AnnotatedBinder;
 import com.github.lightning.bindings.ClassBinder;
-import com.github.lightning.bindings.PropertyBinder;
 import com.github.lightning.bindings.MarshallerBinder;
+import com.github.lightning.bindings.PropertyBinder;
+import com.github.lightning.internal.beans.PropertyDescriptorFactory;
 
 public abstract class AbstractSerializerDefinition implements SerializerDefinition {
 
 	private final Map<Class<?>, Marshaller<?>> marshallers = new HashMap<Class<?>, Marshaller<?>>();
 	private final Set<SerializerDefinition> children = new HashSet<SerializerDefinition>();
-	private final Map<PropertyAccessor, Marshaller<?>> propertyMarshallers = new HashMap<PropertyAccessor, Marshaller<?>>();
+	private final Map<PropertyDescriptor, Marshaller<?>> propertyMarshallers = new HashMap<PropertyDescriptor, Marshaller<?>>();
 
-	private Class<? extends Annotation> attributesAnnotation = Attribute.class;
+	private Class<? extends Annotation> attributesAnnotation = null;
 
 	@Override
-	public final void visitDefinition(DefinitionVisitor visitor) {
-		// TODO implementation missing
+	public final void acceptVisitor(DefinitionVisitor visitor) {
+		// Start visiting
+		visitor.visitSerializerDefinition(this);
+
+		// Visit the attribute annotation if set
+		if (attributesAnnotation != null) {
+			visitor.visitAttributeAnnotation(attributesAnnotation);
+		}
+
+		// Visit all direct marshallers
+		for (Entry<Class<?>, Marshaller<?>> entry : marshallers.entrySet()) {
+			visitor.visitClassDefine(entry.getKey(), entry.getValue());
+		}
+
+		// Visit all property definitions
+		for (Entry<PropertyDescriptor, Marshaller<?>> entry : propertyMarshallers.entrySet()) {
+			visitor.visitPropertyDescriptor(entry.getKey(), entry.getValue());
+		}
+
+		// Visit all children
+		for (SerializerDefinition child : children) {
+			child.acceptVisitor(visitor);
+		}
+
+		// Finalize visit
+		visitor.visitFinalizeSerializerDefinition(this);
 	}
 
 	protected abstract void configure();
@@ -55,7 +80,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			@Override
 			public void byMarshaller(Class<? extends Marshaller<T>> marshaller) {
 				try {
-					marshallers.put(clazz, marshaller.newInstance());
+					byMarshaller(marshaller.newInstance());
 				}
 				catch (Exception e) {
 					throw new SerializerDefinitionException("Marshaller class " + marshaller.getCanonicalName()
@@ -121,14 +146,18 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 			@Override
 			public void byMarshaller(Class<? extends Marshaller<?>> marshaller) {
-				// TODO Auto-generated method stub
-
+				try {
+					byMarshaller(marshaller.newInstance());
+				}
+				catch (Exception e) {
+					throw new SerializerDefinitionException("Marshaller class " + marshaller.getCanonicalName()
+							+ " could not be instantiated. Is there a standard (public) constructor?");
+				}
 			}
 
 			@Override
 			public void byMarshaller(Marshaller<?> marshaller) {
-				// TODO Auto-generated method stub
-
+				propertyMarshallers.put(PropertyDescriptorFactory.byField(property, marshaller), marshaller);
 			}
 		};
 	}
