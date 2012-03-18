@@ -6,7 +6,7 @@ import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.util.BeanUtil;
 import com.github.lightning.internal.util.StringUtil;
 
-class InternalPropertyDescriptor implements PropertyDescriptor, Comparable<PropertyDescriptor> {
+class InternalPropertyDescriptor implements PropertyDescriptor {
 
 	private final String name;
 	private final String propertyName;

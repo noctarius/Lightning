@@ -29,6 +29,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 	@Override
 	public final void acceptVisitor(DefinitionVisitor visitor) {
+		// Read the configuration
+		configure();
+
 		// Start visiting
 		visitor.visitSerializerDefinition(this);
 
@@ -84,7 +87,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 				}
 				catch (Exception e) {
 					throw new SerializerDefinitionException("Marshaller class " + marshaller.getCanonicalName()
-							+ " could not be instantiated. Is there a standard (public) constructor?");
+							+ " could not be instantiated. Is there a standard (public) constructor?", e);
 				}
 			}
 
@@ -117,7 +120,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 				}
 				catch (Exception e) {
 					throw new SerializerDefinitionException("Property " + property + " could not be found for type "
-							+ clazz.getCanonicalName());
+							+ clazz.getCanonicalName(), e);
 				}
 			}
 
@@ -151,7 +154,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 				}
 				catch (Exception e) {
 					throw new SerializerDefinitionException("Marshaller class " + marshaller.getCanonicalName()
-							+ " could not be instantiated. Is there a standard (public) constructor?");
+							+ " could not be instantiated. Is there a standard (public) constructor?", e);
 				}
 			}
 

@@ -8,6 +8,7 @@ import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.internal.util.Crc64Util;
 import com.github.lightning.internal.util.InternalUtil;
+import com.github.lightning.logging.Logger;
 
 class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefinition> {
 
@@ -16,12 +17,12 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 	private final byte[] checksum;
 	private long id;
 
-	InternalClassDefinition(Class<?> type, List<PropertyDescriptor> propertyDescriptors) {
+	InternalClassDefinition(Class<?> type, List<PropertyDescriptor> propertyDescriptors, Logger logger) {
 		this.canonicalName = type.getCanonicalName();
 		this.type = type;
 
 		byte[] classData = ClassUtil.getClassBytes(type);
-		this.checksum = InternalUtil.getChecksum(propertyDescriptors);
+		this.checksum = InternalUtil.getChecksum(propertyDescriptors, logger);
 		this.id = Crc64Util.checksum(classData);
 	}
 

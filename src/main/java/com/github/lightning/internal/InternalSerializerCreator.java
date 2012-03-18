@@ -61,7 +61,7 @@ public final class InternalSerializerCreator {
 
 		List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>();
 		for (InternalClassDescriptor classDescriptor : classDescriptors.values()) {
-			classDefinitions.add(classDescriptor.getClassDefinition());
+			classDefinitions.add(classDescriptor.build().getClassDefinition());
 		}
 
 		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), logger);
@@ -70,13 +70,17 @@ public final class InternalSerializerCreator {
 	private class InternalDefinitionVisitor implements DefinitionVisitor {
 
 		private final Stack<Class<? extends Annotation>> attributeAnnotation = new Stack<Class<? extends Annotation>>();
-		private final Stack<InternalClassDescriptor> classDescriptor = new Stack<InternalClassDescriptor>();
 
 		@Override
 		public void visitSerializerDefinition(SerializerDefinition serializerDefinition) {
 			// If at top level definition just add the base annotation
 			if (attributeAnnotation.size() == 0) {
-				attributeAnnotation.push(InternalSerializerCreator.this.attributeAnnotation);
+				if (InternalSerializerCreator.this.attributeAnnotation == null) {
+					attributeAnnotation.push(Attribute.class);
+				}
+				else {
+					attributeAnnotation.push(InternalSerializerCreator.this.attributeAnnotation);
+				}
 			}
 			else {
 				Class<? extends Annotation> annotation = attributeAnnotation.peek();
@@ -101,21 +105,25 @@ public final class InternalSerializerCreator {
 		@Override
 		public void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller<?> marshaller) {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
+
+			if (logger.isTraceEnabled()) {
+				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature()
+						+ ") on type " + propertyDescriptor.getDeclaringClass().getCanonicalName());
+			}
+
 			classDescriptor.push(propertyDescriptor);
 		}
 
 		@Override
 		public void visitFinalizeSerializerDefinition(SerializerDefinition serializerDefinition) {
-			// Clean this level up and finalize building of ClassDescriptor
+			// Clean this level up
 			this.attributeAnnotation.pop();
-			InternalClassDescriptor classDescriptor = this.classDescriptor.pop();
-			classDescriptor.build();
 		}
 
 		private InternalClassDescriptor findClassDescriptor(Class<?> type) {
 			InternalClassDescriptor classDescriptor = classDescriptors.get(type);
 			if (classDescriptor == null) {
-				classDescriptor = new InternalClassDescriptor(type);
+				classDescriptor = new InternalClassDescriptor(type, logger);
 				classDescriptors.put(type, classDescriptor);
 			}
 

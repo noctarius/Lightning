@@ -99,7 +99,11 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 	}
 
 	private AbstractLongObjectMap<ClassDefinition> initMappings(List<ClassDefinition> classDefinitions) {
-		AbstractLongObjectMap<ClassDefinition> mappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class, classDefinitions.size());
+		AbstractLongObjectMap<ClassDefinition> mappings;
+		mappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class, classDefinitions.size());
+		for (ClassDefinition classDefinition : classDefinitions) {
+			mappings.put(classDefinition.getId(), classDefinition);
+		}
 		return mappings;
 	}
 }

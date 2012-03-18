@@ -1,6 +1,6 @@
 package com.github.lightning;
 
-public interface PropertyDescriptor {
+public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
 
 	Class<?> getDeclaringClass();
 

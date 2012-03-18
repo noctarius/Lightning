@@ -2,24 +2,30 @@ package com.github.lightning;
 
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.PrintStream;
 
 import com.github.lightning.base.AbstractMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
+import com.github.lightning.logging.LoggerAdapter;
 
 public class WhatShouldItLookLike {
 
 	public static void main(String[] args) {
+		Serializer serializer2 = Lightning.newBuilder().logger(new DebugLogger())
+				.serializerDefinitions(new BookingEngineSerializerFactory()).build();
+
+		ClassDefinitionContainer container2 = serializer2.getClassDefinitionContainer();
+
+		Serializer remoteSerializer2 = Lightning.newBuilder().logger(new DebugLogger())
+				.serializerDefinitions(new BookingEngineSerializerFactory()).build();
+
+		remoteSerializer2.setClassDefinitionContainer(container2);
+
 		Serializer serializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
 		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
 		Serializer remoteSerializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
 		remoteSerializer.setClassDefinitionContainer(container);
-
-		Serializer serializer2 = Lightning.newBuilder().serializerDefinitions(new BookingEngineSerializerFactory()).build();
-		ClassDefinitionContainer container2 = serializer2.getClassDefinitionContainer();
-
-		Serializer remoteSerializer2 = Lightning.newBuilder().serializerDefinitions(new BookingEngineSerializerFactory()).build();
-		remoteSerializer2.setClassDefinitionContainer(container2);
 	}
 
 	public static class BookingEngineSerializerFactory extends AbstractSerializerDefinition {
@@ -131,6 +137,119 @@ public class WhatShouldItLookLike {
 		@Override
 		public Integer unmarshall(Integer value, DataInput dataInput) {
 			return value;
+		}
+	}
+
+	public static class DebugLogger extends LoggerAdapter {
+
+		@Override
+		public boolean isLogLevelEnabled(LogLevel logLevel) {
+			return true;
+		}
+
+		@Override
+		public boolean isTraceEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isDebugEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isInfoEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isWarnEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isErrorEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isFatalEnabled() {
+			return true;
+		}
+
+		@Override
+		public void trace(String message) {
+			log(LogLevel.Trace, message, null);
+		}
+
+		@Override
+		public void trace(String message, Throwable throwable) {
+			log(LogLevel.Trace, message, throwable);
+		}
+
+		@Override
+		public void debug(String message) {
+			log(LogLevel.Debug, message, null);
+		}
+
+		@Override
+		public void debug(String message, Throwable throwable) {
+			log(LogLevel.Debug, message, throwable);
+		}
+
+		@Override
+		public void info(String message) {
+			log(LogLevel.Info, message, null);
+		}
+
+		@Override
+		public void info(String message, Throwable throwable) {
+			log(LogLevel.Info, message, throwable);
+		}
+
+		@Override
+		public void warn(String message) {
+			log(LogLevel.Warn, message, null);
+		}
+
+		@Override
+		public void warn(String message, Throwable throwable) {
+			log(LogLevel.Warn, message, throwable);
+		}
+
+		@Override
+		public void error(String message) {
+			log(LogLevel.Error, message, null);
+		}
+
+		@Override
+		public void error(String message, Throwable throwable) {
+			log(LogLevel.Error, message, throwable);
+		}
+
+		@Override
+		public void fatal(String message) {
+			log(LogLevel.Fatal, message, null);
+		}
+
+		@Override
+		public void fatal(String message, Throwable throwable) {
+			log(LogLevel.Fatal, message, throwable);
+		}
+
+		private void log(LogLevel logLevel, String message, Throwable throwable) {
+			PrintStream stream;
+			if (throwable != null) {
+				stream = System.err;
+			}
+			else {
+				stream = System.out;
+			}
+
+			stream.println(logLevel.name() + ": " + message);
+			if (throwable != null) {
+				throwable.printStackTrace();
+			}
 		}
 	}
 }

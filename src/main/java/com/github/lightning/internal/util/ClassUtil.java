@@ -63,7 +63,7 @@ public final class ClassUtil {
 		try {
 			ClassLoader classLoader = clazz.getClassLoader();
 			String internalName = Type.getInternalName(clazz);
-			InputStream stream = classLoader.getResourceAsStream(internalName + "class");
+			InputStream stream = classLoader.getResourceAsStream(internalName + ".class");
 			byte[] data = new byte[stream.available()];
 			stream.read(data);
 			return data;

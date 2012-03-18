@@ -7,17 +7,20 @@ import com.github.lightning.ClassDefinition;
 import com.github.lightning.ClassDescriptor;
 import com.github.lightning.Marshaller;
 import com.github.lightning.PropertyDescriptor;
+import com.github.lightning.logging.Logger;
 
 class InternalClassDescriptor implements ClassDescriptor {
 
 	private final List<PropertyDescriptor> propertyDescriptors = new ArrayList<PropertyDescriptor>();
+	private final Logger logger;
 	private final Class<?> type;
 
 	private ClassDefinition classDefinition;
 	private Marshaller<?> marshaller;
 
-	InternalClassDescriptor(Class<?> type) {
+	InternalClassDescriptor(Class<?> type, Logger logger) {
 		this.type = type;
+		this.logger = logger;
 	}
 
 	@Override
@@ -48,7 +51,8 @@ class InternalClassDescriptor implements ClassDescriptor {
 		this.marshaller = marshaller;
 	}
 
-	public void build() {
-		classDefinition = new InternalClassDefinition(getType(), getPropertyDescriptors());
+	public ClassDescriptor build() {
+		classDefinition = new InternalClassDefinition(getType(), getPropertyDescriptors(), logger);
+		return this;
 	}
 }
