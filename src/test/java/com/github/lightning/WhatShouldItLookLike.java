@@ -26,13 +26,13 @@ public class WhatShouldItLookLike {
 
 		@Override
 		protected void configure() {
-			define(Foo.class).byMarshaller(BarMarshaller.class);
+			define(Bar.class).byMarshaller(new BarMarshaller());
 
 			bind(Foo.class).with(Attribute.class).exclude("value");
-			bind(Foo.class).field("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
-			bind(Foo.class).field("enumValue").byMarshaller(BarMarshaller.class);
+			bind(Foo.class).property("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
+			bind(Foo.class).property("enumValue").byMarshaller(BarMarshaller.class);
 
-			install(SomeChildSerializerFactory.class);
+			install(new SomeChildSerializerFactory());
 		}
 	}
 
