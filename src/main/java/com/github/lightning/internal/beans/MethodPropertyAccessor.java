@@ -6,15 +6,17 @@ import com.github.lightning.PropertyAccessor;
 
 public abstract class MethodPropertyAccessor implements PropertyAccessor {
 
-	private final Method method;
+	private final Method setter;
+	private final Method getter;
 
-	protected MethodPropertyAccessor(Method method) {
-		this.method = method;
+	protected MethodPropertyAccessor(Method setter, Method getter) {
+		this.setter = setter;
+		this.getter = getter;
 	}
 
 	@Override
 	public Class<?> getDeclaringClass() {
-		return method.getDeclaringClass();
+		return getter.getDeclaringClass();
 	}
 
 	@Override
@@ -24,10 +26,14 @@ public abstract class MethodPropertyAccessor implements PropertyAccessor {
 
 	@Override
 	public Class<?> getType() {
-		return method.getReturnType();
+		return getter.getReturnType();
 	}
 
-	protected Method getMethod() {
-		return method;
+	protected Method getGetterMethod() {
+		return getter;
+	}
+
+	protected Method getSetterMethod() {
+		return setter;
 	}
 }

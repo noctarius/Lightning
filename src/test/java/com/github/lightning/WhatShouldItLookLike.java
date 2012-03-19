@@ -246,7 +246,7 @@ public class WhatShouldItLookLike {
 				stream = System.out;
 			}
 
-			stream.println(logLevel.name() + ": " + message);
+			stream.println(getName() + " - " + logLevel.name() + ": " + message);
 			if (throwable != null) {
 				throwable.printStackTrace();
 			}

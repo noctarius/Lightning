@@ -2,25 +2,71 @@ package com.github.lightning.internal.beans;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.github.lightning.IllegalPropertyAccessException;
+import com.esotericsoftware.reflectasm.FieldAccess;
+import com.esotericsoftware.reflectasm.MethodAccess;
 import com.github.lightning.PropertyAccessor;
 import com.github.lightning.internal.util.BeanUtil;
 
-public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactory {
+public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactory {
+
+	private final Map<Class<?>, MethodAccess> methodAccessCache = new HashMap<Class<?>, MethodAccess>();
+	private final Map<Class<?>, FieldAccess> fieldAccessCache = new HashMap<Class<?>, FieldAccess>();
 
 	@Override
 	public PropertyAccessor fieldAccess(Field field) {
-		return buildForField(field);
+		try {
+			return buildForField(field);
+		}
+		catch (IllegalArgumentException e) {
+			// If field is not public
+			return null;
+		}
 	}
 
 	@Override
 	public PropertyAccessor methodAccess(Method method) {
-		return buildForMethod(method);
+		try {
+			return buildForMethod(method);
+		}
+		catch (IllegalArgumentException e) {
+			return null;
+		}
 	}
 
-	private PropertyAccessor buildForField(final Field field) {
-		field.setAccessible(true);
+	private FieldAccess getFieldAccess(Field field) {
+		Class<?> declaringClass = field.getDeclaringClass();
+
+		FieldAccess fieldAccess = fieldAccessCache.get(declaringClass);
+		if (fieldAccess != null) {
+			return fieldAccess;
+		}
+
+		fieldAccess = FieldAccess.get(declaringClass);
+		fieldAccessCache.put(declaringClass, fieldAccess);
+
+		return fieldAccess;
+	}
+
+	private MethodAccess getMethodAccess(Method method) {
+		Class<?> declaringClass = method.getDeclaringClass();
+
+		MethodAccess methodAccess = methodAccessCache.get(declaringClass);
+		if (methodAccess != null) {
+			return methodAccess;
+		}
+
+		methodAccess = MethodAccess.get(declaringClass);
+		methodAccessCache.put(declaringClass, methodAccess);
+
+		return methodAccess;
+	}
+
+	private PropertyAccessor buildForField(Field field) {
+		final FieldAccess fieldAccess = getFieldAccess(field);
+		final int fieldIndex = fieldAccess.getIndex(field.getName());
 		return new FieldPropertyAccessor(field) {
 
 			@Override
@@ -30,12 +76,7 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
-				try {
-					getField().set(instance, value);
-				}
-				catch (Exception e) {
-					throw new IllegalPropertyAccessException("Exception while writing field " + getField().getName(), e);
-				}
+				fieldAccess.set(instance, fieldIndex, value);
 			}
 
 			@Override
@@ -81,12 +122,7 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 			@Override
 			@SuppressWarnings("unchecked")
 			public <T> T readObject(Object instance) {
-				try {
-					return (T) getField().get(instance);
-				}
-				catch (Exception e) {
-					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
-				}
+				return (T) fieldAccess.get(instance, fieldIndex);
 			}
 
 			@Override
@@ -127,11 +163,13 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 	}
 
 	private PropertyAccessor buildForMethod(Method method) {
+		final MethodAccess methodAccess = getMethodAccess(method);
+
 		Method getter = BeanUtil.findGetterMethod(method);
 		Method setter = BeanUtil.findSetterMethod(method);
 
-		getter.setAccessible(true);
-		setter.setAccessible(true);
+		final int getterMethodIndex = methodAccess.getIndex(getter.getName(), method.getParameterTypes());
+		final int setterMethodIndex = methodAccess.getIndex(setter.getName(), method.getParameterTypes());
 
 		return new MethodPropertyAccessor(setter, getter) {
 
@@ -142,12 +180,7 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
-				try {
-					getSetterMethod().invoke(instance, value);
-				}
-				catch (Exception e) {
-					throw new IllegalPropertyAccessException("Exception while writing with method " + getSetterMethod().getName(), e);
-				}
+				methodAccess.invoke(instance, setterMethodIndex, value);
 			}
 
 			@Override
@@ -193,12 +226,7 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 			@Override
 			@SuppressWarnings("unchecked")
 			public <T> T readObject(Object instance) {
-				try {
-					return (T) getGetterMethod().invoke(instance);
-				}
-				catch (Exception e) {
-					throw new IllegalPropertyAccessException("Exception while reading with method " + getGetterMethod().getName(), e);
-				}
+				return (T) methodAccess.invoke(instance, getterMethodIndex);
 			}
 
 			@Override

@@ -11,6 +11,12 @@ public interface Logger {
 		Fatal
 	}
 
+	Logger getChildLogger(Class<?> clazz);
+
+	Logger getChildLogger(String name);
+
+	String getName();
+
 	boolean isLogLevelEnabled(LogLevel logLevel);
 
 	boolean isTraceEnabled();

@@ -12,9 +12,11 @@ import com.github.lightning.ClassDefinition;
 import com.github.lightning.DefinitionVisitor;
 import com.github.lightning.Marshaller;
 import com.github.lightning.PropertyDescriptor;
+import com.github.lightning.PropertyDescriptorFactory;
 import com.github.lightning.SerializationStrategy;
 import com.github.lightning.Serializer;
 import com.github.lightning.SerializerDefinition;
+import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.logging.LoggerAdapter;
 
@@ -54,8 +56,10 @@ public final class InternalSerializerCreator {
 	}
 
 	public Serializer build() {
+		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
 		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
 		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
+			serializerDefinition.configure(propertyDescriptorFactory);
 			serializerDefinition.acceptVisitor(definitionVisitor);
 		}
 
@@ -100,6 +104,12 @@ public final class InternalSerializerCreator {
 		public void visitClassDefine(Class<?> type, Marshaller<?> marshaller) {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(type);
 			classDescriptor.setMarshaller(marshaller);
+		}
+
+		@Override
+		public void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller<?> marshaller) {
+			// TODO Auto-generated method stub
+
 		}
 
 		@Override

@@ -13,4 +13,6 @@ public interface ClassBinder<T> {
 
 	<V> PropertyBinder<V> property(Field property);
 
+	Class<T> getType();
+
 }

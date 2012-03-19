@@ -52,6 +52,17 @@
 			<artifactId>asm-all</artifactId>
 			<version>3.3.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.googlecode</groupId>
+			<artifactId>reflectasm</artifactId>
+			<version>1.01</version>
+			<exclusions>
+				<exclusion>
+					<groupId>asm</groupId>
+					<artifactId>asm</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
