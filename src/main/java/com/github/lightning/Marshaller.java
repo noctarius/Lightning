@@ -2,11 +2,14 @@ package com.github.lightning;
 
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.IOException;
 
-public interface Marshaller<V> {
+public interface Marshaller {
 
-	void marshall(V value, DataOutput dataOutput);
+	boolean acceptType(Class<?> type);
 
-	V unmarshall(V value, DataInput dataInput);
+	void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException;
+
+	<V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException;
 
 }

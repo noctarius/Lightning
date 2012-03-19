@@ -16,7 +16,7 @@ class InternalClassDescriptor implements ClassDescriptor {
 	private final Class<?> type;
 
 	private ClassDefinition classDefinition;
-	private Marshaller<?> marshaller;
+	private Marshaller marshaller;
 
 	InternalClassDescriptor(Class<?> type, Logger logger) {
 		this.type = type;
@@ -39,7 +39,7 @@ class InternalClassDescriptor implements ClassDescriptor {
 	}
 
 	@Override
-	public Marshaller<?> getMarshaller() {
+	public Marshaller getMarshaller() {
 		return marshaller;
 	}
 
@@ -47,7 +47,7 @@ class InternalClassDescriptor implements ClassDescriptor {
 		propertyDescriptors.add(propertyDescriptor);
 	}
 
-	public void setMarshaller(Marshaller<?> marshaller) {
+	public void setMarshaller(Marshaller marshaller) {
 		this.marshaller = marshaller;
 	}
 

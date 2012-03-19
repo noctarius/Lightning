@@ -101,19 +101,19 @@ public final class InternalSerializerCreator {
 		}
 
 		@Override
-		public void visitClassDefine(Class<?> type, Marshaller<?> marshaller) {
+		public void visitClassDefine(Class<?> type, Marshaller marshaller) {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(type);
 			classDescriptor.setMarshaller(marshaller);
 		}
 
 		@Override
-		public void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller<?> marshaller) {
+		public void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller<?> marshaller) {
+		public void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
 
 			if (logger.isTraceEnabled()) {

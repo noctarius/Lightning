@@ -10,6 +10,6 @@ public interface ClassDescriptor {
 
 	List<PropertyDescriptor> getPropertyDescriptors();
 
-	Marshaller<?> getMarshaller();
+	Marshaller getMarshaller();
 
 }

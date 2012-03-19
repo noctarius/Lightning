@@ -2,6 +2,7 @@ package com.github.lightning;
 
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import com.github.lightning.base.AbstractMarshaller;
@@ -116,28 +117,39 @@ public class WhatShouldItLookLike {
 		boolean required() default false;
 	}
 
-	public static class BarMarshaller extends AbstractMarshaller<Bar> {
+	public static class BarMarshaller extends AbstractMarshaller {
 
 		@Override
-		public void marshall(Bar value, DataOutput dataOutput) {
+		public boolean acceptType(Class<?> type) {
+			return type == Bar.class;
 		}
 
 		@Override
-		public Bar unmarshall(Bar value, DataInput dataInput) {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+		}
+
+		@Override
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
 			return value;
 		}
 	}
 
-	public static class SomeSpecialIntegerMarshaller extends AbstractMarshaller<Integer> {
+	public static class SomeSpecialIntegerMarshaller extends AbstractMarshaller {
 
 		@Override
-		public void marshall(Integer value, DataOutput dataOutput) {
+		public boolean acceptType(Class<?> type) {
+			return type == Integer.class;
 		}
 
 		@Override
-		public Integer unmarshall(Integer value, DataInput dataInput) {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+		}
+
+		@Override
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
 			return value;
 		}
+
 	}
 
 	public static class DebugLogger extends LoggerAdapter {

@@ -27,9 +27,9 @@ import com.github.lightning.internal.util.MarshallerUtil;
 
 public abstract class AbstractSerializerDefinition implements SerializerDefinition {
 
-	private final Map<Class<?>, Marshaller<?>> marshallers = new HashMap<Class<?>, Marshaller<?>>();
+	private final Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
 	private final Set<SerializerDefinition> children = new HashSet<SerializerDefinition>();
-	private final Map<PropertyDescriptor, Marshaller<?>> propertyMarshallers = new HashMap<PropertyDescriptor, Marshaller<?>>();
+	private final Map<PropertyDescriptor, Marshaller> propertyMarshallers = new HashMap<PropertyDescriptor, Marshaller>();
 	private final Map<AnnotatedBinder, AnnotationBinderDefinition<?>> annotationBinders = new HashMap<AnnotatedBinder, AnnotationBinderDefinition<?>>();
 
 	private PropertyDescriptorFactory propertyDescriptorFactory;
@@ -55,7 +55,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		// Visit all direct marshallers
-		for (Entry<Class<?>, Marshaller<?>> entry : marshallers.entrySet()) {
+		for (Entry<Class<?>, Marshaller> entry : marshallers.entrySet()) {
 			visitor.visitClassDefine(entry.getKey(), entry.getValue());
 		}
 
@@ -65,7 +65,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		// Visit all property definitions
-		for (Entry<PropertyDescriptor, Marshaller<?>> entry : propertyMarshallers.entrySet()) {
+		for (Entry<PropertyDescriptor, Marshaller> entry : propertyMarshallers.entrySet()) {
 			visitor.visitPropertyDescriptor(entry.getKey(), entry.getValue());
 		}
 
@@ -89,7 +89,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		children.add(childSerializer);
 	}
 
-	protected <T> MarshallerBinder<T> define(final Class<T> clazz) {
+	protected <T> MarshallerBinder define(final Class<T> clazz) {
 		return buildMarshallerBinder(clazz);
 	}
 
@@ -97,11 +97,11 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		this.attributesAnnotation = annotation;
 	}
 
-	private <T> MarshallerBinder<T> buildMarshallerBinder(final Class<T> clazz) {
-		return new MarshallerBinder<T>() {
+	private <T> MarshallerBinder buildMarshallerBinder(final Class<T> clazz) {
+		return new MarshallerBinder() {
 
 			@Override
-			public void byMarshaller(Class<? extends Marshaller<T>> marshaller) {
+			public void byMarshaller(Class<? extends Marshaller> marshaller) {
 				try {
 					byMarshaller(marshaller.newInstance());
 				}
@@ -112,7 +112,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			}
 
 			@Override
-			public void byMarshaller(Marshaller<T> marshaller) {
+			public void byMarshaller(Marshaller marshaller) {
 				marshallers.put(clazz, marshaller);
 			}
 		};
@@ -179,7 +179,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		return new PropertyBinder<V>() {
 
 			@Override
-			public void byMarshaller(Class<? extends Marshaller<?>> marshaller) {
+			public void byMarshaller(Class<? extends Marshaller> marshaller) {
 				try {
 					byMarshaller(marshaller.newInstance());
 				}
@@ -190,7 +190,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			}
 
 			@Override
-			public void byMarshaller(Marshaller<?> marshaller) {
+			public void byMarshaller(Marshaller marshaller) {
 				propertyMarshallers.put(propertyDescriptorFactory.byField(property, marshaller), marshaller);
 			}
 		};
@@ -219,7 +219,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			for (Field field : fields) {
 				Class<?> fieldType = field.getType();
 
-				Marshaller<?> marshaller = MarshallerUtil.getBestMatchingMarshaller(fieldType, marshallers);
+				Marshaller marshaller = MarshallerUtil.getBestMatchingMarshaller(fieldType, marshallers);
 				if (marshaller == null) {
 					throw new SerializerDefinitionException("Field " + field + " cannot be marshalled");
 				}

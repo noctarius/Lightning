@@ -13,9 +13,9 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	private final String internalSignature;
 
 	private final PropertyAccessor propertyAccessor;
-	private final Marshaller<?> marshaller;
+	private final Marshaller marshaller;
 
-	InternalPropertyDescriptor(String propertyName, Marshaller<?> marshaller, PropertyAccessor propertyAccessor) {
+	InternalPropertyDescriptor(String propertyName, Marshaller marshaller, PropertyAccessor propertyAccessor) {
 		this.name = StringUtil.toUpperCamelCase(propertyName);
 		this.propertyName = propertyName;
 		this.propertyAccessor = propertyAccessor;
@@ -54,7 +54,7 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
-	public Marshaller<?> getMarshaller() {
+	public Marshaller getMarshaller() {
 		return marshaller;
 	}
 

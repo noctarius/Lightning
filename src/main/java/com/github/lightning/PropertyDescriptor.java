@@ -14,6 +14,6 @@ public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
 
 	String getInternalSignature();
 
-	Marshaller<?> getMarshaller();
+	Marshaller getMarshaller();
 
 }

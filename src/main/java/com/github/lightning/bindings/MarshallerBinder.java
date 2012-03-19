@@ -2,10 +2,10 @@ package com.github.lightning.bindings;
 
 import com.github.lightning.Marshaller;
 
-public interface MarshallerBinder<T> {
+public interface MarshallerBinder {
 
-	void byMarshaller(Class<? extends Marshaller<T>> marshaller);
+	void byMarshaller(Class<? extends Marshaller> marshaller);
 
-	void byMarshaller(Marshaller<T> marshaller);
+	void byMarshaller(Marshaller marshaller);
 
 }

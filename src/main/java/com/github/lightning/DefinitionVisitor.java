@@ -8,11 +8,11 @@ public interface DefinitionVisitor {
 
 	void visitAttributeAnnotation(Class<? extends Annotation> attributeAnnotation);
 
-	void visitClassDefine(Class<?> type, Marshaller<?> marshaller);
+	void visitClassDefine(Class<?> type, Marshaller marshaller);
 
-	void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller<?> marshaller);
+	void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller);
 
-	void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller<?> marshaller);
+	void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller marshaller);
 
 	void visitFinalizeSerializerDefinition(SerializerDefinition serializerDefinition);
 

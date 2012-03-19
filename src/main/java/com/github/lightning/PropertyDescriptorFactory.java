@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 
 public interface PropertyDescriptorFactory {
 
-	PropertyDescriptor byMethod(Method method, Marshaller<?> marshaller);
+	PropertyDescriptor byMethod(Method method, Marshaller marshaller);
 
-	PropertyDescriptor byField(Field field, Marshaller<?> marshaller);
+	PropertyDescriptor byField(Field field, Marshaller marshaller);
 
 }
