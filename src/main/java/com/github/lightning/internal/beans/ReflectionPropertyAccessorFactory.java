@@ -39,11 +39,6 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		return new FieldPropertyAccessor(field) {
 
 			@Override
-			public void writeShort(Object instance, short value) {
-				writeObject(instance, value);
-			}
-
-			@Override
 			public <T> void writeObject(Object instance, T value) {
 				try {
 					getField().set(instance, value);
@@ -51,46 +46,6 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 				catch (Exception e) {
 					throw new IllegalPropertyAccessException("Exception while writing field " + getField().getName(), e);
 				}
-			}
-
-			@Override
-			public void writeLong(Object instance, long value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeInt(Object instance, int value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeFloat(Object instance, float value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeDouble(Object instance, double value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeChar(Object instance, char value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeByte(Object instance, byte value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeBoolean(Object instance, boolean value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public short readShort(Object instance) {
-				return readObject(instance);
 			}
 
 			@Override
@@ -102,41 +57,6 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 				catch (Exception e) {
 					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
 				}
-			}
-
-			@Override
-			public long readLong(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public int readInt(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public float readFloat(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public double readDouble(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public char readChar(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public byte readByte(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public boolean readBoolean(Object instance) {
-				return readObject(instance);
 			}
 		};
 	}
@@ -151,11 +71,6 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		return new MethodPropertyAccessor(setter, getter) {
 
 			@Override
-			public void writeShort(Object instance, short value) {
-				writeObject(instance, value);
-			}
-
-			@Override
 			public <T> void writeObject(Object instance, T value) {
 				try {
 					getSetterMethod().invoke(instance, value);
@@ -163,46 +78,6 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 				catch (Exception e) {
 					throw new IllegalPropertyAccessException("Exception while writing with method " + getSetterMethod().getName(), e);
 				}
-			}
-
-			@Override
-			public void writeLong(Object instance, long value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeInt(Object instance, int value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeFloat(Object instance, float value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeDouble(Object instance, double value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeChar(Object instance, char value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeByte(Object instance, byte value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeBoolean(Object instance, boolean value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public short readShort(Object instance) {
-				return readObject(instance);
 			}
 
 			@Override
@@ -214,41 +89,6 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 				catch (Exception e) {
 					throw new IllegalPropertyAccessException("Exception while reading with method " + getGetterMethod().getName(), e);
 				}
-			}
-
-			@Override
-			public long readLong(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public int readInt(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public float readFloat(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public double readDouble(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public char readChar(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public byte readByte(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public boolean readBoolean(Object instance) {
-				return readObject(instance);
 			}
 		};
 	}

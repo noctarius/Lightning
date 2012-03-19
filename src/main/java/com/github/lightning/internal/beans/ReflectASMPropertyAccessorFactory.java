@@ -85,94 +85,14 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 		return new FieldPropertyAccessor(field) {
 
 			@Override
-			public void writeShort(Object instance, short value) {
-				writeObject(instance, value);
-			}
-
-			@Override
 			public <T> void writeObject(Object instance, T value) {
 				fieldAccess.set(instance, fieldIndex, value);
-			}
-
-			@Override
-			public void writeLong(Object instance, long value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeInt(Object instance, int value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeFloat(Object instance, float value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeDouble(Object instance, double value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeChar(Object instance, char value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeByte(Object instance, byte value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeBoolean(Object instance, boolean value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public short readShort(Object instance) {
-				return readObject(instance);
 			}
 
 			@Override
 			@SuppressWarnings("unchecked")
 			public <T> T readObject(Object instance) {
 				return (T) fieldAccess.get(instance, fieldIndex);
-			}
-
-			@Override
-			public long readLong(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public int readInt(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public float readFloat(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public double readDouble(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public char readChar(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public byte readByte(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public boolean readBoolean(Object instance) {
-				return readObject(instance);
 			}
 		};
 	}
@@ -199,85 +119,11 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 			}
 
 			@Override
-			public void writeLong(Object instance, long value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeInt(Object instance, int value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeFloat(Object instance, float value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeDouble(Object instance, double value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeChar(Object instance, char value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeByte(Object instance, byte value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public void writeBoolean(Object instance, boolean value) {
-				writeObject(instance, value);
-			}
-
-			@Override
-			public short readShort(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
 			@SuppressWarnings("unchecked")
 			public <T> T readObject(Object instance) {
 				return (T) methodAccess.invoke(instance, getterMethodIndex);
 			}
 
-			@Override
-			public long readLong(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public int readInt(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public float readFloat(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public double readDouble(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public char readChar(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public byte readByte(Object instance) {
-				return readObject(instance);
-			}
-
-			@Override
-			public boolean readBoolean(Object instance) {
-				return readObject(instance);
-			}
 		};
 	}
 }

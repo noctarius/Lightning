@@ -17,9 +17,7 @@ package com.github.lightning.internal.beans;
 
 import java.lang.reflect.Method;
 
-import com.github.lightning.PropertyAccessor;
-
-public abstract class MethodPropertyAccessor implements PropertyAccessor {
+public abstract class MethodPropertyAccessor extends AbstractPropertyAccessor {
 
 	private final Method setter;
 	private final Method getter;

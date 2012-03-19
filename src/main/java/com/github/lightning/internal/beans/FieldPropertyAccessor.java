@@ -17,9 +17,7 @@ package com.github.lightning.internal.beans;
 
 import java.lang.reflect.Field;
 
-import com.github.lightning.PropertyAccessor;
-
-public abstract class FieldPropertyAccessor implements PropertyAccessor {
+public abstract class FieldPropertyAccessor extends AbstractPropertyAccessor {
 
 	private final Field field;
 
