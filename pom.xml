@@ -195,6 +195,10 @@
 								<include>pom.xml</include>
 								<include>src/**</include>
 							</includes>
+							<excludes>
+								<exclude>src/**/bundle/**</exclude>
+								<exclude>src/**/jrockit/**</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>
