@@ -17,6 +17,8 @@ package com.github.lightning.internal.instantiator;
 
 import java.io.Serializable;
 
+import com.github.lightning.ObjectInstantiator;
+
 /**
  * Use Objenesis in a static way. <strong>It is strongly not recommended to use
  * this class.</strong>

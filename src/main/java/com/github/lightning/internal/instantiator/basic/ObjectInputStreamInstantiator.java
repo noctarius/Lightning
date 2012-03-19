@@ -25,7 +25,7 @@ import java.io.ObjectStreamClass;
 import java.io.ObjectStreamConstants;
 import java.io.Serializable;
 
-import com.github.lightning.internal.instantiator.ObjectInstantiator;
+import com.github.lightning.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**
@@ -40,7 +40,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  * completely different class.
  * 
  * @author Leonardo Mesquita
- * @see com.github.lightning.internal.instantiator.ObjectInstantiator
+ * @see com.github.lightning.ObjectInstantiator
  */
 public class ObjectInputStreamInstantiator implements ObjectInstantiator {
 

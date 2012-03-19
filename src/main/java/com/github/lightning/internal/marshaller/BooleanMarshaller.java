@@ -26,7 +26,7 @@ public class BooleanMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
 		if (Boolean.class == type) {
 			if (isNull(dataInput)) {
 				return null;

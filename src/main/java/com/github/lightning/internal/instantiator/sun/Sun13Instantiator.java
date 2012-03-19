@@ -26,7 +26,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  * constructors.
  * 
  * @author Leonardo Mesquita
- * @see com.github.lightning.internal.instantiator.ObjectInstantiator
+ * @see com.github.lightning.ObjectInstantiator
  */
 public class Sun13Instantiator extends Sun13InstantiatorBase {
 

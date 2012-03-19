@@ -15,7 +15,7 @@
  */
 package com.github.lightning.internal.instantiator.strategy;
 
-import com.github.lightning.internal.instantiator.ObjectInstantiator;
+import com.github.lightning.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.gcj.GCJInstantiator;
 import com.github.lightning.internal.instantiator.jrockit.JRockit131Instantiator;
 import com.github.lightning.internal.instantiator.jrockit.JRockitLegacyInstantiator;

@@ -27,7 +27,7 @@ import com.github.lightning.internal.instantiator.SerializationInstantiatorHelpe
  * constructor.
  * 
  * @author Leonardo Mesquita
- * @see com.github.lightning.internal.instantiator.ObjectInstantiator
+ * @see com.github.lightning.ObjectInstantiator
  */
 public class Sun13SerializationInstantiator extends Sun13InstantiatorBase {
 

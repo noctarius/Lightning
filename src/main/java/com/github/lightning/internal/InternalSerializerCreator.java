@@ -9,8 +9,10 @@ import java.util.Stack;
 
 import com.github.lightning.Attribute;
 import com.github.lightning.ClassDefinition;
+import com.github.lightning.DefinitionBuildingContext;
 import com.github.lightning.DefinitionVisitor;
 import com.github.lightning.Marshaller;
+import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.PropertyDescriptorFactory;
 import com.github.lightning.SerializationStrategy;
@@ -57,9 +59,11 @@ public final class InternalSerializerCreator {
 
 	public Serializer build() {
 		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
+		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
+		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy, propertyDescriptorFactory);
 		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
 		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
-			serializerDefinition.configure(propertyDescriptorFactory);
+			serializerDefinition.configure(definitionBuildingContext);
 			serializerDefinition.acceptVisitor(definitionVisitor);
 		}
 

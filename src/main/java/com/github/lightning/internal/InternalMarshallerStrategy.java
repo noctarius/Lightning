@@ -1,4 +1,4 @@
-package com.github.lightning.internal.util;
+package com.github.lightning.internal;
 
 import java.io.Externalizable;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.Streamed;
 import com.github.lightning.internal.marshaller.BooleanMarshaller;
 import com.github.lightning.internal.marshaller.ByteMarshaller;
@@ -20,15 +21,15 @@ import com.github.lightning.internal.marshaller.SerializableMarshaller;
 import com.github.lightning.internal.marshaller.ShortMarshaller;
 import com.github.lightning.internal.marshaller.StreamedMarshaller;
 
-public class MarshallerUtil {
+public class InternalMarshallerStrategy implements MarshallerStrategy {
 
-	private static final Marshaller EXTERNALIZABLE_MARSHALLER = new ExternalizableMarshaller();
-	private static final Marshaller SERIALIZABLE_MARSHALLER = new SerializableMarshaller();
-	private static final Marshaller STREAMED_MARSHALLER = new StreamedMarshaller();
+	private final Marshaller externalizableMarshaller = new ExternalizableMarshaller();
+	private final Marshaller serializableMarshaller = new SerializableMarshaller();
+	private final Marshaller streamedMarshaller = new StreamedMarshaller();
 
-	public static final List<Marshaller> BASE_MARSHALLER;
+	public final List<Marshaller> baseMarshaller;
 
-	static {
+	InternalMarshallerStrategy() {
 		List<Marshaller> marshallers = new ArrayList<Marshaller>();
 		marshallers.add(new StreamedMarshaller());
 		marshallers.add(new ExternalizableMarshaller());
@@ -41,32 +42,30 @@ public class MarshallerUtil {
 		marshallers.add(new FloatMarshaller());
 		marshallers.add(new DoubleMarshaller());
 
-		BASE_MARSHALLER = Collections.unmodifiableList(marshallers);
+		baseMarshaller = Collections.unmodifiableList(marshallers);
 	}
 
-	private MarshallerUtil() {
-	}
-
-	public static Marshaller getBestMatchingMarshaller(Class<?> type, Map<Class<?>, Marshaller> marshallers) {
+	public Marshaller getMarshaller(Class<?> type, Map<Class<?>, Marshaller> definedMarshallers) {
 		if (Streamed.class.isAssignableFrom(type)) {
-			return STREAMED_MARSHALLER;
+			return streamedMarshaller;
 		}
 
 		if (Externalizable.class.isAssignableFrom(type)) {
-			return EXTERNALIZABLE_MARSHALLER;
+			return externalizableMarshaller;
 		}
 
-		Marshaller marshaller = marshallers.get(type);
+		Marshaller marshaller = definedMarshallers.get(type);
 		if (marshaller != null) {
 			return marshaller;
 		}
 
-		for (Marshaller temp : BASE_MARSHALLER) {
+		for (Marshaller temp : baseMarshaller) {
 			if (temp.acceptType(type)) {
 				return temp;
 			}
 		}
 
-		return SERIALIZABLE_MARSHALLER;
+		return serializableMarshaller;
 	}
+
 }

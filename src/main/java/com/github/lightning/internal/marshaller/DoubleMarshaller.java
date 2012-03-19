@@ -26,7 +26,7 @@ public class DoubleMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
 		if (Double.class == type) {
 			if (isNull(dataInput)) {
 				return null;

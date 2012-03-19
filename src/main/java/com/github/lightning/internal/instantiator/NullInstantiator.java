@@ -15,6 +15,8 @@
  */
 package com.github.lightning.internal.instantiator;
 
+import com.github.lightning.ObjectInstantiator;
+
 /**
  * The instantiator that always return a null instance
  * 

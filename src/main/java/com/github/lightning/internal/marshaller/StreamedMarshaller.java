@@ -5,9 +5,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import com.github.lightning.Streamed;
-import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.base.AbstractObjectMarshaller;
 
-public class StreamedMarshaller extends AbstractMarshaller {
+public class StreamedMarshaller extends AbstractObjectMarshaller {
 
 	@Override
 	public boolean acceptType(Class<?> type) {

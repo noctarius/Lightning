@@ -18,6 +18,7 @@ package com.github.lightning.internal.instantiator;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.lightning.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.strategy.InstantiatorStrategy;
 
 /**

@@ -15,6 +15,8 @@
  */
 package com.github.lightning.internal.instantiator;
 
+import com.github.lightning.ObjectInstantiator;
+
 /**
  * Common interface to all kind of Objenesis objects
  * 

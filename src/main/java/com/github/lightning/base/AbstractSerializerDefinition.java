@@ -12,10 +12,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.lightning.Attribute;
+import com.github.lightning.DefinitionBuildingContext;
 import com.github.lightning.DefinitionVisitor;
 import com.github.lightning.Marshaller;
 import com.github.lightning.PropertyDescriptor;
-import com.github.lightning.PropertyDescriptorFactory;
 import com.github.lightning.SerializerDefinition;
 import com.github.lightning.SerializerDefinitionException;
 import com.github.lightning.bindings.AnnotatedBinder;
@@ -23,7 +23,6 @@ import com.github.lightning.bindings.ClassBinder;
 import com.github.lightning.bindings.MarshallerBinder;
 import com.github.lightning.bindings.PropertyBinder;
 import com.github.lightning.internal.util.BeanUtil;
-import com.github.lightning.internal.util.MarshallerUtil;
 
 public abstract class AbstractSerializerDefinition implements SerializerDefinition {
 
@@ -32,13 +31,13 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 	private final Map<PropertyDescriptor, Marshaller> propertyMarshallers = new HashMap<PropertyDescriptor, Marshaller>();
 	private final Map<AnnotatedBinder, AnnotationBinderDefinition<?>> annotationBinders = new HashMap<AnnotatedBinder, AnnotationBinderDefinition<?>>();
 
-	private PropertyDescriptorFactory propertyDescriptorFactory;
+	private DefinitionBuildingContext definitionBuildingContext;
 	private Class<? extends Annotation> attributesAnnotation = null;
 
 	@Override
-	public final void configure(PropertyDescriptorFactory propertyDescriptorFactory) {
+	public final void configure(DefinitionBuildingContext definitionBuildingContext) {
 		// Save PropertyDescriptorFactory for later use in configure()
-		this.propertyDescriptorFactory = propertyDescriptorFactory;
+		this.definitionBuildingContext = definitionBuildingContext;
 
 		// Read the configuration
 		configure();
@@ -71,7 +70,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 		// Visit all children
 		for (SerializerDefinition child : children) {
-			child.configure(propertyDescriptorFactory);
+			child.configure(definitionBuildingContext);
 			child.acceptVisitor(visitor);
 		}
 
@@ -191,7 +190,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 			@Override
 			public void byMarshaller(Marshaller marshaller) {
-				propertyMarshallers.put(propertyDescriptorFactory.byField(property, marshaller), marshaller);
+				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller), marshaller);
 			}
 		};
 	}
@@ -219,12 +218,12 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			for (Field field : fields) {
 				Class<?> fieldType = field.getType();
 
-				Marshaller marshaller = MarshallerUtil.getBestMatchingMarshaller(fieldType, marshallers);
+				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
 				if (marshaller == null) {
 					throw new SerializerDefinitionException("Field " + field + " cannot be marshalled");
 				}
 
-				PropertyDescriptor propertyDescriptor = propertyDescriptorFactory.byField(field, marshaller);
+				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(field, marshaller);
 				visitor.visitAnnotatedAttribute(propertyDescriptor, marshaller);
 			}
 		}

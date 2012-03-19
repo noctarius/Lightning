@@ -9,9 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.base.AbstractObjectMarshaller;
 
-public class SerializableMarshaller extends AbstractMarshaller {
+public class SerializableMarshaller extends AbstractObjectMarshaller {
 
 	@Override
 	public boolean acceptType(Class<?> type) {

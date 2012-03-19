@@ -15,7 +15,7 @@ package com.github.lightning.internal.instantiator.jrockit;
 
 import java.lang.reflect.Method;
 
-import com.github.lightning.internal.instantiator.ObjectInstantiator;
+import com.github.lightning.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**
@@ -28,7 +28,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  * any constructors.
  * 
  * @author Leonardo Mesquita
- * @see com.github.lightning.internal.instantiator.ObjectInstantiator
+ * @see com.github.lightning.ObjectInstantiator
  * @see com.github.lightning.internal.instantiator.sun.SunReflectionFactoryInstantiator
  */
 public class JRockitLegacyInstantiator implements ObjectInstantiator {

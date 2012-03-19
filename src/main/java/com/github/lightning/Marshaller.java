@@ -10,6 +10,6 @@ public interface Marshaller {
 
 	void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException;
 
-	<V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException;
+	<V> V unmarshall(Class<?> type, ObjectInstantiator objectInstantiator, DataInput dataInput) throws IOException;
 
 }

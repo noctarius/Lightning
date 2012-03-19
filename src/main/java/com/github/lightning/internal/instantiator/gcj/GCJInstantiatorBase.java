@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
 
-import com.github.lightning.internal.instantiator.ObjectInstantiator;
+import com.github.lightning.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**

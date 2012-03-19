@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.base.AbstractObjectMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
 import com.github.lightning.logging.LoggerAdapter;
 
@@ -117,7 +117,7 @@ public class WhatShouldItLookLike {
 		boolean required() default false;
 	}
 
-	public static class BarMarshaller extends AbstractMarshaller {
+	public static class BarMarshaller extends AbstractObjectMarshaller {
 
 		@Override
 		public boolean acceptType(Class<?> type) {
@@ -134,7 +134,7 @@ public class WhatShouldItLookLike {
 		}
 	}
 
-	public static class SomeSpecialIntegerMarshaller extends AbstractMarshaller {
+	public static class SomeSpecialIntegerMarshaller extends AbstractObjectMarshaller {
 
 		@Override
 		public boolean acceptType(Class<?> type) {

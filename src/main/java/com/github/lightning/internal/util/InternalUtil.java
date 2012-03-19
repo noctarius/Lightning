@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.github.lightning.ObjectInstantiator;
 import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.beans.PropertyAccessorFactory;
-import com.github.lightning.internal.instantiator.ObjectInstantiator;
 import com.github.lightning.logging.Logger;
 
 public final class InternalUtil {

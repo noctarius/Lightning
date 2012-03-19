@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.base.AbstractObjectMarshaller;
 
-public class ExternalizableMarshaller extends AbstractMarshaller {
+public class ExternalizableMarshaller extends AbstractObjectMarshaller {
 
 	@Override
 	public boolean acceptType(Class<?> type) {

@@ -25,7 +25,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  * work on GCJ JVMs. This instantiator will not call any constructors.
  * 
  * @author Leonardo Mesquita
- * @see com.github.lightning.internal.instantiator.ObjectInstantiator
+ * @see com.github.lightning.ObjectInstantiator
  */
 public class GCJInstantiator extends GCJInstantiatorBase {
 
