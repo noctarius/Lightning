@@ -15,16 +15,18 @@
  */
 package com.github.lightning;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Defines a property (annotated field or method) as an attribute to be
  * serialized by Lightning.<br>
  * 
  * <pre>
- * 
- * 
- * 
- * 
- * 
  * public class MyEntity {
  * 
  * 	private long id;
@@ -53,7 +55,13 @@ package com.github.lightning;
  * 
  * @author noctarius
  */
+@Documented
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface Attribute {
+
+	public static final String NULL = "~~NULL~~";
 
 	/**
 	 * If a method is annotated this value defines a property name differs from
@@ -64,6 +72,6 @@ public @interface Attribute {
 	 * 
 	 * @return the defined property name
 	 */
-	String property();
+	String property() default NULL;
 
 }
