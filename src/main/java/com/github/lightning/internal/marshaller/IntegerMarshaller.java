@@ -25,7 +25,7 @@ public class IntegerMarshaller extends AbstractMarshaller {
 
 	@Override
 	public boolean acceptType(Class<?> type) {
-		return short.class == type || Integer.class == type;
+		return int.class == type || Integer.class == type;
 	}
 
 	@Override
