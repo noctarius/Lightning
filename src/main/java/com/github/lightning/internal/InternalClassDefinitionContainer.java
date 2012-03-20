@@ -74,13 +74,15 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 	public void writeTo(DataOutput dataOutput) throws IOException {
 		dataOutput.writeInt(classDefinitions.size());
 		for (ClassDefinition classDefinition : classDefinitions) {
-			final long classId = classDefinition.getId();
+			final long id = classDefinition.getId();
 			final byte[] checksum = classDefinition.getChecksum();
 			final String canonicalName = classDefinition.getCanonicalName();
+			final long serialVersionUID = classDefinition.getSerialVersionUID();
 
-			dataOutput.writeLong(classId);
+			dataOutput.writeLong(id);
 			dataOutput.writeUTF(canonicalName);
 			dataOutput.write(checksum);
+			dataOutput.writeLong(serialVersionUID);
 		}
 	}
 
@@ -88,14 +90,15 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 	public void readFrom(DataInput dataInput) throws IOException {
 		int size = dataInput.readInt();
 		for (int i = 0; i < size; i++) {
-			final long classId = dataInput.readLong();
+			final long id = dataInput.readLong();
 			final String canonicalName = dataInput.readUTF();
 			final byte[] checksum = new byte[20];
+			final long serialVersionUID = dataInput.readLong();
 			dataInput.readFully(checksum);
 
 			try {
 				Class<?> type = ClassUtil.loadClass(canonicalName);
-				classDefinitions.add(new InternalClassDefinition(classId, type, checksum));
+				classDefinitions.add(new InternalClassDefinition(id, type, checksum, serialVersionUID));
 			}
 			catch (ClassNotFoundException e) {
 				throw new IOException("Class " + canonicalName + " could not be loaded", e);

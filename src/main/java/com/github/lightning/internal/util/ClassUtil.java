@@ -17,6 +17,7 @@ package com.github.lightning.internal.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectStreamClass;
 
 import org.objectweb.asm.Type;
 
@@ -72,6 +73,10 @@ public final class ClassUtil {
 		}
 
 		throw new ClassNotFoundException("Class " + canonicalName + " not found on classpath");
+	}
+
+	public static long calculateSerialVersionUID(Class<?> clazz) {
+		return ObjectStreamClass.lookupAny(clazz).getSerialVersionUID();
 	}
 
 	public static byte[] getClassBytes(Class<?> clazz) {

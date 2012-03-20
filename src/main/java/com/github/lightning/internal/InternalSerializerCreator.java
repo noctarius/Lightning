@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.github.lightning.Attribute;
+import com.github.lightning.ClassComparisonStrategy;
 import com.github.lightning.ClassDefinition;
 import com.github.lightning.DefinitionBuildingContext;
 import com.github.lightning.DefinitionVisitor;
@@ -44,6 +45,7 @@ public final class InternalSerializerCreator {
 
 	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 	private Class<? extends Annotation> attributeAnnotation = Attribute.class;
+	private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
 	private Logger logger = new LoggerAdapter();
 
 	public InternalSerializerCreator() {
@@ -72,6 +74,11 @@ public final class InternalSerializerCreator {
 		return this;
 	}
 
+	public InternalSerializerCreator setClassComparisonStrategy(ClassComparisonStrategy classComparisonStrategy) {
+		this.classComparisonStrategy = classComparisonStrategy;
+		return this;
+	}
+
 	public Serializer build() {
 		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
 		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
@@ -87,7 +94,7 @@ public final class InternalSerializerCreator {
 			classDefinitions.add(classDescriptor.build().getClassDefinition());
 		}
 
-		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), logger);
+		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), classComparisonStrategy, logger);
 	}
 
 	private class InternalDefinitionVisitor implements DefinitionVisitor {

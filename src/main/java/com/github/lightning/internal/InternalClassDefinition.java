@@ -30,6 +30,8 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 	private final String canonicalName;
 	private final Class<?> type;
 	private final byte[] checksum;
+	private final long serialVersionUID;
+
 	private long id;
 
 	InternalClassDefinition(Class<?> type, List<PropertyDescriptor> propertyDescriptors, Logger logger) {
@@ -39,13 +41,15 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 		byte[] classData = ClassUtil.getClassBytes(type);
 		this.checksum = InternalUtil.getChecksum(propertyDescriptors, logger);
 		this.id = Crc64Util.checksum(classData);
+		this.serialVersionUID = ClassUtil.calculateSerialVersionUID(type);
 	}
 
-	InternalClassDefinition(long id, Class<?> type, byte[] checksum) {
+	InternalClassDefinition(long id, Class<?> type, byte[] checksum, long serialVersionUID) {
 		this.canonicalName = type.getCanonicalName();
 		this.type = type;
 		this.id = id;
 		this.checksum = checksum;
+		this.serialVersionUID = serialVersionUID;
 	}
 
 	@Override
@@ -66,6 +70,11 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 	@Override
 	public long getId() {
 		return id;
+	}
+
+	@Override
+	public long getSerialVersionUID() {
+		return serialVersionUID;
 	}
 
 	@Override

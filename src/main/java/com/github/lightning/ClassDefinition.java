@@ -25,4 +25,6 @@ public interface ClassDefinition {
 
 	long getId();
 
+	long getSerialVersionUID();
+
 }

@@ -15,8 +15,55 @@
  */
 package com.github.lightning;
 
+/**
+ * Defines a property (annotated field or method) as an attribute to be
+ * serialized by Lightning.<br>
+ * 
+ * <pre>
+ * 
+ * 
+ * 
+ * 
+ * 
+ * public class MyEntity {
+ * 
+ * 	private long id;
+ * 
+ * 	&#064;Attribute
+ * 	private String name;
+ * 
+ * 	&#064;Attribute
+ * 	public long getId() {
+ * 		return id;
+ * 	}
+ * 
+ * 	public void setId(long id) {
+ * 		this.id = id;
+ * 	}
+ * 
+ * 	public String getName() {
+ * 		return name;
+ * 	}
+ * 
+ * 	public void setName(String name) {
+ * 		this.name = name;
+ * 	}
+ * }
+ * </pre>
+ * 
+ * @author noctarius
+ */
 public @interface Attribute {
 
+	/**
+	 * If a method is annotated this value defines a property name differs from
+	 * property name extracted from methodname.<br>
+	 * Means if method is "getFoo" property name defaults to "foo", but if the
+	 * method is annotated by @Attribute("bar") the property name will be
+	 * explicitly "bar".
+	 * 
+	 * @return the defined property name
+	 */
 	String property();
 
 }
