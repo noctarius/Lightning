@@ -17,15 +17,6 @@ package com.github.lightning.logging;
 
 public interface Logger {
 
-	public static enum LogLevel {
-		Trace,
-		Debug,
-		Info,
-		Warn,
-		Error,
-		Fatal
-	}
-
 	Logger getChildLogger(Class<?> clazz);
 
 	Logger getChildLogger(String name);

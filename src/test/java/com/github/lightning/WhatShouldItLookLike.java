@@ -22,6 +22,7 @@ import java.io.PrintStream;
 
 import com.github.lightning.base.AbstractObjectMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
+import com.github.lightning.logging.LogLevel;
 import com.github.lightning.logging.LoggerAdapter;
 
 public class WhatShouldItLookLike {
