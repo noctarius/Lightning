@@ -116,7 +116,7 @@ class InternalSerializer implements Serializer {
 		for (ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions()) {
 			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition.getCanonicalName());
 			if (oldClassDefinition == null) {
-				throw new ClassDefinitionNotConstistentException("No classDefinition for class " + classDefinition.getCanonicalName() + " was found");
+				throw new ClassDefinitionNotConstistentException("No ClassDefinition for class " + classDefinition.getCanonicalName() + " was found");
 			}
 
 			if (classComparisonStrategy == ClassComparisonStrategy.SerialVersionUID) {

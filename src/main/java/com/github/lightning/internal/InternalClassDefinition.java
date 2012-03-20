@@ -18,6 +18,8 @@ package com.github.lightning.internal;
 import java.util.Arrays;
 import java.util.List;
 
+import org.objectweb.asm.Type;
+
 import com.github.lightning.ClassDefinition;
 import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.util.ClassUtil;
@@ -35,7 +37,7 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 	private long id;
 
 	InternalClassDefinition(Class<?> type, List<PropertyDescriptor> propertyDescriptors, Logger logger) {
-		this.canonicalName = type.getCanonicalName();
+		this.canonicalName = Type.getInternalName(type).replace("/", ".");
 		this.type = type;
 
 		byte[] classData = ClassUtil.getClassBytes(type);
@@ -45,7 +47,7 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 	}
 
 	InternalClassDefinition(long id, Class<?> type, byte[] checksum, long serialVersionUID) {
-		this.canonicalName = type.getCanonicalName();
+		this.canonicalName = Type.getInternalName(type).replace("/", ".");
 		this.type = type;
 		this.id = id;
 		this.checksum = checksum;

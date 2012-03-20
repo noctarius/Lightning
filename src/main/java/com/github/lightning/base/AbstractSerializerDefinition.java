@@ -47,7 +47,8 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 	private final Map<AnnotatedBinder, AnnotationBinderDefinition<?>> annotationBinders = new HashMap<AnnotatedBinder, AnnotationBinderDefinition<?>>();
 
 	private DefinitionBuildingContext definitionBuildingContext;
-	private Class<? extends Annotation> attributesAnnotation = null;
+	private Class<? extends Annotation> attributeAnnotation = null;
+	private AbstractSerializerDefinition parent = null;
 
 	@Override
 	public final void configure(DefinitionBuildingContext definitionBuildingContext) {
@@ -64,8 +65,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		visitor.visitSerializerDefinition(this);
 
 		// Visit the attribute annotation if set
-		if (attributesAnnotation != null) {
-			visitor.visitAttributeAnnotation(attributesAnnotation);
+		Class<? extends Annotation> attributeAnnotation = findAttributeAnnotation(this);
+		if (attributeAnnotation != null) {
+			visitor.visitAttributeAnnotation(attributeAnnotation);
 		}
 
 		// Visit all direct marshallers
@@ -101,14 +103,17 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 	protected void install(SerializerDefinition childSerializer) {
 		children.add(childSerializer);
+		if (childSerializer instanceof AbstractSerializerDefinition) {
+			((AbstractSerializerDefinition) childSerializer).parent = this;
+		}
 	}
 
 	protected <T> MarshallerBinder define(final Class<T> clazz) {
 		return buildMarshallerBinder(clazz);
 	}
 
-	protected void describesAttributes(Class<? extends Annotation> annotation) {
-		this.attributesAnnotation = annotation;
+	protected void describesAttributes(Class<? extends Annotation> attributeAnnotation) {
+		this.attributeAnnotation = attributeAnnotation;
 	}
 
 	private <T> MarshallerBinder buildMarshallerBinder(final Class<T> clazz) {
@@ -137,7 +142,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 			@Override
 			public AnnotatedBinder attributes() {
-				return buildAnnotatedBinder(this, attributesAnnotation);
+				return buildAnnotatedBinder(this, attributeAnnotation);
 			}
 
 			@Override
@@ -175,7 +180,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 		return new AnnotatedBinder() {
 
-			private final AnnotationBinderDefinition<T> binder = new AnnotationBinderDefinition<T>(classBinder, annotation);
+			private final AnnotationBinderDefinition<T> binder = new AnnotationBinderDefinition<T>(classBinder);
 
 			{
 				annotationBinders.put(this, binder);
@@ -210,15 +215,25 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		};
 	}
 
+	private Class<? extends Annotation> findAttributeAnnotation(AbstractSerializerDefinition abstractSerializerDefinition) {
+		if (attributeAnnotation != null) {
+			return attributeAnnotation;
+		}
+
+		if (parent != null) {
+			return findAttributeAnnotation(parent);
+		}
+
+		return Attribute.class;
+	}
+
 	private class AnnotationBinderDefinition<T> {
 
 		private final ClassBinder<T> classBinder;
-		private final Class<? extends Annotation> attributeAnnotation;
 		private final List<String> excludes = new ArrayList<String>();
 
-		private AnnotationBinderDefinition(ClassBinder<T> classBinder, Class<? extends Annotation> attributeAnnotation) {
+		private AnnotationBinderDefinition(ClassBinder<T> classBinder) {
 			this.classBinder = classBinder;
-			this.attributeAnnotation = attributeAnnotation;
 		}
 
 		public void addExclude(String exclude) {
@@ -226,9 +241,10 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		public void acceptVisitor(DefinitionVisitor visitor) {
+			Class<? extends Annotation> attributeAnnotation = findAttributeAnnotation(AbstractSerializerDefinition.this);
 			Class<T> type = classBinder.getType();
-			List<Field> fields = findFields(type);
-			fields.addAll(findByMethods(type));
+			List<Field> fields = findFields(type, attributeAnnotation);
+			fields.addAll(findByMethods(type, attributeAnnotation));
 
 			for (Field field : fields) {
 				Class<?> fieldType = field.getType();
@@ -243,7 +259,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			}
 		}
 
-		private List<Field> findFields(Class<?> type) {
+		private List<Field> findFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
 			List<Field> attributes = new ArrayList<Field>();
 			for (Field field : type.getDeclaredFields()) {
 				if (field.isAnnotationPresent(attributeAnnotation)) {
@@ -254,7 +270,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			return attributes;
 		}
 
-		private List<Field> findByMethods(Class<?> type) {
+		private List<Field> findByMethods(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
 			List<Field> attributes = new ArrayList<Field>();
 			for (Method method : type.getDeclaredMethods()) {
 				if (method.isAnnotationPresent(attributeAnnotation)) {

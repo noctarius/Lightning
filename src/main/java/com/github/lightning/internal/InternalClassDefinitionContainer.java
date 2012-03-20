@@ -38,9 +38,15 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 	private final List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>();
 	private final AbstractLongObjectMap<ClassDefinition> classDefinitionsMappings;
 
+	// Serialization
+	public InternalClassDefinitionContainer() {
+		classDefinitionsMappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class);
+	}
+
 	InternalClassDefinitionContainer(List<ClassDefinition> classDefinitions) {
 		this.classDefinitions.addAll(classDefinitions);
-		classDefinitionsMappings = initMappings(classDefinitions);
+		classDefinitionsMappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class, classDefinitions.size());
+		initMappings(classDefinitions);
 	}
 
 	@Override
@@ -93,8 +99,8 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 			final long id = dataInput.readLong();
 			final String canonicalName = dataInput.readUTF();
 			final byte[] checksum = new byte[20];
-			final long serialVersionUID = dataInput.readLong();
 			dataInput.readFully(checksum);
+			final long serialVersionUID = dataInput.readLong();
 
 			try {
 				Class<?> type = ClassUtil.loadClass(canonicalName);
@@ -104,6 +110,8 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 				throw new IOException("Class " + canonicalName + " could not be loaded", e);
 			}
 		}
+
+		initMappings(classDefinitions);
 	}
 
 	@Override
@@ -116,12 +124,9 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 		readFrom(in);
 	}
 
-	private AbstractLongObjectMap<ClassDefinition> initMappings(List<ClassDefinition> classDefinitions) {
-		AbstractLongObjectMap<ClassDefinition> mappings;
-		mappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class, classDefinitions.size());
+	private void initMappings(List<ClassDefinition> classDefinitions) {
 		for (ClassDefinition classDefinition : classDefinitions) {
-			mappings.put(classDefinition.getId(), classDefinition);
+			classDefinitionsMappings.put(classDefinition.getId(), classDefinition);
 		}
-		return mappings;
 	}
 }

@@ -134,8 +134,14 @@ public final class InternalSerializerCreator {
 
 		@Override
 		public void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
-			// TODO Auto-generated method stub
+			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
 
+			if (logger.isTraceEnabled()) {
+				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature()
+						+ ") on type " + propertyDescriptor.getDeclaringClass().getCanonicalName());
+			}
+
+			classDescriptor.push(propertyDescriptor);
 		}
 
 		@Override
