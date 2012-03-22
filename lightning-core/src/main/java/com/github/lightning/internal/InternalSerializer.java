@@ -25,27 +25,33 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.lightning.ClassComparisonStrategy;
 import com.github.lightning.ClassDefinition;
 import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.ClassDefinitionNotConstistentException;
-import com.github.lightning.Serializer;
+import com.github.lightning.ClassDescriptor;
 import com.github.lightning.internal.io.BufferInputStream;
 import com.github.lightning.internal.io.BufferOutputStream;
 import com.github.lightning.internal.io.ReaderInputStream;
 import com.github.lightning.internal.io.WriterOutputStream;
 import com.github.lightning.logging.Logger;
 
-class InternalSerializer implements Serializer {
+class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
 	private final ClassComparisonStrategy classComparisonStrategy;
+	private final Map<Class<?>, ClassDescriptor> classDescriptors;
 
-	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, ClassComparisonStrategy classComparisonStrategy, Logger logger) {
+	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, ClassComparisonStrategy classComparisonStrategy,
+			Map<Class<?>, ClassDescriptor> classDescriptors, Logger logger) {
+
 		this.classDefinitionContainer.set(classDefinitionContainer);
 		this.classComparisonStrategy = classComparisonStrategy;
+		this.classDescriptors = Collections.unmodifiableMap(classDescriptors);
 	}
 
 	@Override
@@ -112,25 +118,30 @@ class InternalSerializer implements Serializer {
 		return deserialize((DataInput) new DataInputStream(new BufferInputStream(buffer)));
 	}
 
+	@Override
+	public ClassDescriptor findClassDescriptor(Class<?> type) {
+		return classDescriptors.get(type);
+	}
+
 	private void consistencyCheckClassChecksums(ClassDefinitionContainer oldClassDefinitionContainer, ClassDefinitionContainer classDefinitionContainer) {
 		for (ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions()) {
 			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition.getCanonicalName());
 			if (oldClassDefinition == null) {
-				throw new ClassDefinitionNotConstistentException("No ClassDefinition for class " + classDefinition.getCanonicalName() + " was found");
+				throw new ClassDefinitionNotConstistentException("No ClassDefinition for type " + classDefinition.getCanonicalName() + " was found");
 			}
 
 			if (classComparisonStrategy == ClassComparisonStrategy.SerialVersionUID) {
 				long serialVersionUID = classDefinition.getSerialVersionUID();
 				long oldSerialVersionUID = oldClassDefinition.getSerialVersionUID();
 				if (serialVersionUID != oldSerialVersionUID) {
-					throw new ClassDefinitionNotConstistentException("SerialVersionUID of class " + classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionNotConstistentException("SerialVersionUID of type " + classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 			else {
 				byte[] checksum = classDefinition.getChecksum();
 				byte[] oldChecksum = oldClassDefinition.getChecksum();
 				if (!Arrays.equals(checksum, oldChecksum)) {
-					throw new ClassDefinitionNotConstistentException("Signature checksum of class " + classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionNotConstistentException("Signature checksum of type " + classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 		}

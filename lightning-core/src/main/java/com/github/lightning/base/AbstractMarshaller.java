@@ -20,12 +20,11 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import com.github.lightning.Marshaller;
-import com.github.lightning.ObjectInstantiator;
 
 public abstract class AbstractMarshaller implements Marshaller {
 
 	@Override
-	public <V> V unmarshall(Class<?> type, ObjectInstantiator objectInstantiator, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
 		return unmarshall(type, dataInput);
 	}
 
@@ -38,6 +37,4 @@ public abstract class AbstractMarshaller implements Marshaller {
 		byte isNull = dataInput.readByte();
 		return isNull == 1 ? true : false;
 	}
-
-	protected abstract <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException;
 }

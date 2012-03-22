@@ -20,11 +20,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import com.github.lightning.Attribute;
 import com.github.lightning.ClassComparisonStrategy;
 import com.github.lightning.ClassDefinition;
+import com.github.lightning.ClassDescriptor;
 import com.github.lightning.DefinitionBuildingContext;
 import com.github.lightning.DefinitionVisitor;
 import com.github.lightning.Marshaller;
@@ -35,6 +37,7 @@ import com.github.lightning.SerializationStrategy;
 import com.github.lightning.Serializer;
 import com.github.lightning.SerializerDefinition;
 import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
+import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.logging.LoggerAdapter;
 
@@ -42,6 +45,7 @@ public final class InternalSerializerCreator {
 
 	private final Map<Class<?>, InternalClassDescriptor> classDescriptors = new HashMap<Class<?>, InternalClassDescriptor>();
 	private final List<SerializerDefinition> serializerDefinitions = new ArrayList<SerializerDefinition>();
+	private final ObjenesisSerializer objenesisSerializer = new ObjenesisSerializer(true);
 
 	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 	private Class<? extends Annotation> attributeAnnotation = Attribute.class;
@@ -85,7 +89,7 @@ public final class InternalSerializerCreator {
 		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy, propertyDescriptorFactory);
 		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
 		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
-			serializerDefinition.configure(definitionBuildingContext);
+			serializerDefinition.configure(definitionBuildingContext, objenesisSerializer);
 			serializerDefinition.acceptVisitor(definitionVisitor);
 		}
 
@@ -94,7 +98,22 @@ public final class InternalSerializerCreator {
 			classDefinitions.add(classDescriptor.build().getClassDefinition());
 		}
 
-		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), classComparisonStrategy, logger);
+		Map<Class<?>, ClassDescriptor> cleanedClassDescriptors = new HashMap<Class<?>, ClassDescriptor>(classDescriptors.size());
+		for (Entry<Class<?>, InternalClassDescriptor> entry : classDescriptors.entrySet()) {
+			cleanedClassDescriptors.put(entry.getKey(), entry.getValue());
+		}
+
+		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), classComparisonStrategy, cleanedClassDescriptors, logger);
+	}
+
+	private InternalClassDescriptor findClassDescriptor(Class<?> type) {
+		InternalClassDescriptor classDescriptor = classDescriptors.get(type);
+		if (classDescriptor == null) {
+			classDescriptor = new InternalClassDescriptor(type, logger);
+			classDescriptors.put(type, classDescriptor);
+		}
+
+		return classDescriptor;
 	}
 
 	private class InternalDefinitionVisitor implements DefinitionVisitor {
@@ -160,16 +179,6 @@ public final class InternalSerializerCreator {
 		public void visitFinalizeSerializerDefinition(SerializerDefinition serializerDefinition) {
 			// Clean this level up
 			this.attributeAnnotation.pop();
-		}
-
-		private InternalClassDescriptor findClassDescriptor(Class<?> type) {
-			InternalClassDescriptor classDescriptor = classDescriptors.get(type);
-			if (classDescriptor == null) {
-				classDescriptor = new InternalClassDescriptor(type, logger);
-				classDescriptors.put(type, classDescriptor);
-			}
-
-			return classDescriptor;
 		}
 	}
 }

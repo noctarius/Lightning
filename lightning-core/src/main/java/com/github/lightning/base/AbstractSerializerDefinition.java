@@ -37,6 +37,7 @@ import com.github.lightning.bindings.AnnotatedBinder;
 import com.github.lightning.bindings.ClassBinder;
 import com.github.lightning.bindings.MarshallerBinder;
 import com.github.lightning.bindings.PropertyBinder;
+import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.internal.util.BeanUtil;
 
 public abstract class AbstractSerializerDefinition implements SerializerDefinition {
@@ -47,13 +48,17 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 	private final Map<AnnotatedBinder, AnnotationBinderDefinition<?>> annotationBinders = new HashMap<AnnotatedBinder, AnnotationBinderDefinition<?>>();
 
 	private DefinitionBuildingContext definitionBuildingContext;
+	private ObjenesisSerializer objenesisSerializer = null;
 	private Class<? extends Annotation> attributeAnnotation = null;
 	private AbstractSerializerDefinition parent = null;
 
 	@Override
-	public final void configure(DefinitionBuildingContext definitionBuildingContext) {
+	public final void configure(DefinitionBuildingContext definitionBuildingContext, ObjenesisSerializer objenesisSerializer) {
 		// Save PropertyDescriptorFactory for later use in configure()
 		this.definitionBuildingContext = definitionBuildingContext;
+
+		// Save ObjenesisSerializer for later use in configure()
+		this.objenesisSerializer = objenesisSerializer;
 
 		// Read the configuration
 		configure();
@@ -87,7 +92,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 		// Visit all children
 		for (SerializerDefinition child : children) {
-			child.configure(definitionBuildingContext);
+			child.configure(definitionBuildingContext, objenesisSerializer);
 			child.acceptVisitor(visitor);
 		}
 
@@ -132,7 +137,12 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 			@Override
 			public void byMarshaller(Marshaller marshaller) {
-				marshallers.put(clazz, marshaller);
+				if (marshaller instanceof AbstractObjectMarshaller) {
+					marshallers.put(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objenesisSerializer));
+				}
+				else {
+					marshallers.put(clazz, marshaller);
+				}
 			}
 		};
 	}

@@ -86,14 +86,15 @@ public class ObjenesisBase implements Objenesis {
 	 * create a lot of
 	 * instances from the same class, it is way more efficient to create them
 	 * from the same
-	 * ObjectInstantiator than calling {@link #newInstance(Class)}.
+	 * ObjectInstantiator than calling {@link #newInstance(Class)}.<br>
+	 * Explicitly made this NON-THREADSAFE for performance reasons.
 	 * 
 	 * @param clazz
 	 *            Class to instantiate
 	 * @return Instantiator dedicated to the class
 	 */
 	@Override
-	public synchronized ObjectInstantiator getInstantiatorOf(Class clazz) {
+	public ObjectInstantiator getInstantiatorOf(Class clazz) {
 		if (cache == null) {
 			return strategy.newInstantiatorOf(clazz);
 		}

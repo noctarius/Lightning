@@ -41,5 +41,4 @@ public class SunUnsafeAllocateInstanceInstantiator implements ObjectInstantiator
 
 		return null;
 	}
-
 }

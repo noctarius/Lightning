@@ -15,9 +15,11 @@
  */
 package com.github.lightning;
 
+import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+
 public interface SerializerDefinition {
 
-	void configure(DefinitionBuildingContext definitionBuildingContext);
+	void configure(DefinitionBuildingContext definitionBuildingContext, ObjenesisSerializer objenesisSerializer);
 
 	void acceptVisitor(DefinitionVisitor visitor);
 
