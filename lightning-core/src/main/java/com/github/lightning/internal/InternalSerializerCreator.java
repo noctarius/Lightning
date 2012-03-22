@@ -45,6 +45,7 @@ public final class InternalSerializerCreator {
 
 	private final Map<Class<?>, InternalClassDescriptor> classDescriptors = new HashMap<Class<?>, InternalClassDescriptor>();
 	private final List<SerializerDefinition> serializerDefinitions = new ArrayList<SerializerDefinition>();
+	private final Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
 	private final ObjenesisSerializer objenesisSerializer = new ObjenesisSerializer(true);
 
 	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
@@ -103,7 +104,8 @@ public final class InternalSerializerCreator {
 			cleanedClassDescriptors.put(entry.getKey(), entry.getValue());
 		}
 
-		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), classComparisonStrategy, cleanedClassDescriptors, logger);
+		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions),
+				classComparisonStrategy, cleanedClassDescriptors, marshallers, objenesisSerializer, logger);
 	}
 
 	private InternalClassDescriptor findClassDescriptor(Class<?> type) {
@@ -149,6 +151,8 @@ public final class InternalSerializerCreator {
 		public void visitClassDefine(Class<?> type, Marshaller marshaller) {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(type);
 			classDescriptor.setMarshaller(marshaller);
+			
+			marshallers.put(type, marshaller);
 		}
 
 		@Override

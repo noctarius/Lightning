@@ -19,6 +19,9 @@ public interface GeneratorConstants {
 	static String MARSHALLER_MARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
 			new Type[] { Type.getType(Object.class), Type.getType(Class.class), Type.getType(DataOutput.class) });
 
+	static String MARSHALLER_BASE_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
+			new Type[] { Type.getType(Class.class), Type.getType(DataInput.class) });
+
 	static String MARSHALLER_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
 			new Type[] { Type.getType(Object.class), Type.getType(Class.class), Type.getType(DataInput.class) });
 
@@ -29,8 +32,8 @@ public interface GeneratorConstants {
 			new Type[] { Type.getType(String.class) });
 
 	static String MARSHALLER_CONSTRUCTOR_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
-			new Type[] { Type.getType(Class.class), Type.getType(Map.class),
-					Type.getType(ClassDescriptorAwareSerializer.class), Type.getType(ObjenesisSerializer.class) });
+			new Type[] { Type.getType(Class.class), Type.getType(Map.class), Type.getType(ClassDescriptorAwareSerializer.class),
+					Type.getType(ObjenesisSerializer.class) });
 
 	static String OBJECT_GET_CLASS_SIGNATURE = Type.getMethodDescriptor(Type.getType(Class.class), new Type[0]);
 
@@ -100,11 +103,13 @@ public interface GeneratorConstants {
 	static String PROPERTY_ACCESSOR_WRITE_OBJECT_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
 			new Type[] { Type.getType(Object.class), Type.getType(Object.class) });
 
-	static String BOOLEAN_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Boolean.class), new Type[] { Type.BOOLEAN_TYPE });
+	static String BOOLEAN_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Boolean.class),
+			new Type[] { Type.BOOLEAN_TYPE });
 
 	static String BYTE_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Byte.class), new Type[] { Type.BYTE_TYPE });
 
-	static String CHAR_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Character.class), new Type[] { Type.CHAR_TYPE });
+	static String CHAR_VALUE_OF_SIGNATURE = Type
+			.getMethodDescriptor(Type.getType(Character.class), new Type[] { Type.CHAR_TYPE });
 
 	static String SHORT_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Short.class), new Type[] { Type.SHORT_TYPE });
 
@@ -114,5 +119,6 @@ public interface GeneratorConstants {
 
 	static String FLOAT_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Float.class), new Type[] { Type.FLOAT_TYPE });
 
-	static String DOUBLE_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Double.class), new Type[] { Type.DOUBLE_TYPE });
+	static String DOUBLE_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Double.class),
+			new Type[] { Type.DOUBLE_TYPE });
 }

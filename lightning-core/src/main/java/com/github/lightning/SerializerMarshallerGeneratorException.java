@@ -1,5 +1,6 @@
 package com.github.lightning;
 
+@SuppressWarnings("serial")
 public class SerializerMarshallerGeneratorException extends RuntimeException {
 
 	public SerializerMarshallerGeneratorException() {

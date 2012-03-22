@@ -19,6 +19,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -34,6 +35,10 @@ import com.github.lightning.ClassDefinition;
 import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.ClassDefinitionNotConstistentException;
 import com.github.lightning.ClassDescriptor;
+import com.github.lightning.Marshaller;
+import com.github.lightning.SerializerExecutionException;
+import com.github.lightning.internal.generator.MarshallerGenerator;
+import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.internal.io.BufferInputStream;
 import com.github.lightning.internal.io.BufferOutputStream;
 import com.github.lightning.internal.io.ReaderInputStream;
@@ -43,15 +48,25 @@ import com.github.lightning.logging.Logger;
 class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
+	private final MarshallerGenerator marshallerGenerator = new MarshallerGenerator();
 	private final ClassComparisonStrategy classComparisonStrategy;
 	private final Map<Class<?>, ClassDescriptor> classDescriptors;
 
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, ClassComparisonStrategy classComparisonStrategy,
-			Map<Class<?>, ClassDescriptor> classDescriptors, Logger logger) {
+			Map<Class<?>, ClassDescriptor> classDescriptors, Map<Class<?>, Marshaller> marshallers, ObjenesisSerializer objenesisSerializer, Logger logger) {
 
 		this.classDefinitionContainer.set(classDefinitionContainer);
 		this.classComparisonStrategy = classComparisonStrategy;
 		this.classDescriptors = Collections.unmodifiableMap(classDescriptors);
+
+		for (ClassDescriptor classDescriptor : classDescriptors.values()) {
+			if (classDescriptor instanceof InternalClassDescriptor && classDescriptor.getMarshaller() == null) {
+				Marshaller marshaller = marshallerGenerator.generateMarshaller(classDescriptor.getType(),
+						classDescriptor.getPropertyDescriptors(), marshallers, this, objenesisSerializer);
+
+				((InternalClassDescriptor) classDescriptor).setMarshaller(marshaller);
+			}
+		}
 	}
 
 	@Override
@@ -71,8 +86,14 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 	@Override
 	public <V> void serialize(V value, DataOutput dataOutput) {
-		// TODO Auto-generated method stub
-
+		try {
+			Class<?> type = value.getClass();
+			ClassDescriptor classDescriptor = findClassDescriptor(type);
+			classDescriptor.getMarshaller().marshall(value, type, dataOutput);
+		}
+		catch (IOException e) {
+			throw new SerializerExecutionException("Error while serializing value", e);
+		}
 	}
 
 	@Override

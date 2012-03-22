@@ -16,7 +16,7 @@ import com.github.lightning.SerializerDefinitionException;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 
-abstract class AbstractGeneratedMarshaller implements Marshaller {
+public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 	private final Class<?> marshalledType;
 	private final Map<Class<?>, Marshaller> marshallers;
@@ -24,7 +24,7 @@ abstract class AbstractGeneratedMarshaller implements Marshaller {
 	private final List<PropertyDescriptor> propertyDescriptors;
 	private final ObjectInstantiator objectInstantiator;
 
-	AbstractGeneratedMarshaller(Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers,
+	public AbstractGeneratedMarshaller(Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers,
 			ClassDescriptorAwareSerializer serializer, ObjenesisSerializer objenesisSerializer) {
 
 		this.marshalledType = marshalledType;
