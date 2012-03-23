@@ -209,7 +209,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		mv.visitInsn(RETURN);
 
 		// End visiting
-		mv.visitMaxs(7, 7);
+		mv.visitMaxs(5, 5);
 		mv.visitEnd();
 	}
 
@@ -234,9 +234,6 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 
 			// Store PropertyAccessor for later use
 			mv.visitVarInsn(ASTORE, 4);
-
-			// Load value to method stack
-			mv.visitVarInsn(ALOAD, 1);
 
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
@@ -277,11 +274,14 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			visitPropertyAccessorWrite(propertyType, mv);
 		}
 
+		// Load instance to method stack
+		mv.visitVarInsn(ALOAD, 1);
+
 		// Add Return statement
 		visitReturn(type, mv);
 
 		// End visiting
-		mv.visitMaxs(7, 7);
+		mv.visitMaxs(6, 6);
 		mv.visitEnd();
 	}
 

@@ -60,6 +60,7 @@ public class WhatShouldItLookLike {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
 		out.writeObject(foo);
+		System.out.println(foo);
 		
 		byte[] data = baos.toByteArray();
 		System.out.println(Arrays.toString(data));
@@ -67,7 +68,7 @@ public class WhatShouldItLookLike {
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 		Object value = in.readObject();
-		System.out.println(value.toString());
+		System.out.println(value);
 	}
 
 	public static class BookingEngineSerializerFactory extends AbstractSerializerDefinition {
@@ -151,7 +152,7 @@ public class WhatShouldItLookLike {
 
 		@Override
 		public String toString() {
-			return "Foo [first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue=" + enumValue + "]";
+			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue=" + enumValue + "]";
 		}
 	}
 
