@@ -121,7 +121,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	public <V> V deserialize(DataInput dataInput) {
 		try {
 			long typeId = dataInput.readLong();
-			Class<?> clazz = classDefinitionContainer.get().getClassById(typeId);
+			Class<?> clazz = classDefinitionContainer.get().getTypeById(typeId);
 			ClassDescriptor classDescriptor = findClassDescriptor(clazz);
 			return (V) classDescriptor.getMarshaller().unmarshall(clazz, dataInput);
 		}

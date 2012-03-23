@@ -21,10 +21,12 @@ public interface ClassDefinitionContainer {
 
 	Collection<ClassDefinition> getClassDefinitions();
 
-	Class<?> getClassById(long id);
+	Class<?> getTypeById(long id);
 
 	ClassDefinition getClassDefinitionByCanonicalName(String canonicalName);
 
 	ClassDefinition getClassDefinitionById(long id);
+	
+	ClassDefinition getClassDefinitionByType(Class<?> type);
 
 }

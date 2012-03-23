@@ -100,6 +100,8 @@ public class WhatShouldItLookLike {
 		private String second;
 		private Integer value;
 		private int someOther;
+		
+		@Attribute
 		private Bar enumValue;
 
 		@Attribute(required = true)

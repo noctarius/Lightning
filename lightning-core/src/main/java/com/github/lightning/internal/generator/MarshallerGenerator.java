@@ -179,6 +179,11 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "getPropertyAccessor",
 					MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
 
+			// Load property type
+			mv.visitInsn(DUP);
+			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
+			mv.visitVarInsn(ASTORE, 4);
+			
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 1);
 
@@ -190,15 +195,8 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 				visitWrapperAutoboxing(type, mv);
 			}
 
-			// Save value to stack property
-			mv.visitVarInsn(ASTORE, 4);
-
-			// Load it two times to method stack
+			// Load type to method stack
 			mv.visitVarInsn(ALOAD, 4);
-			mv.visitVarInsn(ALOAD, 4);
-
-			// Call getClass()
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "getClass", OBJECT_GET_CLASS_SIGNATURE);
 
 			// Load DataOutput to method stack
 			mv.visitVarInsn(ALOAD, 3);
@@ -237,8 +235,8 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			// Store PropertyAccessor for later use
 			mv.visitVarInsn(ASTORE, 4);
 
-			// Load this to method stack
-			mv.visitVarInsn(ALOAD, 0);
+			// Load value to method stack
+			mv.visitVarInsn(ALOAD, 1);
 
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);

@@ -55,7 +55,7 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 	}
 
 	@Override
-	public Class<?> getClassById(long id) {
+	public Class<?> getTypeById(long id) {
 		ClassDefinition classDefinition = classDefinitionsMappings.get(id);
 		return classDefinition != null ? classDefinition.getType() : null;
 	}
@@ -74,6 +74,16 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 	public ClassDefinition getClassDefinitionById(long id) {
 		ClassDefinition classDefinition = classDefinitionsMappings.get(id);
 		return classDefinition != null ? classDefinition : null;
+	}
+
+	@Override
+	public ClassDefinition getClassDefinitionByType(Class<?> type) {
+		for (ClassDefinition classDefinition : classDefinitions) {
+			if (classDefinition.getType() == type) {
+				return classDefinition;
+			}
+		}
+		return null;
 	}
 
 	@Override
