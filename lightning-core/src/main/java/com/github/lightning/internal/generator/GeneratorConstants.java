@@ -11,6 +11,7 @@ import org.objectweb.asm.Type;
 
 import com.github.lightning.Marshaller;
 import com.github.lightning.PropertyAccessor;
+import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 
@@ -33,8 +34,14 @@ public interface GeneratorConstants {
 
 	static String MARSHALLER_CONSTRUCTOR_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
 			new Type[] { Type.getType(Class.class), Type.getType(Map.class), Type.getType(ClassDescriptorAwareSerializer.class),
+					Type.getType(ObjenesisSerializer.class), Type.getType(List.class) });
+
+	static String MARSHALLER_SUPER_CONSTRUCTOR_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Class.class), Type.getType(Map.class), Type.getType(ClassDescriptorAwareSerializer.class),
 					Type.getType(ObjenesisSerializer.class) });
 
+	static String PROPERTY_DESCRIPTOR_GET_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class), new Type[0]);
+	
 	static String OBJECT_GET_CLASS_SIGNATURE = Type.getMethodDescriptor(Type.getType(Class.class), new Type[0]);
 
 	static String SUPER_CLASS_INTERNAL_TYPE = Type.getType(AbstractGeneratedMarshaller.class).getInternalName();
@@ -42,6 +49,10 @@ public interface GeneratorConstants {
 	static String IOEXCEPTION_CLASS_INTERNAL_TYPE = Type.getType(IOException.class).getInternalName();
 	static String LIST_CLASS_INTERNAL_TYPE = Type.getType(List.class).getInternalName();
 	static String PROPERTYACCESSOR_CLASS_INTERNAL_TYPE = Type.getType(PropertyAccessor.class).getInternalName();
+	static String PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE = Type.getType(PropertyDescriptor.class).getInternalName();
+
+	static String MARSHALLER_CLASS_DESCRIPTOR = Type.getType(Marshaller.class).getDescriptor();
+	static String PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR = Type.getType(PropertyDescriptor.class).getDescriptor();
 
 	static String[] MARSHALLER_EXCEPTIONS = { IOEXCEPTION_CLASS_INTERNAL_TYPE };
 

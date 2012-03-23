@@ -35,6 +35,7 @@ import com.github.lightning.internal.marshaller.LongMarshaller;
 import com.github.lightning.internal.marshaller.SerializableMarshaller;
 import com.github.lightning.internal.marshaller.ShortMarshaller;
 import com.github.lightning.internal.marshaller.StreamedMarshaller;
+import com.github.lightning.internal.marshaller.StringMarshaller;
 
 public class InternalMarshallerStrategy implements MarshallerStrategy {
 
@@ -56,6 +57,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 		marshallers.add(new LongMarshaller());
 		marshallers.add(new FloatMarshaller());
 		marshallers.add(new DoubleMarshaller());
+		marshallers.add(new StringMarshaller());
 
 		baseMarshaller = Collections.unmodifiableList(marshallers);
 	}

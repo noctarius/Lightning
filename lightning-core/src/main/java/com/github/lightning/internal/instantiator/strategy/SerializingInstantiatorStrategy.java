@@ -57,9 +57,6 @@ public class SerializingInstantiatorStrategy extends BaseInstantiatorStrategy {
 	 */
 	@Override
 	public ObjectInstantiator newInstantiatorOf(Class type) {
-		if (!Serializable.class.isAssignableFrom(type)) {
-			throw new ObjenesisException(new NotSerializableException(type + " not serializable"));
-		}
 		if (JVM_NAME.startsWith(SUN)) {
 			if (VM_VERSION.startsWith("1.3")) {
 				return new Sun13SerializationInstantiator(type);

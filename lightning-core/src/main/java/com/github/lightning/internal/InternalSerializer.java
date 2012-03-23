@@ -65,6 +65,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 						classDescriptor.getPropertyDescriptors(), marshallers, this, objenesisSerializer);
 
 				((InternalClassDescriptor) classDescriptor).setMarshaller(marshaller);
+				marshallers.put(classDescriptor.getType(), marshaller);
 			}
 		}
 	}
@@ -89,6 +90,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 		try {
 			Class<?> type = value.getClass();
 			ClassDescriptor classDescriptor = findClassDescriptor(type);
+			dataOutput.writeLong(classDescriptor.getClassDefinition().getId());
 			classDescriptor.getMarshaller().marshall(value, type, dataOutput);
 		}
 		catch (IOException e) {
@@ -115,9 +117,17 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <V> V deserialize(DataInput dataInput) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			long typeId = dataInput.readLong();
+			Class<?> clazz = classDefinitionContainer.get().getClassById(typeId);
+			ClassDescriptor classDescriptor = findClassDescriptor(clazz);
+			return (V) classDescriptor.getMarshaller().unmarshall(clazz, dataInput);
+		}
+		catch (IOException e) {
+			throw new SerializerExecutionException("Error while deserializing value", e);
+		}
 	}
 
 	@Override

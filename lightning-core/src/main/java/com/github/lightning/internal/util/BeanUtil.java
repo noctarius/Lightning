@@ -30,7 +30,7 @@ public final class BeanUtil {
 
 	public static Field getFieldByPropertyName(String propertyName, Class<?> type) {
 		try {
-			return type.getField(propertyName);
+			return type.getDeclaredField(propertyName);
 		}
 		catch (NoSuchFieldException e) {
 			return null;

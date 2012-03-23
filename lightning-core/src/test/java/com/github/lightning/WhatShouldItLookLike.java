@@ -15,13 +15,20 @@
  */
 package com.github.lightning;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 import com.github.lightning.base.AbstractObjectMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
+import com.github.lightning.io.SerializerInputStream;
+import com.github.lightning.io.SerializerOutputStream;
 import com.github.lightning.logging.LogLevel;
 import com.github.lightning.logging.LoggerAdapter;
 
@@ -43,6 +50,24 @@ public class WhatShouldItLookLike {
 
 		Serializer remoteSerializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
 		remoteSerializer.setClassDefinitionContainer(container);
+		
+		Foo foo = new Foo();
+		foo.enumValue = Bar.Value2;
+		foo.first = "first";
+		foo.second= "second";
+		foo.value = 123;
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
+		out.writeObject(foo);
+		
+		byte[] data = baos.toByteArray();
+		System.out.println(Arrays.toString(data));
+		
+		ByteArrayInputStream bais = new ByteArrayInputStream(data);
+		SerializerInputStream in = new SerializerInputStream(bais, serializer);
+		Object value = in.readObject();
+		System.out.println(value.toString());
 	}
 
 	public static class BookingEngineSerializerFactory extends AbstractSerializerDefinition {
@@ -51,9 +76,9 @@ public class WhatShouldItLookLike {
 		protected void configure() {
 			define(Bar.class).byMarshaller(new BarMarshaller());
 
-			bind(Foo.class).with(Attribute.class).exclude("value");
-			bind(Foo.class).property("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
-			bind(Foo.class).property("enumValue").byMarshaller(BarMarshaller.class);
+			//bind(Foo.class).with(Attribute.class).exclude("value");
+			//bind(Foo.class).property("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
+			//bind(Foo.class).property("enumValue").byMarshaller(BarMarshaller.class);
 
 			install(new SomeChildSerializerFactory());
 		}
@@ -121,6 +146,11 @@ public class WhatShouldItLookLike {
 		public void setEnumValue(Bar enumValue) {
 			this.enumValue = enumValue;
 		}
+
+		@Override
+		public String toString() {
+			return "Foo [first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue=" + enumValue + "]";
+		}
 	}
 
 	public static enum Bar {
@@ -128,6 +158,7 @@ public class WhatShouldItLookLike {
 		Value2
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface Attribute {
 
 		boolean required() default false;

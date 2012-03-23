@@ -2,6 +2,7 @@ package com.github.lightning.internal.generator;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -36,11 +38,11 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			Collections.sort(propertyDescriptorsCopy);
 
 			// Build className e.g. "SomeTypeMarshaller$$X$$Lightning"
-			String className = new StringBuilder(type.getSimpleName()).append("Marshaller$$")
-					.append(GENEREATED_CLASS_ID.getAndIncrement()).append("$$Lightning").toString();
+			String className = new StringBuilder(type.getSimpleName()).append("Marshaller")
+					.append(GENEREATED_CLASS_ID.getAndIncrement()).append("Lightning").toString();
 
 			// Build class
-			cw.visit(V1_6, ACC_PUBLIC & ACC_SUPER, className, className, SUPER_CLASS_INTERNAL_TYPE, null);
+			cw.visit(V1_6, ACC_PUBLIC & ACC_SUPER, className, null, SUPER_CLASS_INTERNAL_TYPE, null);
 
 			// Build marshaller fields
 			createMarshallerFields(cw, propertyDescriptorsCopy);
@@ -67,9 +69,10 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 
 			Class<? extends Marshaller> generatedClass = classloader.loadClass(bytecode);
 			Constructor<? extends Marshaller> constructor = generatedClass.getConstructor(Class.class, Map.class,
-					ClassDescriptorAwareSerializer.class, ObjenesisSerializer.class);
+					ClassDescriptorAwareSerializer.class, ObjenesisSerializer.class, List.class);
 
-			return constructor.newInstance(type, marshallers, serializer, objenesisSerializer);
+			constructor.setAccessible(true);
+			return constructor.newInstance(type, marshallers, serializer, objenesisSerializer, propertyDescriptorsCopy);
 		}
 		catch (Exception e) {
 			throw new SerializerMarshallerGeneratorException("Marshaller for type " + type + " could not be generated", e);
@@ -77,9 +80,10 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 	}
 
 	private void createMarshallerFields(ClassWriter cw, List<PropertyDescriptor> propertyDescriptors) {
-		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+		for (int i = 0; i < propertyDescriptors.size(); i++) {
+			PropertyDescriptor propertyDescriptor = propertyDescriptors.get(i);
 			FieldVisitor fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName(propertyDescriptor),
-					Type.getType(propertyDescriptor.getType()).getDescriptor(), null, null);
+					MARSHALLER_CLASS_DESCRIPTOR, null, null);
 
 			fv.visitEnd();
 		}
@@ -100,25 +104,55 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 
 		// Load third parameter type (ClassDescriptorAwaySerializer)
 		mv.visitVarInsn(ALOAD, 3);
-		
-		//Load fourth parameter type (ObjenesisSerializer)
+
+		// Load fourth parameter type (ObjenesisSerializer)
 		mv.visitVarInsn(ALOAD, 4);
 
 		// Call super(Class, Map)
-		mv.visitMethodInsn(INVOKESPECIAL, SUPER_CLASS_INTERNAL_TYPE, "<init>", MARSHALLER_CONSTRUCTOR_SIGNATURE);
+		mv.visitMethodInsn(INVOKESPECIAL, SUPER_CLASS_INTERNAL_TYPE, "<init>", MARSHALLER_SUPER_CONSTRUCTOR_SIGNATURE);
 
 		// Fill fields with marshallers
-		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+		for (int i = 0; i < propertyDescriptors.size(); i++) {
+			PropertyDescriptor propertyDescriptor = propertyDescriptors.get(i);
 			String fieldName = toFinalFieldName(propertyDescriptor);
 			mv.visitVarInsn(ALOAD, 0);
+
+			// Load property type
+			mv.visitVarInsn(ALOAD, 5);
+			mv.visitIntInsn(BIPUSH, i);
+			mv.visitMethodInsn(INVOKEINTERFACE, LIST_CLASS_INTERNAL_TYPE, "get", "(I)Ljava/lang/Object;");
+
+			// Store PropertyDescriptor
+			mv.visitVarInsn(ASTORE, 6);
+
+			// Define branch
+			Label labelNonNull = new Label();
+
+			// Check if marshaller is defined
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitVarInsn(ALOAD, 1);
+			mv.visitVarInsn(ALOAD, 6);
+			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE, "getMarshaller", PROPERTY_DESCRIPTOR_GET_MARSHALLER_SIGNATURE);
+			mv.visitTypeInsn(CHECKCAST, MARSHALLER_CLASS_INTERNAL_TYPE);
+			mv.visitVarInsn(ASTORE, 7);
+			mv.visitVarInsn(ALOAD, 7);
+			mv.visitJumpInsn(IFNONNULL, labelNonNull);
+
+			mv.visitVarInsn(ALOAD, 0);
+			mv.visitVarInsn(ALOAD, 6);
+			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE, "getType", "()Ljava/lang/Class;");
+
+			// Search marshaller for property type
 			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "findMarshaller", MARSHALLER_FIND_MARSHALLER_SIGNATURE);
-			mv.visitFieldInsn(PUTFIELD, className, fieldName, Type.getType(propertyDescriptor.getType()).getDescriptor());
+			mv.visitVarInsn(ASTORE, 7);
+
+			// Save marshaller to field
+			mv.visitLabel(labelNonNull);
+			mv.visitVarInsn(ALOAD, 7);
+			mv.visitFieldInsn(PUTFIELD, className, fieldName, MARSHALLER_CLASS_DESCRIPTOR);
 		}
 
 		mv.visitInsn(RETURN);
-		mv.visitMaxs(5, 5);
+		mv.visitMaxs(8, 8);
 		mv.visitEnd();
 	}
 
@@ -133,7 +167,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			mv.visitVarInsn(ALOAD, 0);
 
 			// Load property marshaller on stack
-			mv.visitFieldInsn(GETFIELD, className, fieldName, Type.getType(propertyDescriptor.getType()).getDescriptor());
+			mv.visitFieldInsn(GETFIELD, className, fieldName, MARSHALLER_CLASS_DESCRIPTOR);
 
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
@@ -146,8 +180,8 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 					MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
 
 			// Load this to method stack
-			mv.visitVarInsn(ALOAD, 0);
-			
+			mv.visitVarInsn(ALOAD, 1);
+
 			// Load value by type on stack
 			visitPropertyAccessorRead(type, mv);
 
@@ -177,7 +211,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		mv.visitInsn(RETURN);
 
 		// End visiting
-		mv.visitMaxs(5, 5);
+		mv.visitMaxs(7, 7);
 		mv.visitEnd();
 	}
 
@@ -195,7 +229,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 
 			// Push property name to method stack
 			mv.visitLdcInsn(propertyDescriptor.getPropertyName());
-			
+
 			// Load property accessor
 			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "getPropertyAccessor",
 					MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
@@ -205,12 +239,12 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
-			
+
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
 
 			// Load property marshaller to method stack
-			mv.visitFieldInsn(GETFIELD, className, fieldName, Type.getType(propertyDescriptor.getType()).getDescriptor());
+			mv.visitFieldInsn(GETFIELD, className, fieldName, MARSHALLER_CLASS_DESCRIPTOR);
 
 			// Load PropertyAccessor to method stack
 			mv.visitVarInsn(ALOAD, 4);
@@ -249,7 +283,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		visitReturn(type, mv);
 
 		// End visiting
-		mv.visitMaxs(6, 6);
+		mv.visitMaxs(7, 7);
 		mv.visitEnd();
 	}
 
@@ -412,36 +446,28 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 
 	private void visitWrapperAutoboxing(Class<?> type, MethodVisitor mv) {
 		if (type == boolean.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Boolean");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "valueOf", BOOLEAN_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", BOOLEAN_VALUE_OF_SIGNATURE);
 		}
 		else if (type == byte.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Byte");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Byte", "valueOf", BYTE_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Byte", "valueOf", BYTE_VALUE_OF_SIGNATURE);
 		}
 		else if (type == char.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Character");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "valueOf", CHAR_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "valueOf", CHAR_VALUE_OF_SIGNATURE);
 		}
 		else if (type == short.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Short");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Short", "valueOf", SHORT_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Short", "valueOf", SHORT_VALUE_OF_SIGNATURE);
 		}
 		else if (type == int.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "valueOf", INT_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", INT_VALUE_OF_SIGNATURE);
 		}
 		else if (type == long.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Long");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "valueOf", LONG_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", LONG_VALUE_OF_SIGNATURE);
 		}
 		else if (type == float.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Float");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "valueOf", FLOAT_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", FLOAT_VALUE_OF_SIGNATURE);
 		}
 		else if (type == double.class) {
-			mv.visitTypeInsn(CHECKCAST, "java/lang/Double");
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "valueOf", DOUBLE_VALUE_OF_SIGNATURE);
+			mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", DOUBLE_VALUE_OF_SIGNATURE);
 		}
 	}
 
@@ -450,7 +476,12 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 				.toString();
 	}
 
-	private String toInternalRepresentation(String className) {
-		return new StringBuilder("L").append(className).append(";").toString();
+	protected void visitSystemOutPrintln(MethodVisitor mv, int stackPosition) {
+		mv.visitVarInsn(ASTORE, stackPosition);
+		mv.visitFieldInsn(GETSTATIC, Type.getType(System.class).getInternalName(), "out", Type.getType(PrintStream.class).getDescriptor());
+		mv.visitVarInsn(ALOAD, stackPosition);
+		mv.visitMethodInsn(INVOKEVIRTUAL, Type.getType(Object.class).getInternalName(), "toString", "()Ljava/lang/String;");
+		mv.visitMethodInsn(INVOKEVIRTUAL, Type.getType(PrintStream.class).getInternalName(), "println", "(Ljava/lang/String;)V");
+		mv.visitVarInsn(ALOAD, stackPosition);
 	}
 }
