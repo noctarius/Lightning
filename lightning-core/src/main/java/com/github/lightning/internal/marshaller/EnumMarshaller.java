@@ -22,33 +22,41 @@ import java.io.IOException;
 import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.base.AbstractMarshaller;
 
-public class BooleanMarshaller extends AbstractMarshaller {
+public class EnumMarshaller extends AbstractMarshaller {
 
 	@Override
 	public boolean acceptType(Class<?> type) {
-		return boolean.class == type || Boolean.class == type;
+		return Enum.class.isAssignableFrom(type);
 	}
 
 	@Override
 	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
-		if (Boolean.class == type) {
-			if (!writePossibleNull(value, dataOutput)) {
-				return;
-			}
+		if (!writePossibleNull(value, dataOutput)) {
+			return;
 		}
 
-		dataOutput.writeBoolean((Boolean) value);
+		dataOutput.writeLong(classDefinitionContainer.getClassDefinitionByType(type).getId());
+		dataOutput.writeInt(((Enum<?>) value).ordinal());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
-		if (Boolean.class == type) {
-			if (isNull(dataInput)) {
-				return null;
-			}
+		if (isNull(dataInput)) {
+			return null;
 		}
 
-		return (V) Boolean.valueOf(dataInput.readBoolean());
+		long typeId = dataInput.readLong();
+		Class<?> propertyType = classDefinitionContainer.getTypeById(typeId);
+		
+		int ordinal = dataInput.readInt();
+		Enum<?>[] values = ((Class<Enum<?>>) propertyType).getEnumConstants();
+		for (Enum<?> value : values) {
+			if (value.ordinal() == ordinal) {
+				return (V) value;
+			}
+		}
+		
+		return null;
 	}
 }

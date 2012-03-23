@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.base.AbstractObjectMarshaller;
 
 public class ExternalizableMarshaller extends AbstractObjectMarshaller {
@@ -32,12 +33,12 @@ public class ExternalizableMarshaller extends AbstractObjectMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		((Externalizable) value).writeExternal((ObjectOutput) dataOutput);
 	}
 
 	@Override
-	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		try {
 			((Externalizable) value).readExternal((ObjectInput) dataInput);
 			return value;

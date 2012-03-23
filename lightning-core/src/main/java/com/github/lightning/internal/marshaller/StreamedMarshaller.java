@@ -19,6 +19,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Streamed;
 import com.github.lightning.base.AbstractObjectMarshaller;
 
@@ -30,12 +31,12 @@ public class StreamedMarshaller extends AbstractObjectMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		((Streamed) value).writeTo(dataOutput);
 	}
 
 	@Override
-	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		((Streamed) value).readFrom(dataInput);
 		return value;
 	}

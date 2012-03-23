@@ -19,13 +19,14 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Marshaller;
 
 public abstract class AbstractMarshaller implements Marshaller {
 
 	@Override
-	public <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
-		return unmarshall(type, dataInput);
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		return null;
 	}
 
 	protected boolean writePossibleNull(Object value, DataOutput dataOutput) throws IOException {

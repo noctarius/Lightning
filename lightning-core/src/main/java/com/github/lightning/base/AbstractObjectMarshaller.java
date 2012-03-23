@@ -18,13 +18,15 @@ package com.github.lightning.base;
 import java.io.DataInput;
 import java.io.IOException;
 
+import com.github.lightning.ClassDefinitionContainer;
+
 public abstract class AbstractObjectMarshaller extends AbstractMarshaller {
 
 	@Override
-	public final <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
+	public final <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		// Should be never called!
 		return null;
 	}
 
-	public abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException;
+	public abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException;
 }

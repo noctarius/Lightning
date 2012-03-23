@@ -182,7 +182,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			// Load property type
 			mv.visitInsn(DUP);
 			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
-			mv.visitVarInsn(ASTORE, 4);
+			mv.visitVarInsn(ASTORE, 5);
 			
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 1);
@@ -196,11 +196,14 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			}
 
 			// Load type to method stack
-			mv.visitVarInsn(ALOAD, 4);
+			mv.visitVarInsn(ALOAD, 5);
 
 			// Load DataOutput to method stack
 			mv.visitVarInsn(ALOAD, 3);
 
+			// Load ClassDefinitionContainer to method stack
+			mv.visitVarInsn(ALOAD, 4);
+			
 			// Call Marshaller#marshall on properties marshaller
 			mv.visitMethodInsn(INVOKEINTERFACE, MARSHALLER_CLASS_INTERNAL_TYPE, "marshall", MARSHALLER_MARSHALL_SIGNATURE);
 		}
@@ -209,7 +212,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		mv.visitInsn(RETURN);
 
 		// End visiting
-		mv.visitMaxs(5, 5);
+		mv.visitMaxs(6, 6);
 		mv.visitEnd();
 	}
 
@@ -233,7 +236,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 					MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
 
 			// Store PropertyAccessor for later use
-			mv.visitVarInsn(ASTORE, 4);
+			mv.visitVarInsn(ASTORE, 5);
 
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
@@ -242,7 +245,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			mv.visitFieldInsn(GETFIELD, className, fieldName, MARSHALLER_CLASS_DESCRIPTOR);
 
 			// Load PropertyAccessor to method stack
-			mv.visitVarInsn(ALOAD, 4);
+			mv.visitVarInsn(ALOAD, 5);
 
 			// Load Type from PropertyAccessor to method stack
 			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
@@ -250,21 +253,24 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 			// Load DataInput to method stack
 			mv.visitVarInsn(ALOAD, 3);
 
+			// Load ClassDefinitionContainer to method stack
+			mv.visitVarInsn(ALOAD, 4);
+
 			// Call Marshaller#unmarshall on properties marshaller
 			mv.visitMethodInsn(INVOKEINTERFACE, MARSHALLER_CLASS_INTERNAL_TYPE, "unmarshall", MARSHALLER_BASE_UNMARSHALL_SIGNATURE);
 
 			// Save value
-			mv.visitVarInsn(ASTORE, 5);
+			mv.visitVarInsn(ASTORE, 6);
 
 			// Load PropertyAccessor to method stack
-			mv.visitVarInsn(ALOAD, 4);
+			mv.visitVarInsn(ALOAD, 5);
 
 			// Load instance to method stack
 			mv.visitVarInsn(ALOAD, 1);
 
 			// Load value to method stack
-			mv.visitVarInsn(ALOAD, 5);
-
+			mv.visitVarInsn(ALOAD, 6);
+			
 			// If type is primitive add some "autoboxing" magic
 			if (propertyType.isPrimitive()) {
 				visitPrimitiveAutoboxing(propertyType, mv);
@@ -281,7 +287,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		visitReturn(type, mv);
 
 		// End visiting
-		mv.visitMaxs(6, 6);
+		mv.visitMaxs(7, 7);
 		mv.visitEnd();
 	}
 

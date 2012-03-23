@@ -19,6 +19,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.base.AbstractMarshaller;
 
 public class StringMarshaller extends AbstractMarshaller {
@@ -29,7 +30,7 @@ public class StringMarshaller extends AbstractMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		if (!writePossibleNull(value, dataOutput)) {
 			return;
 		}
@@ -39,7 +40,7 @@ public class StringMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}

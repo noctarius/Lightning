@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.objectweb.asm.Type;
 
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Marshaller;
 import com.github.lightning.PropertyAccessor;
 import com.github.lightning.PropertyDescriptor;
@@ -18,13 +19,15 @@ import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 public interface GeneratorConstants {
 
 	static String MARSHALLER_MARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
-			new Type[] { Type.getType(Object.class), Type.getType(Class.class), Type.getType(DataOutput.class) });
+			new Type[] { Type.getType(Object.class), Type.getType(Class.class),
+					Type.getType(DataOutput.class), Type.getType(ClassDefinitionContainer.class) });
 
 	static String MARSHALLER_BASE_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
-			new Type[] { Type.getType(Class.class), Type.getType(DataInput.class) });
+			new Type[] { Type.getType(Class.class), Type.getType(DataInput.class), Type.getType(ClassDefinitionContainer.class) });
 
 	static String MARSHALLER_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
-			new Type[] { Type.getType(Object.class), Type.getType(Class.class), Type.getType(DataInput.class) });
+			new Type[] { Type.getType(Object.class), Type.getType(Class.class),
+					Type.getType(DataInput.class), Type.getType(ClassDefinitionContainer.class) });
 
 	static String MARSHALLER_FIND_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class),
 			new Type[] { Type.getType(Class.class) });
@@ -41,7 +44,7 @@ public interface GeneratorConstants {
 					Type.getType(ObjenesisSerializer.class) });
 
 	static String PROPERTY_DESCRIPTOR_GET_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class), new Type[0]);
-	
+
 	static String OBJECT_GET_CLASS_SIGNATURE = Type.getMethodDescriptor(Type.getType(Class.class), new Type[0]);
 
 	static String SUPER_CLASS_INTERNAL_TYPE = Type.getType(AbstractGeneratedMarshaller.class).getInternalName();

@@ -91,7 +91,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 			Class<?> type = value.getClass();
 			ClassDescriptor classDescriptor = findClassDescriptor(type);
 			dataOutput.writeLong(classDescriptor.getClassDefinition().getId());
-			classDescriptor.getMarshaller().marshall(value, type, dataOutput);
+			classDescriptor.getMarshaller().marshall(value, type, dataOutput, classDefinitionContainer.get());
 		}
 		catch (IOException e) {
 			throw new SerializerExecutionException("Error while serializing value", e);
@@ -123,7 +123,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 			long typeId = dataInput.readLong();
 			Class<?> clazz = classDefinitionContainer.get().getTypeById(typeId);
 			ClassDescriptor classDescriptor = findClassDescriptor(clazz);
-			return (V) classDescriptor.getMarshaller().unmarshall(clazz, dataInput);
+			return (V) classDescriptor.getMarshaller().unmarshall(clazz, dataInput, classDefinitionContainer.get());
 		}
 		catch (IOException e) {
 			throw new SerializerExecutionException("Error while deserializing value", e);

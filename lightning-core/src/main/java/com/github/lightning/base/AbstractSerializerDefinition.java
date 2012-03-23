@@ -88,6 +88,13 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		// Visit all property definitions
 		for (Entry<PropertyDescriptor, Marshaller> entry : propertyMarshallers.entrySet()) {
 			visitor.visitPropertyDescriptor(entry.getKey(), entry.getValue());
+
+			Class<?> type = entry.getKey().getType();
+			if (type.isPrimitive() || type.isArray()) {
+				continue;
+			}
+
+			visitor.visitClassDefine(type, entry.getValue());
 		}
 
 		// Visit all children
@@ -259,14 +266,39 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			for (Field field : fields) {
 				Class<?> fieldType = field.getType();
 
+				Map<Class<?>, Marshaller> marshallers = combineMarshallers(AbstractSerializerDefinition.this);
 				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
 				if (marshaller == null) {
 					throw new SerializerDefinitionException("Field " + field + " cannot be marshalled");
 				}
 
 				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(field, marshaller);
+
+				if (isExcluded(propertyDescriptor.getPropertyName()))
+					continue;
+
 				visitor.visitAnnotatedAttribute(propertyDescriptor, marshaller);
+
+				if (fieldType.isPrimitive() || fieldType.isArray()) {
+					continue;
+				}
+
+				visitor.visitClassDefine(fieldType, marshaller);
 			}
+		}
+
+		private Map<Class<?>, Marshaller> combineMarshallers(AbstractSerializerDefinition abstractSerializerDefinition) {
+			Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
+			if (abstractSerializerDefinition.parent != null) {
+				marshallers.putAll(combineMarshallers(abstractSerializerDefinition.parent));
+			}
+
+			marshallers.putAll(abstractSerializerDefinition.marshallers);
+			return marshallers;
+		}
+
+		private boolean isExcluded(String propertyName) {
+			return excludes.contains(propertyName);
 		}
 
 		private List<Field> findFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {

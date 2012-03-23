@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.ClassDescriptor;
 import com.github.lightning.Marshaller;
 import com.github.lightning.ObjectInstantiator;
@@ -41,12 +42,12 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		V value = (V) objectInstantiator.newInstance();
-		return unmarshall(value, type, dataInput);
+		return unmarshall(value, type, dataInput, classDefinitionContainer);
 	}
 
-	protected abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput);
+	protected abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer);
 	
 	protected ClassDescriptor getClassDescriptor() {
 		return classDescriptor;
@@ -95,7 +96,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 			Marshaller marshaller = this.marshaller;
 			if (marshaller == null) {
 				marshaller = getMarshaller();
@@ -105,11 +106,11 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
 			}
 
-			marshaller.marshall(value, type, dataOutput);
+			marshaller.marshall(value, type, dataOutput, classDefinitionContainer);
 		}
 
 		@Override
-		public <V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException {
+		public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 			Marshaller marshaller = this.marshaller;
 			if (marshaller == null) {
 				marshaller = getMarshaller();
@@ -119,7 +120,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
 			}
 
-			return marshaller.unmarshall(type, dataInput);
+			return marshaller.unmarshall(type, dataInput, classDefinitionContainer);
 		}
 
 		private synchronized Marshaller getMarshaller() {

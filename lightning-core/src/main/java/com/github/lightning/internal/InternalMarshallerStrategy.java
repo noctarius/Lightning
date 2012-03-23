@@ -28,6 +28,7 @@ import com.github.lightning.internal.marshaller.BooleanMarshaller;
 import com.github.lightning.internal.marshaller.ByteMarshaller;
 import com.github.lightning.internal.marshaller.CharacterMarshaller;
 import com.github.lightning.internal.marshaller.DoubleMarshaller;
+import com.github.lightning.internal.marshaller.EnumMarshaller;
 import com.github.lightning.internal.marshaller.ExternalizableMarshaller;
 import com.github.lightning.internal.marshaller.FloatMarshaller;
 import com.github.lightning.internal.marshaller.IntegerMarshaller;
@@ -58,6 +59,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 		marshallers.add(new FloatMarshaller());
 		marshallers.add(new DoubleMarshaller());
 		marshallers.add(new StringMarshaller());
+		marshallers.add(new EnumMarshaller());
 
 		baseMarshaller = Collections.unmodifiableList(marshallers);
 	}

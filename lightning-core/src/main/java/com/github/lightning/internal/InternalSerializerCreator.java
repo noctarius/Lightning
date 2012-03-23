@@ -151,7 +151,7 @@ public final class InternalSerializerCreator {
 		public void visitClassDefine(Class<?> type, Marshaller marshaller) {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(type);
 			classDescriptor.setMarshaller(marshaller);
-			
+
 			marshallers.put(type, marshaller);
 		}
 

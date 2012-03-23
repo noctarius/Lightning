@@ -24,6 +24,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
+import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.base.AbstractObjectMarshaller;
 
 public class SerializableMarshaller extends AbstractObjectMarshaller {
@@ -34,14 +35,14 @@ public class SerializableMarshaller extends AbstractObjectMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		ObjectOutputStream stream = new ObjectOutputStream((OutputStream) dataOutput);
 		stream.writeObject(value);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
+	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		ObjectInputStream stream = new ObjectInputStream((InputStream) dataInput);
 		try {
 			return (V) stream.readObject();

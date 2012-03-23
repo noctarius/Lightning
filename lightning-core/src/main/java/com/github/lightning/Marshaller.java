@@ -23,8 +23,8 @@ public interface Marshaller {
 
 	boolean acceptType(Class<?> type);
 
-	void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException;
+	void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException;
 
-	<V> V unmarshall(Class<?> type, DataInput dataInput) throws IOException;
+	<V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException;
 
 }

@@ -55,7 +55,7 @@ public class WhatShouldItLookLike {
 		foo.enumValue = Bar.Value2;
 		foo.first = "first";
 		foo.second= "second";
-		foo.value = 123;
+		foo.someOther = 123;
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
@@ -75,7 +75,7 @@ public class WhatShouldItLookLike {
 
 		@Override
 		protected void configure() {
-			define(Bar.class).byMarshaller(new BarMarshaller());
+			//define(Bar.class).byMarshaller(new BarMarshaller());
 
 			//bind(Foo.class).with(Attribute.class).exclude("value");
 			//bind(Foo.class).property("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
@@ -91,7 +91,8 @@ public class WhatShouldItLookLike {
 		public void configure() {
 			describesAttributes(Attribute.class);
 
-			bind(Foo.class).attributes(); // like .with(Attribute.class)
+			bind(Foo.class).attributes();//.exclude("enumValue"); // like .with(Attribute.class)
+			//bind(Foo.class).property("enumValue").byMarshaller(new BarMarshaller());
 		}
 	}
 
@@ -175,12 +176,12 @@ public class WhatShouldItLookLike {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
-			return value;
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+			return null;
 		}
 	}
 
@@ -192,11 +193,11 @@ public class WhatShouldItLookLike {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput) throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput) throws IOException {
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
 			return value;
 		}
 

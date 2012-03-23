@@ -225,6 +225,10 @@ public final class ClassUtil {
 	public static byte[] getClassBytes(Class<?> clazz) {
 		try {
 			ClassLoader classLoader = clazz.getClassLoader();
+			if (classLoader == null) {
+				classLoader = Thread.currentThread().getContextClassLoader();
+			}
+
 			String internalName = Type.getInternalName(clazz);
 			InputStream stream = classLoader.getResourceAsStream(internalName + ".class");
 			byte[] data = new byte[stream.available()];
