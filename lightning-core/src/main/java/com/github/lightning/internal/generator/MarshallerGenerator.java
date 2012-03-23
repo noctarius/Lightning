@@ -98,8 +98,11 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		// Load second parameter type (Map)
 		mv.visitVarInsn(ALOAD, 2);
 
-		// Load third parameter type (List)
+		// Load third parameter type (ClassDescriptorAwaySerializer)
 		mv.visitVarInsn(ALOAD, 3);
+		
+		//Load fourth parameter type (ObjenesisSerializer)
+		mv.visitVarInsn(ALOAD, 4);
 
 		// Call super(Class, Map)
 		mv.visitMethodInsn(INVOKESPECIAL, SUPER_CLASS_INTERNAL_TYPE, "<init>", MARSHALLER_CONSTRUCTOR_SIGNATURE);
@@ -113,7 +116,7 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		}
 
 		mv.visitInsn(RETURN);
-		mv.visitMaxs(4, 5);
+		mv.visitMaxs(5, 5);
 		mv.visitEnd();
 	}
 
