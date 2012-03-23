@@ -111,6 +111,8 @@ public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 			String fieldName = toFinalFieldName(propertyDescriptor);
 			mv.visitVarInsn(ALOAD, 0);
+			mv.visitVarInsn(ALOAD, 0);
+			mv.visitVarInsn(ALOAD, 1);
 			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "findMarshaller", MARSHALLER_FIND_MARSHALLER_SIGNATURE);
 			mv.visitFieldInsn(PUTFIELD, className, fieldName, Type.getType(propertyDescriptor.getType()).getDescriptor());
 		}
