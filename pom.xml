@@ -68,6 +68,10 @@
 		<url>http://github.com/Lightning/Lightning</url>
 	</scm>
 
+	<properties>
+		<maven.version>[3.0.3,)</maven.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -86,7 +90,102 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>1.7</version>
+			</dependency>
 
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-plugin-api</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-model</artifactId>
+				<version>${maven.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-utils</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-core</artifactId>
+				<version>${maven.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.maven</groupId>
+						<artifactId>maven-artifact</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.maven</groupId>
+						<artifactId>maven-settings</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.maven</groupId>
+						<artifactId>maven-settings-builder</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.maven</groupId>
+						<artifactId>maven-repository-metadata</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.maven</groupId>
+						<artifactId>maven-model-builder</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.maven</groupId>
+						<artifactId>maven-aether-provider</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.sonatype.aether</groupId>
+						<artifactId>aether-impl</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.sonatype.aether</groupId>
+						<artifactId>aether-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.sonatype.aether</groupId>
+						<artifactId>aether-util</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.sonatype.sisu</groupId>
+						<artifactId>sisu-inject-plexus</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-interpolation</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-utils</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-classworlds</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-component-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.sonatype.plexus</groupId>
+						<artifactId>plexus-sec-dispatcher</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.maven.plugin-testing</groupId>
+				<artifactId>maven-plugin-testing-harness</artifactId>
+				<version>2.0-alpha-1</version>
+				<scope>test</scope>
+			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
