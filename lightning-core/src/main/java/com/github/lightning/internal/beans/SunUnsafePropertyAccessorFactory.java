@@ -18,8 +18,8 @@ package com.github.lightning.internal.beans;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import com.github.lightning.PropertyAccessor;
 import com.github.lightning.internal.util.UnsafeUtil;
+import com.github.lightning.metadata.PropertyAccessor;
 
 @SuppressWarnings("restriction")
 final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory {

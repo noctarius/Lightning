@@ -24,8 +24,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.base.AbstractObjectMarshaller;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class SerializableMarshaller extends AbstractObjectMarshaller {
 

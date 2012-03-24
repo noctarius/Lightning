@@ -16,10 +16,10 @@
 package com.github.lightning.internal.beans;
 
 import com.github.lightning.Marshaller;
-import com.github.lightning.PropertyAccessor;
-import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.util.BeanUtil;
 import com.github.lightning.internal.util.StringUtil;
+import com.github.lightning.metadata.PropertyAccessor;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 class InternalPropertyDescriptor implements PropertyDescriptor {
 

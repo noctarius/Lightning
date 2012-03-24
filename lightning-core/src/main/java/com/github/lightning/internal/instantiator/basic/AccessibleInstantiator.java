@@ -23,7 +23,7 @@ package com.github.lightning.internal.instantiator.basic;
  * non-public constructors (if the security manager allows it).
  * 
  * @author Joe Walnes
- * @see com.github.lightning.ObjectInstantiator
+ * @see com.github.lightning.instantiator.ObjectInstantiator
  */
 public class AccessibleInstantiator extends ConstructorInstantiator {
 

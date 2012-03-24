@@ -1,5 +1,6 @@
 package com.github.lightning;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
@@ -22,11 +23,13 @@ import com.github.lightning.io.SerializerInputStream;
 import com.github.lightning.io.SerializerOutputStream;
 import com.github.lightning.logging.LogLevel;
 import com.github.lightning.logging.LoggerAdapter;
+import com.github.lightning.metadata.Attribute;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class Benchmark {
 
-	private static final int warmupRounds = 100000;
-	private static final int benchmarkRounds = 800000;
+	private static final int WARMUP_ROUNDS = 100000;
+	private static final int BENCHMARK_ROUNDS = 800000;
 
 	@Test
 	public void benchmarkLightningSerialization() throws Exception {
@@ -36,7 +39,7 @@ public class Benchmark {
 		System.out.println("Lightning Serializer build time: " + nanos + " ms");
 
 		long size = 0;
-		for (int i = 0; i < warmupRounds; i++) {
+		for (int i = 0; i < WARMUP_ROUNDS; i++) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
 			Foo foo = buildRandomFoo();
@@ -55,7 +58,7 @@ public class Benchmark {
 		}
 
 		long time = 0;
-		for (int i = 0; i < benchmarkRounds; i++) {
+		for (int i = 0; i < BENCHMARK_ROUNDS; i++) {
 			Foo foo = buildRandomFoo();
 
 			long startTime = System.nanoTime();
@@ -67,8 +70,9 @@ public class Benchmark {
 			assertNotNull(baos.toByteArray());
 		}
 
-		double avg = time / (double) benchmarkRounds;
-		System.out.println("Lightning Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + benchmarkRounds + ", size: " + size + " bytes");
+		double avg = time / (double) BENCHMARK_ROUNDS;
+		System.out.println("Lightning Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
+				+ ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -85,7 +89,7 @@ public class Benchmark {
 		Serializer serializer = Lightning.newBuilder().serializerDefinitions(new BenchmarkSerializerDefinition()).build();
 
 		long size = 0;
-		for (int i = 0; i < warmupRounds; i++) {
+		for (int i = 0; i < WARMUP_ROUNDS; i++) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
 			Foo foo = buildRandomFoo();
@@ -100,6 +104,7 @@ public class Benchmark {
 			SerializerInputStream in = new SerializerInputStream(bais, serializer);
 			Object value = in.readObject();
 			assertNotNull(value);
+			assertEquals(foo, value);
 		}
 
 		try {
@@ -109,7 +114,7 @@ public class Benchmark {
 		}
 
 		long time = 0;
-		for (int i = 0; i < benchmarkRounds; i++) {
+		for (int i = 0; i < BENCHMARK_ROUNDS; i++) {
 			Foo foo = buildRandomFoo();
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -122,10 +127,12 @@ public class Benchmark {
 			Object value = in.readObject();
 			time += System.nanoTime() - startTime;
 			assertNotNull(value);
+			assertEquals(foo, value);
 		}
 
-		double avg = time / (double) benchmarkRounds;
-		System.out.println("Lightning Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + benchmarkRounds + ", size: " + size + " bytes");
+		double avg = time / (double) BENCHMARK_ROUNDS;
+		System.out.println("Lightning Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
+				+ ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -140,7 +147,7 @@ public class Benchmark {
 	@Test
 	public void benchmarkJavaSerialization() throws Exception {
 		long size = 0;
-		for (int i = 0; i < warmupRounds; i++) {
+		for (int i = 0; i < WARMUP_ROUNDS; i++) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(baos);
 			Foo foo = buildRandomFoo();
@@ -159,7 +166,7 @@ public class Benchmark {
 		}
 
 		long time = 0;
-		for (int i = 0; i < benchmarkRounds; i++) {
+		for (int i = 0; i < BENCHMARK_ROUNDS; i++) {
 			Foo foo = buildRandomFoo();
 
 			long startTime = System.nanoTime();
@@ -171,8 +178,9 @@ public class Benchmark {
 			assertNotNull(baos.toByteArray());
 		}
 
-		double avg = time / (double) benchmarkRounds;
-		System.out.println("Java Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + benchmarkRounds + ", size: " + size + " bytes");
+		double avg = time / (double) BENCHMARK_ROUNDS;
+		System.out.println("Java Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
+				+ ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -187,7 +195,7 @@ public class Benchmark {
 	@Test
 	public void benchmarkJavaDeserialization() throws Exception {
 		long size = 0;
-		for (int i = 0; i < warmupRounds; i++) {
+		for (int i = 0; i < WARMUP_ROUNDS; i++) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(baos);
 			Foo foo = buildRandomFoo();
@@ -202,6 +210,7 @@ public class Benchmark {
 			ObjectInputStream in = new ObjectInputStream(bais);
 			Object value = in.readObject();
 			assertNotNull(value);
+			assertEquals(foo, value);
 		}
 
 		try {
@@ -211,7 +220,7 @@ public class Benchmark {
 		}
 
 		long time = 0;
-		for (int i = 0; i < benchmarkRounds; i++) {
+		for (int i = 0; i < BENCHMARK_ROUNDS; i++) {
 			Foo foo = buildRandomFoo();
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -225,10 +234,12 @@ public class Benchmark {
 
 			time += System.nanoTime() - startTime;
 			assertNotNull(value);
+			assertEquals(foo, value);
 		}
 
-		double avg = time / (double) benchmarkRounds;
-		System.out.println("Java Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + benchmarkRounds + ", size: " + size + " bytes");
+		double avg = time / (double) BENCHMARK_ROUNDS;
+		System.out.println("Java Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
+				+ ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -241,9 +252,7 @@ public class Benchmark {
 	}
 
 	private static final Random RANDOM = new Random(System.nanoTime());
-	private static final String[] STRING_VALUES = {
-			"HGHO", "jldu", "oösd", "JKGH", "HGFG", "JLHL", "GJJK", "JKGH"
-	};
+	private static final String[] STRING_VALUES = { "HGHO", "jldu", "oösd", "JKGH", "HGFG", "JLHL", "GJJK", "JKGH" };
 
 	private static Foo buildRandomFoo() {
 		Foo foo = new Foo();
@@ -264,6 +273,7 @@ public class Benchmark {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class Foo implements Serializable {
 
 		private String first;
@@ -321,7 +331,54 @@ public class Benchmark {
 
 		@Override
 		public String toString() {
-			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue=" + enumValue + "]";
+			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther="
+					+ someOther + ", enumValue=" + enumValue + "]";
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((enumValue == null) ? 0 : enumValue.hashCode());
+			result = prime * result + ((first == null) ? 0 : first.hashCode());
+			result = prime * result + ((second == null) ? 0 : second.hashCode());
+			result = prime * result + someOther;
+			result = prime * result + ((value == null) ? 0 : value.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Foo other = (Foo) obj;
+			if (enumValue != other.enumValue)
+				return false;
+			if (first == null) {
+				if (other.first != null)
+					return false;
+			}
+			else if (!first.equals(other.first))
+				return false;
+			if (second == null) {
+				if (other.second != null)
+					return false;
+			}
+			else if (!second.equals(other.second))
+				return false;
+			if (someOther != other.someOther)
+				return false;
+			if (value == null) {
+				if (other.value != null)
+					return false;
+			}
+			else if (!value.equals(other.value))
+				return false;
+			return true;
 		}
 	}
 
@@ -338,11 +395,13 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer)
+				throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer)
+				throws IOException {
 			return null;
 		}
 	}
@@ -355,11 +414,13 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer)
+				throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer)
+				throws IOException {
 			return value;
 		}
 

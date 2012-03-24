@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning.internal.instantiator;
-
-import com.github.lightning.ObjectInstantiator;
+package com.github.lightning.instantiator;
 
 /**
  * Common interface to all kind of Objenesis objects
  * 
  * @author Henri Tremblay
  */
-public interface Objenesis {
+public interface ObjectInstantiatorFactory {
 
 	/**
 	 * Will create a new object without any constructor being called
@@ -31,7 +29,7 @@ public interface Objenesis {
 	 *            Class to instantiate
 	 * @return New instance of clazz
 	 */
-	Object newInstance(Class clazz);
+	Object newInstance(Class<?> clazz);
 
 	/**
 	 * Will pick the best instantiator for the provided class. If you need to
@@ -44,5 +42,5 @@ public interface Objenesis {
 	 *            Class to instantiate
 	 * @return Instantiator dedicated to the class
 	 */
-	ObjectInstantiator getInstantiatorOf(Class clazz);
+	ObjectInstantiator getInstantiatorOf(Class<?> clazz);
 }

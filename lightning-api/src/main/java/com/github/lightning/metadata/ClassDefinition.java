@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.metadata;
 
+public interface ClassDefinition {
 
-public interface DefinitionBuildingContext {
+	String getCanonicalName();
 
-	PropertyDescriptorFactory getPropertyDescriptorFactory();
+	Class<?> getType();
 
-	MarshallerStrategy getMarshallerStrategy();
+	byte[] getChecksum();
+
+	long getId();
+
+	long getSerialVersionUID();
 
 }

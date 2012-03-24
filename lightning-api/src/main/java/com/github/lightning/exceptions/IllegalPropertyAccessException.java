@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.exceptions;
 
-import java.util.Collection;
+@SuppressWarnings("serial")
+public class IllegalPropertyAccessException extends RuntimeException {
 
-public interface ClassDefinitionContainer {
+	public IllegalPropertyAccessException() {
+		super();
+	}
 
-	Collection<ClassDefinition> getClassDefinitions();
+	public IllegalPropertyAccessException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-	Class<?> getTypeById(long id);
+	public IllegalPropertyAccessException(String message) {
+		super(message);
+	}
 
-	ClassDefinition getClassDefinitionByCanonicalName(String canonicalName);
-
-	ClassDefinition getClassDefinitionById(long id);
-	
-	ClassDefinition getClassDefinitionByType(Class<?> type);
-
+	public IllegalPropertyAccessException(Throwable cause) {
+		super(cause);
+	}
 }

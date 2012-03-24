@@ -17,7 +17,8 @@ package com.github.lightning.internal.instantiator;
 
 import java.io.Serializable;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 
 /**
  * Use Objenesis in a static way. <strong>It is strongly not recommended to use
@@ -27,9 +28,9 @@ import com.github.lightning.ObjectInstantiator;
  */
 public final class ObjenesisHelper {
 
-	private static final Objenesis OBJENESIS_STD = new ObjenesisStd();
+	private static final ObjectInstantiatorFactory OBJENESIS_STD = new ObjenesisStd();
 
-	private static final Objenesis OBJENESIS_SERIALIZER = new ObjenesisSerializer();
+	private static final ObjectInstantiatorFactory OBJENESIS_SERIALIZER = new ObjenesisSerializer();
 
 	private ObjenesisHelper() {
 	}

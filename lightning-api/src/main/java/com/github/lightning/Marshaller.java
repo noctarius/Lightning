@@ -19,6 +19,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.github.lightning.metadata.ClassDefinitionContainer;
+
 public interface Marshaller {
 
 	boolean acceptType(Class<?> type);

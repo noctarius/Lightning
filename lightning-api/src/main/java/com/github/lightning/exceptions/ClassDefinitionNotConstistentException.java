@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.exceptions;
 
-public interface ClassDefinition {
+@SuppressWarnings("serial")
+public class ClassDefinitionNotConstistentException extends RuntimeException {
 
-	String getCanonicalName();
+	public ClassDefinitionNotConstistentException() {
+		super();
+	}
 
-	Class<?> getType();
+	public ClassDefinitionNotConstistentException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-	byte[] getChecksum();
+	public ClassDefinitionNotConstistentException(String message) {
+		super(message);
+	}
 
-	long getId();
-
-	long getSerialVersionUID();
-
+	public ClassDefinitionNotConstistentException(Throwable cause) {
+		super(cause);
+	}
 }

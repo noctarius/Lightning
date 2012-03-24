@@ -26,7 +26,7 @@ import com.github.lightning.internal.instantiator.SerializationInstantiatorHelpe
  * calling the first non-serializable superclass' no-arg constructor.
  * 
  * @author Leonardo Mesquita
- * @see com.github.lightning.ObjectInstantiator
+ * @see com.github.lightning.instantiator.ObjectInstantiator
  */
 public class GCJSerializationInstantiator extends GCJInstantiatorBase {
 

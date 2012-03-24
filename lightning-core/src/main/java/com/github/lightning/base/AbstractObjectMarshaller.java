@@ -18,7 +18,7 @@ package com.github.lightning.base;
 import java.io.DataInput;
 import java.io.IOException;
 
-import com.github.lightning.ClassDefinitionContainer;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public abstract class AbstractObjectMarshaller extends AbstractMarshaller {
 

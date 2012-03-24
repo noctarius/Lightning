@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.base.AbstractObjectMarshaller;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class ExternalizableMarshaller extends AbstractObjectMarshaller {
 

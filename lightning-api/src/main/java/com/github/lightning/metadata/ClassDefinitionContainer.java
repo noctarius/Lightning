@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.metadata;
 
-@SuppressWarnings("serial")
-public class IllegalAccessorException extends RuntimeException {
+import java.util.Collection;
 
-	public IllegalAccessorException() {
-		super();
-	}
+public interface ClassDefinitionContainer {
 
-	public IllegalAccessorException(String message, Throwable cause) {
-		super(message, cause);
-	}
+	Collection<ClassDefinition> getClassDefinitions();
 
-	public IllegalAccessorException(String message) {
-		super(message);
-	}
+	Class<?> getTypeById(long id);
 
-	public IllegalAccessorException(Throwable cause) {
-		super(cause);
-	}
+	ClassDefinition getClassDefinitionByCanonicalName(String canonicalName);
+
+	ClassDefinition getClassDefinitionById(long id);
+	
+	ClassDefinition getClassDefinitionByType(Class<?> type);
 
 }

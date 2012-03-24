@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 the original author or authors.
+ * Copyright 2006-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.instantiator;
 
-@SuppressWarnings("serial")
-public class ClassDefinitionNotConstistentException extends RuntimeException {
+/**
+ * Instantiates a new object.
+ * 
+ * @author Leonardo Mesquita
+ */
+public interface ObjectInstantiator {
 
-	public ClassDefinitionNotConstistentException() {
-		super();
-	}
+	/**
+	 * Returns a new instance of an object. The returned object's class is
+	 * defined by the
+	 * implementation.
+	 * 
+	 * @return A new instance of an object.
+	 */
+	Object newInstance();
 
-	public ClassDefinitionNotConstistentException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public ClassDefinitionNotConstistentException(String message) {
-		super(message);
-	}
-
-	public ClassDefinitionNotConstistentException(Throwable cause) {
-		super(cause);
-	}
 }

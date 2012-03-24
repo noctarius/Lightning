@@ -18,9 +18,9 @@ package com.github.lightning.internal.beans;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import com.github.lightning.IllegalPropertyAccessException;
-import com.github.lightning.PropertyAccessor;
+import com.github.lightning.exceptions.IllegalPropertyAccessException;
 import com.github.lightning.internal.util.BeanUtil;
+import com.github.lightning.metadata.PropertyAccessor;
 
 public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactory {
 

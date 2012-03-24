@@ -18,7 +18,7 @@ package com.github.lightning.internal.instantiator.strategy;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 import com.github.lightning.internal.instantiator.basic.ObjectStreamClassInstantiator;
 import com.github.lightning.internal.instantiator.gcj.GCJSerializationInstantiator;

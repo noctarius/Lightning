@@ -36,11 +36,11 @@ public class ObjenesisSerializer extends ObjenesisBase {
 	 * Instance using the
 	 * {@link com.github.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy}
 	 * with or without caching
-	 * {@link com.github.lightning.ObjectInstantiator}s
+	 * {@link com.github.lightning.instantiator.ObjectInstantiator}s
 	 * 
 	 * @param useCache
 	 *            If
-	 *            {@link com.github.lightning.ObjectInstantiator}
+	 *            {@link com.github.lightning.instantiator.ObjectInstantiator}
 	 *            s should be cached
 	 */
 	public ObjenesisSerializer(boolean useCache) {

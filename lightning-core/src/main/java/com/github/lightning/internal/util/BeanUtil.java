@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 
 import org.objectweb.asm.Type;
 
-import com.github.lightning.PropertyAccessor;
-import com.github.lightning.PropertyDescriptor;
+import com.github.lightning.metadata.PropertyAccessor;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public final class BeanUtil {
 

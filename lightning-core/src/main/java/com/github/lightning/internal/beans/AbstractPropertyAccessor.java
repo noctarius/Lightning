@@ -15,7 +15,7 @@
  */
 package com.github.lightning.internal.beans;
 
-import com.github.lightning.PropertyAccessor;
+import com.github.lightning.metadata.PropertyAccessor;
 
 abstract class AbstractPropertyAccessor implements PropertyAccessor {
 

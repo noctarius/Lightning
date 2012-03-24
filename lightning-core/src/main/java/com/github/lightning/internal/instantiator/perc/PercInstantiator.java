@@ -18,7 +18,7 @@ package com.github.lightning.internal.instantiator.perc;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**
@@ -29,7 +29,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  * Aonix Perc support team.
  * 
  * @author Henri Tremblay
- * @see com.github.lightning.ObjectInstantiator
+ * @see com.github.lightning.instantiator.ObjectInstantiator
  */
 public class PercInstantiator implements ObjectInstantiator {
 

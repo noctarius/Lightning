@@ -20,12 +20,12 @@ import java.util.List;
 
 import org.objectweb.asm.Type;
 
-import com.github.lightning.ClassDefinition;
-import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.internal.util.Crc64Util;
 import com.github.lightning.internal.util.InternalUtil;
 import com.github.lightning.logging.Logger;
+import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefinition> {
 

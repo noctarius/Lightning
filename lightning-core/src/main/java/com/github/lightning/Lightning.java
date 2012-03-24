@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.lightning.configuration.SerializerDefinition;
 import com.github.lightning.internal.InternalSerializerCreator;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.logging.LoggerAdapter;

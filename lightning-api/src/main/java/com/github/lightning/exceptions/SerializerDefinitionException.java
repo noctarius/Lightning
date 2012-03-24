@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.exceptions;
 
-import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+@SuppressWarnings("serial")
+public class SerializerDefinitionException extends RuntimeException {
 
-public interface SerializerDefinition {
+	public SerializerDefinitionException() {
+		super();
+	}
 
-	void configure(DefinitionBuildingContext definitionBuildingContext, ObjenesisSerializer objenesisSerializer);
+	public SerializerDefinitionException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-	void acceptVisitor(DefinitionVisitor visitor);
+	public SerializerDefinitionException(String message) {
+		super(message);
+	}
 
+	public SerializerDefinitionException(Throwable cause) {
+		super(cause);
+	}
 }

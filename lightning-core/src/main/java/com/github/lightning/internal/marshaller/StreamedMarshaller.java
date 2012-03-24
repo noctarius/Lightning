@@ -19,9 +19,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Streamed;
 import com.github.lightning.base.AbstractObjectMarshaller;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class StreamedMarshaller extends AbstractObjectMarshaller {
 

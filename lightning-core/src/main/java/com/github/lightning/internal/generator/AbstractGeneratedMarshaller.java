@@ -7,15 +7,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.github.lightning.ClassDefinitionContainer;
-import com.github.lightning.ClassDescriptor;
 import com.github.lightning.Marshaller;
-import com.github.lightning.ObjectInstantiator;
-import com.github.lightning.PropertyAccessor;
-import com.github.lightning.PropertyDescriptor;
-import com.github.lightning.SerializerDefinitionException;
+import com.github.lightning.exceptions.SerializerDefinitionException;
+import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.ClassDescriptor;
+import com.github.lightning.metadata.PropertyAccessor;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public abstract class AbstractGeneratedMarshaller implements Marshaller {
 

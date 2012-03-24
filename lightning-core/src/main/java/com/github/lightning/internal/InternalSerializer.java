@@ -31,12 +31,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.lightning.ClassComparisonStrategy;
-import com.github.lightning.ClassDefinition;
-import com.github.lightning.ClassDefinitionContainer;
-import com.github.lightning.ClassDefinitionNotConstistentException;
-import com.github.lightning.ClassDescriptor;
 import com.github.lightning.Marshaller;
-import com.github.lightning.SerializerExecutionException;
+import com.github.lightning.exceptions.ClassDefinitionNotConstistentException;
+import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.internal.generator.MarshallerGenerator;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.internal.io.BufferInputStream;
@@ -44,6 +41,9 @@ import com.github.lightning.internal.io.BufferOutputStream;
 import com.github.lightning.internal.io.ReaderInputStream;
 import com.github.lightning.internal.io.WriterOutputStream;
 import com.github.lightning.logging.Logger;
+import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.ClassDescriptor;
 
 class InternalSerializer implements ClassDescriptorAwareSerializer {
 

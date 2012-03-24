@@ -15,9 +15,9 @@
  */
 package com.github.lightning.internal;
 
-import com.github.lightning.DefinitionBuildingContext;
 import com.github.lightning.MarshallerStrategy;
-import com.github.lightning.PropertyDescriptorFactory;
+import com.github.lightning.generator.DefinitionBuildingContext;
+import com.github.lightning.generator.PropertyDescriptorFactory;
 
 public class InternalDefinitionBuildingContext implements DefinitionBuildingContext {
 

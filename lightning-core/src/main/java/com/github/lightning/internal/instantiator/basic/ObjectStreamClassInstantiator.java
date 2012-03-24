@@ -18,7 +18,7 @@ package com.github.lightning.internal.instantiator.basic;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Method;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**

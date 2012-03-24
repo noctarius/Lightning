@@ -31,6 +31,7 @@ import com.github.lightning.io.SerializerInputStream;
 import com.github.lightning.io.SerializerOutputStream;
 import com.github.lightning.logging.LogLevel;
 import com.github.lightning.logging.LoggerAdapter;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class WhatShouldItLookLike {
 

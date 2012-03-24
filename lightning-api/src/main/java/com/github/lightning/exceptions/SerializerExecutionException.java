@@ -1,4 +1,4 @@
-package com.github.lightning;
+package com.github.lightning.exceptions;
 
 @SuppressWarnings("serial")
 public class SerializerExecutionException extends RuntimeException {

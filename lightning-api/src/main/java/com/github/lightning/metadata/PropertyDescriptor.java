@@ -1,5 +1,5 @@
 /**
- * Copyright 2006-2009 the original author or authors.
+ * Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.metadata;
 
-/**
- * Instantiates a new object.
- * 
- * @author Leonardo Mesquita
- */
-public interface ObjectInstantiator {
+import com.github.lightning.Marshaller;
 
-	/**
-	 * Returns a new instance of an object. The returned object's class is
-	 * defined by the
-	 * implementation.
-	 * 
-	 * @return A new instance of an object.
-	 */
-	Object newInstance();
+public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
+
+	Class<?> getDeclaringClass();
+
+	PropertyAccessor getPropertyAccessor();
+
+	String getName();
+
+	String getPropertyName();
+
+	Class<?> getType();
+
+	String getInternalSignature();
+
+	Marshaller getMarshaller();
 
 }

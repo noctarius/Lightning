@@ -26,6 +26,7 @@
 	<modules>
 		<module>lightning-core</module>
 		<module>lightning-maven-plugin</module>
+		<module>lightning-api</module>
 	</modules>
 
 	<distributionManagement>

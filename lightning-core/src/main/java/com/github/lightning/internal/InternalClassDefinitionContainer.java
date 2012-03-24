@@ -26,12 +26,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.lightning.ClassDefinition;
-import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Streamed;
 import com.github.lightning.internal.bundle.cern.colt.map.AbstractLongObjectMap;
 import com.github.lightning.internal.bundle.cern.colt.map.OpenLongObjectHashMap;
 import com.github.lightning.internal.util.ClassUtil;
+import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 class InternalClassDefinitionContainer implements ClassDefinitionContainer, Streamed, Externalizable {
 

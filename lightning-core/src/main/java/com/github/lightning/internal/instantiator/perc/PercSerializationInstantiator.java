@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**
@@ -33,7 +33,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  * Based on code provided by Aonix but <b>doesn't work right now</b>
  * 
  * @author Henri Tremblay
- * @see com.github.lightning.ObjectInstantiator
+ * @see com.github.lightning.instantiator.ObjectInstantiator
  */
 public class PercSerializationInstantiator implements ObjectInstantiator {
 

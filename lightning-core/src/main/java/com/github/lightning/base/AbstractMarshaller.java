@@ -19,8 +19,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Marshaller;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public abstract class AbstractMarshaller implements Marshaller {
 

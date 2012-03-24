@@ -23,23 +23,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-import com.github.lightning.Attribute;
 import com.github.lightning.ClassComparisonStrategy;
-import com.github.lightning.ClassDefinition;
-import com.github.lightning.ClassDescriptor;
-import com.github.lightning.DefinitionBuildingContext;
-import com.github.lightning.DefinitionVisitor;
 import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerStrategy;
-import com.github.lightning.PropertyDescriptor;
-import com.github.lightning.PropertyDescriptorFactory;
 import com.github.lightning.SerializationStrategy;
 import com.github.lightning.Serializer;
-import com.github.lightning.SerializerDefinition;
+import com.github.lightning.configuration.SerializerDefinition;
+import com.github.lightning.generator.DefinitionBuildingContext;
+import com.github.lightning.generator.DefinitionVisitor;
+import com.github.lightning.generator.PropertyDescriptorFactory;
 import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.logging.LoggerAdapter;
+import com.github.lightning.metadata.Attribute;
+import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.ClassDescriptor;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public final class InternalSerializerCreator {
 

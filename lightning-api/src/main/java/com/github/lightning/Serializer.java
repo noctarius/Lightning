@@ -23,6 +23,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 
+import com.github.lightning.metadata.ClassDefinitionContainer;
+
 public interface Serializer {
 
 	ClassDefinitionContainer getClassDefinitionContainer();

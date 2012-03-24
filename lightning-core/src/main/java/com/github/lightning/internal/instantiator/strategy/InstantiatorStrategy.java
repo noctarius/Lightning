@@ -15,7 +15,7 @@
  */
 package com.github.lightning.internal.instantiator.strategy;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
 
 /**
  * Defines a strategy to determine the best instantiator for a class.

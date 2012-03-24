@@ -20,12 +20,19 @@
 	<name>Lightning: Core</name>
 
 	<parent>
-		<groupId>com.github.lightning</groupId>
 		<artifactId>lightning-reactor</artifactId>
+		<groupId>com.github.lightning</groupId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
 	</parent>
 
 	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>lightning-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm-all</artifactId>

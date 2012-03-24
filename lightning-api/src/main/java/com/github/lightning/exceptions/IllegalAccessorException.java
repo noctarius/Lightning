@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.exceptions;
 
 @SuppressWarnings("serial")
-public class IllegalPropertyAccessException extends RuntimeException {
+public class IllegalAccessorException extends RuntimeException {
 
-	public IllegalPropertyAccessException() {
+	public IllegalAccessorException() {
 		super();
 	}
 
-	public IllegalPropertyAccessException(String message, Throwable cause) {
+	public IllegalAccessorException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public IllegalPropertyAccessException(String message) {
+	public IllegalAccessorException(String message) {
 		super(message);
 	}
 
-	public IllegalPropertyAccessException(Throwable cause) {
+	public IllegalAccessorException(Throwable cause) {
 		super(cause);
 	}
+
 }

@@ -17,10 +17,10 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import com.github.lightning.Marshaller;
-import com.github.lightning.PropertyDescriptor;
-import com.github.lightning.SerializerMarshallerGeneratorException;
+import com.github.lightning.exceptions.SerializerMarshallerGeneratorException;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class MarshallerGenerator implements Opcodes, GeneratorConstants {
 

@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.generator;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import com.github.lightning.MarshallerStrategy;
 
-public interface PropertyDescriptorFactory {
+public interface DefinitionBuildingContext {
 
-	PropertyDescriptor byMethod(Method method, Marshaller marshaller);
+	PropertyDescriptorFactory getPropertyDescriptorFactory();
 
-	PropertyDescriptor byField(Field field, Marshaller marshaller);
+	MarshallerStrategy getMarshallerStrategy();
 
 }

@@ -22,8 +22,8 @@ import java.util.Map;
 
 import com.esotericsoftware.reflectasm.FieldAccess;
 import com.esotericsoftware.reflectasm.MethodAccess;
-import com.github.lightning.PropertyAccessor;
 import com.github.lightning.internal.util.BeanUtil;
+import com.github.lightning.metadata.PropertyAccessor;
 
 public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactory {
 

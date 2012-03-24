@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.generator;
 
-public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
-	Class<?> getDeclaringClass();
+import com.github.lightning.Marshaller;
+import com.github.lightning.metadata.PropertyDescriptor;
 
-	PropertyAccessor getPropertyAccessor();
+public interface PropertyDescriptorFactory {
 
-	String getName();
+	PropertyDescriptor byMethod(Method method, Marshaller marshaller);
 
-	String getPropertyName();
-
-	Class<?> getType();
-
-	String getInternalSignature();
-
-	Marshaller getMarshaller();
+	PropertyDescriptor byField(Field field, Marshaller marshaller);
 
 }

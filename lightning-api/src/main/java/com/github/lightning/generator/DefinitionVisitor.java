@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.generator;
 
 import java.lang.annotation.Annotation;
+
+import com.github.lightning.Marshaller;
+import com.github.lightning.configuration.SerializerDefinition;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public interface DefinitionVisitor {
 

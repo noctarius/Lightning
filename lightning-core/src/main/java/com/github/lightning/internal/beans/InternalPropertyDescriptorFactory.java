@@ -19,11 +19,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import com.github.lightning.Marshaller;
-import com.github.lightning.PropertyAccessor;
-import com.github.lightning.PropertyDescriptor;
-import com.github.lightning.PropertyDescriptorFactory;
+import com.github.lightning.generator.PropertyDescriptorFactory;
 import com.github.lightning.internal.util.BeanUtil;
 import com.github.lightning.logging.Logger;
+import com.github.lightning.metadata.PropertyAccessor;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class InternalPropertyDescriptorFactory implements PropertyDescriptorFactory {
 

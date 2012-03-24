@@ -31,7 +31,7 @@ public abstract class FieldPropertyAccessor extends AbstractPropertyAccessor {
 	}
 
 	@Override
-	public com.github.lightning.PropertyAccessor.AccessorType getAccessorType() {
+	public com.github.lightning.metadata.PropertyAccessor.AccessorType getAccessorType() {
 		return AccessorType.Field;
 	}
 

@@ -26,19 +26,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.github.lightning.Attribute;
-import com.github.lightning.DefinitionBuildingContext;
-import com.github.lightning.DefinitionVisitor;
 import com.github.lightning.Marshaller;
-import com.github.lightning.PropertyDescriptor;
-import com.github.lightning.SerializerDefinition;
-import com.github.lightning.SerializerDefinitionException;
 import com.github.lightning.bindings.AnnotatedBinder;
 import com.github.lightning.bindings.ClassBinder;
 import com.github.lightning.bindings.MarshallerBinder;
 import com.github.lightning.bindings.PropertyBinder;
-import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+import com.github.lightning.configuration.SerializerDefinition;
+import com.github.lightning.exceptions.SerializerDefinitionException;
+import com.github.lightning.generator.DefinitionBuildingContext;
+import com.github.lightning.generator.DefinitionVisitor;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.util.BeanUtil;
+import com.github.lightning.metadata.Attribute;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public abstract class AbstractSerializerDefinition implements SerializerDefinition {
 
@@ -48,17 +48,17 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 	private final Map<AnnotatedBinder, AnnotationBinderDefinition<?>> annotationBinders = new HashMap<AnnotatedBinder, AnnotationBinderDefinition<?>>();
 
 	private DefinitionBuildingContext definitionBuildingContext;
-	private ObjenesisSerializer objenesisSerializer = null;
+	private ObjectInstantiatorFactory objectInstantiatorFactory = null;
 	private Class<? extends Annotation> attributeAnnotation = null;
 	private AbstractSerializerDefinition parent = null;
 
 	@Override
-	public final void configure(DefinitionBuildingContext definitionBuildingContext, ObjenesisSerializer objenesisSerializer) {
+	public final void configure(DefinitionBuildingContext definitionBuildingContext, ObjectInstantiatorFactory objectInstantiatorFactory) {
 		// Save PropertyDescriptorFactory for later use in configure()
 		this.definitionBuildingContext = definitionBuildingContext;
 
-		// Save ObjenesisSerializer for later use in configure()
-		this.objenesisSerializer = objenesisSerializer;
+		// Save ObjectInstantiatorFactory for later use in configure()
+		this.objectInstantiatorFactory = objectInstantiatorFactory;
 
 		// Read the configuration
 		configure();
@@ -99,7 +99,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 		// Visit all children
 		for (SerializerDefinition child : children) {
-			child.configure(definitionBuildingContext, objenesisSerializer);
+			child.configure(definitionBuildingContext, objectInstantiatorFactory);
 			child.acceptVisitor(visitor);
 		}
 
@@ -145,7 +145,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			@Override
 			public void byMarshaller(Marshaller marshaller) {
 				if (marshaller instanceof AbstractObjectMarshaller) {
-					marshallers.put(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objenesisSerializer));
+					marshallers.put(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objectInstantiatorFactory));
 				}
 				else {
 					marshallers.put(clazz, marshaller);

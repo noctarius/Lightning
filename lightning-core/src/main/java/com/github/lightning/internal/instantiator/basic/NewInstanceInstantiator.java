@@ -15,7 +15,7 @@
  */
 package com.github.lightning.internal.instantiator.basic;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 
 /**

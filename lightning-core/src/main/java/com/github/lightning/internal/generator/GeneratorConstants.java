@@ -9,12 +9,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.objectweb.asm.Type;
 
-import com.github.lightning.ClassDefinitionContainer;
 import com.github.lightning.Marshaller;
-import com.github.lightning.PropertyAccessor;
-import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.PropertyAccessor;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public interface GeneratorConstants {
 

@@ -20,9 +20,10 @@
 	<name>Lightning: Maven Plugin</name>
 
 	<parent>
-		<groupId>com.github.lightning</groupId>
 		<artifactId>lightning-reactor</artifactId>
+		<groupId>com.github.lightning</groupId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
 	</parent>
 
 	<dependencies>

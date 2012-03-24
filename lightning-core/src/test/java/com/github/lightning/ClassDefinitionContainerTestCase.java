@@ -9,6 +9,9 @@ import org.junit.Test;
 
 import com.github.lightning.WhatShouldItLookLike.DebugLogger;
 import com.github.lightning.base.AbstractSerializerDefinition;
+import com.github.lightning.exceptions.ClassDefinitionNotConstistentException;
+import com.github.lightning.metadata.Attribute;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class ClassDefinitionContainerTestCase {
 

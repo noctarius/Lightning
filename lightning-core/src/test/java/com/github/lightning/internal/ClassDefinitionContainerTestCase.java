@@ -22,10 +22,10 @@ import java.util.List;
 import org.junit.Test;
 import org.objectweb.asm.tree.LabelNode;
 
-import com.github.lightning.ClassDefinition;
-import com.github.lightning.ClassDefinitionContainer;
-import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.logging.LoggerAdapter;
+import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class ClassDefinitionContainerTestCase {
 

@@ -23,10 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.lightning.ObjectInstantiator;
-import com.github.lightning.PropertyDescriptor;
+import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.beans.PropertyAccessorFactory;
 import com.github.lightning.logging.Logger;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public final class InternalUtil {
 

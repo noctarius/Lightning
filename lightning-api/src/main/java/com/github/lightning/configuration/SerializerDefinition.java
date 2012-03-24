@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.configuration;
 
-@SuppressWarnings("serial")
-public class SerializerDefinitionException extends RuntimeException {
+import com.github.lightning.generator.DefinitionBuildingContext;
+import com.github.lightning.generator.DefinitionVisitor;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 
-	public SerializerDefinitionException() {
-		super();
-	}
+public interface SerializerDefinition {
 
-	public SerializerDefinitionException(String message, Throwable cause) {
-		super(message, cause);
-	}
+	void configure(DefinitionBuildingContext definitionBuildingContext, ObjectInstantiatorFactory instantiator);
 
-	public SerializerDefinitionException(String message) {
-		super(message);
-	}
+	void acceptVisitor(DefinitionVisitor visitor);
 
-	public SerializerDefinitionException(Throwable cause) {
-		super(cause);
-	}
 }

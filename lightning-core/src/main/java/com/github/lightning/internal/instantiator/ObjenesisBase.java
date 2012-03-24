@@ -18,7 +18,8 @@ package com.github.lightning.internal.instantiator;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.lightning.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.instantiator.strategy.InstantiatorStrategy;
 
 /**
@@ -28,7 +29,7 @@ import com.github.lightning.internal.instantiator.strategy.InstantiatorStrategy;
  * 
  * @author Henri Tremblay
  */
-public class ObjenesisBase implements Objenesis {
+public class ObjenesisBase implements ObjectInstantiatorFactory {
 
 	/** Strategy used by this Objenesi implementation to create classes */
 	protected final InstantiatorStrategy strategy;

@@ -18,11 +18,11 @@ package com.github.lightning.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.lightning.ClassDefinition;
-import com.github.lightning.ClassDescriptor;
 import com.github.lightning.Marshaller;
-import com.github.lightning.PropertyDescriptor;
 import com.github.lightning.logging.Logger;
+import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.ClassDescriptor;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 class InternalClassDescriptor implements ClassDescriptor {
 
