@@ -15,6 +15,7 @@
  */
 package com.github.lightning.internal.generator;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,6 @@ public interface MarshallerGenerator {
 
 	Marshaller generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors,
 			Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
-			ObjectInstantiatorFactory objectInstantiatorFactory);
+			ObjectInstantiatorFactory objectInstantiatorFactory, File debugCacheDirectory);
 
 }

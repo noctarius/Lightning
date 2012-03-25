@@ -15,6 +15,7 @@
  */
 package com.github.lightning;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -48,6 +49,7 @@ public final class Lightning {
 		private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 		private Class<? extends Annotation> attributeAnnotation = null;
 		private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
+		private File debugCacheDirectory = null;
 		private Logger logger = new LoggerAdapter();
 
 		private Builder() {
@@ -55,6 +57,11 @@ public final class Lightning {
 
 		public Builder describesAttributs(Class<? extends Annotation> attributeAnnotation) {
 			this.attributeAnnotation = attributeAnnotation;
+			return this;
+		}
+
+		public Builder debugCacheDirectory(File debugCacheDirectory) {
+			this.debugCacheDirectory = debugCacheDirectory;
 			return this;
 		}
 
@@ -85,8 +92,9 @@ public final class Lightning {
 		}
 
 		public Serializer build() {
-			return new InternalSerializerCreator().setLogger(logger).setSerializationStrategy(serializationStrategy).setClassComparisonStrategy(classComparisonStrategy)
-					.setAttributeAnnotation(attributeAnnotation).addSerializerDefinitions(serializerDefinitions).build();
+			return new InternalSerializerCreator().setLogger(logger).setSerializationStrategy(serializationStrategy)
+					.setClassComparisonStrategy(classComparisonStrategy).setAttributeAnnotation(attributeAnnotation)
+					.setDebugCacheDirectory(debugCacheDirectory).addSerializerDefinitions(serializerDefinitions).build();
 		}
 	}
 

@@ -15,6 +15,7 @@
  */
 package com.github.lightning.internal;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public final class InternalSerializerCreator {
 	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 	private Class<? extends Annotation> attributeAnnotation = Attribute.class;
 	private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
+	private File debugCacheDirectory = null;
 	private Logger logger = new LoggerAdapter();
 
 	public InternalSerializerCreator() {
@@ -62,6 +64,11 @@ public final class InternalSerializerCreator {
 			this.serializerDefinitions.add(serializerDefinition);
 		}
 
+		return this;
+	}
+
+	public InternalSerializerCreator setDebugCacheDirectory(File debugCacheDirectory) {
+		this.debugCacheDirectory = debugCacheDirectory;
 		return this;
 	}
 
@@ -88,7 +95,8 @@ public final class InternalSerializerCreator {
 	public Serializer build() {
 		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
 		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
-		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy, propertyDescriptorFactory);
+		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy,
+				propertyDescriptorFactory);
 		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
 		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
 			serializerDefinition.configure(definitionBuildingContext, objectInstantiatorFactory);
@@ -105,8 +113,8 @@ public final class InternalSerializerCreator {
 			cleanedClassDescriptors.put(entry.getKey(), entry.getValue());
 		}
 
-		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions),
-				classComparisonStrategy, cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger);
+		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), classComparisonStrategy,
+				cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger, debugCacheDirectory);
 	}
 
 	private InternalClassDescriptor findClassDescriptor(Class<?> type) {

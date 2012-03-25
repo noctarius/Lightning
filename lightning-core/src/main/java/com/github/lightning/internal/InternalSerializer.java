@@ -19,6 +19,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,6 +37,7 @@ import com.github.lightning.exceptions.ClassDefinitionNotConstistentException;
 import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.generator.BytecodeMarshallerGenerator;
+import com.github.lightning.internal.generator.MarshallerGenerator;
 import com.github.lightning.internal.io.BufferInputStream;
 import com.github.lightning.internal.io.BufferOutputStream;
 import com.github.lightning.internal.io.ReaderInputStream;
@@ -48,12 +50,13 @@ import com.github.lightning.metadata.ClassDescriptor;
 class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
-	private final BytecodeMarshallerGenerator marshallerGenerator = new BytecodeMarshallerGenerator();
+	private final MarshallerGenerator marshallerGenerator = new BytecodeMarshallerGenerator();
 	private final ClassComparisonStrategy classComparisonStrategy;
 	private final Map<Class<?>, ClassDescriptor> classDescriptors;
 
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, ClassComparisonStrategy classComparisonStrategy,
-			Map<Class<?>, ClassDescriptor> classDescriptors, Map<Class<?>, Marshaller> marshallers, ObjectInstantiatorFactory objectInstantiatorFactory, Logger logger) {
+			Map<Class<?>, ClassDescriptor> classDescriptors, Map<Class<?>, Marshaller> marshallers,
+			ObjectInstantiatorFactory objectInstantiatorFactory, Logger logger, File debugCacheDirectory) {
 
 		this.classDefinitionContainer.set(classDefinitionContainer);
 		this.classComparisonStrategy = classComparisonStrategy;
@@ -62,7 +65,8 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 		for (ClassDescriptor classDescriptor : classDescriptors.values()) {
 			if (classDescriptor instanceof InternalClassDescriptor && classDescriptor.getMarshaller() == null) {
 				Marshaller marshaller = marshallerGenerator.generateMarshaller(classDescriptor.getType(),
-						classDescriptor.getPropertyDescriptors(), marshallers, this, objectInstantiatorFactory);
+						classDescriptor.getPropertyDescriptors(), marshallers, this, objectInstantiatorFactory,
+						debugCacheDirectory);
 
 				((InternalClassDescriptor) classDescriptor).setMarshaller(marshaller);
 				marshallers.put(classDescriptor.getType(), marshaller);
@@ -154,25 +158,30 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 		return classDescriptors.get(type);
 	}
 
-	private void consistencyCheckClassChecksums(ClassDefinitionContainer oldClassDefinitionContainer, ClassDefinitionContainer classDefinitionContainer) {
+	private void consistencyCheckClassChecksums(ClassDefinitionContainer oldClassDefinitionContainer,
+			ClassDefinitionContainer classDefinitionContainer) {
 		for (ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions()) {
-			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition.getCanonicalName());
+			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition
+					.getCanonicalName());
 			if (oldClassDefinition == null) {
-				throw new ClassDefinitionNotConstistentException("No ClassDefinition for type " + classDefinition.getCanonicalName() + " was found");
+				throw new ClassDefinitionNotConstistentException("No ClassDefinition for type "
+						+ classDefinition.getCanonicalName() + " was found");
 			}
 
 			if (classComparisonStrategy == ClassComparisonStrategy.SerialVersionUID) {
 				long serialVersionUID = classDefinition.getSerialVersionUID();
 				long oldSerialVersionUID = oldClassDefinition.getSerialVersionUID();
 				if (serialVersionUID != oldSerialVersionUID) {
-					throw new ClassDefinitionNotConstistentException("SerialVersionUID of type " + classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionNotConstistentException("SerialVersionUID of type "
+							+ classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 			else {
 				byte[] checksum = classDefinition.getChecksum();
 				byte[] oldChecksum = oldClassDefinition.getChecksum();
 				if (!Arrays.equals(checksum, oldChecksum)) {
-					throw new ClassDefinitionNotConstistentException("Signature checksum of type " + classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionNotConstistentException("Signature checksum of type "
+							+ classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 		}
