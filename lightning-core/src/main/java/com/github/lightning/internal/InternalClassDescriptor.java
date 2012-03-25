@@ -24,7 +24,7 @@ import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.ClassDescriptor;
 import com.github.lightning.metadata.PropertyDescriptor;
 
-class InternalClassDescriptor implements ClassDescriptor {
+public class InternalClassDescriptor implements ClassDescriptor {
 
 	private final List<PropertyDescriptor> propertyDescriptors = new ArrayList<PropertyDescriptor>();
 	private final Logger logger;
@@ -33,7 +33,7 @@ class InternalClassDescriptor implements ClassDescriptor {
 	private ClassDefinition classDefinition;
 	private Marshaller marshaller;
 
-	InternalClassDescriptor(Class<?> type, Logger logger) {
+	public InternalClassDescriptor(Class<?> type, Logger logger) {
 		this.type = type;
 		this.logger = logger;
 	}

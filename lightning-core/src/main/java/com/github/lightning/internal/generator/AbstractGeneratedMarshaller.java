@@ -1,3 +1,18 @@
+/**
+ * Copyright 2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.lightning.internal.generator;
 
 import java.io.DataInput;
@@ -10,8 +25,8 @@ import java.util.Map;
 import com.github.lightning.Marshaller;
 import com.github.lightning.exceptions.SerializerDefinitionException;
 import com.github.lightning.instantiator.ObjectInstantiator;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
-import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 import com.github.lightning.metadata.ClassDescriptor;
 import com.github.lightning.metadata.PropertyAccessor;
@@ -26,13 +41,13 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 	private final ObjectInstantiator objectInstantiator;
 
 	public AbstractGeneratedMarshaller(Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers,
-			ClassDescriptorAwareSerializer serializer, ObjenesisSerializer objenesisSerializer) {
+			ClassDescriptorAwareSerializer serializer, ObjectInstantiatorFactory objectInstantiatorFactory) {
 
 		this.marshalledType = marshalledType;
 		this.marshallers = marshallers;
 		this.classDescriptor = serializer.findClassDescriptor(marshalledType);
 		this.propertyDescriptors = Collections.unmodifiableList(classDescriptor.getPropertyDescriptors());
-		this.objectInstantiator = objenesisSerializer.getInstantiatorOf(marshalledType);
+		this.objectInstantiator = objectInstantiatorFactory.getInstantiatorOf(marshalledType);
 	}
 
 	@Override
@@ -47,7 +62,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		return unmarshall(value, type, dataInput, classDefinitionContainer);
 	}
 
-	protected abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer);
+	protected abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException;
 	
 	protected ClassDescriptor getClassDescriptor() {
 		return classDescriptor;

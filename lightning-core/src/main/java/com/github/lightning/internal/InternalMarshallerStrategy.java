@@ -46,7 +46,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 
 	public final List<Marshaller> baseMarshaller;
 
-	InternalMarshallerStrategy() {
+	public InternalMarshallerStrategy() {
 		List<Marshaller> marshallers = new ArrayList<Marshaller>();
 		marshallers.add(new StreamedMarshaller());
 		marshallers.add(new ExternalizableMarshaller());

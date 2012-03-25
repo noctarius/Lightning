@@ -32,6 +32,7 @@ import com.github.lightning.configuration.SerializerDefinition;
 import com.github.lightning.generator.DefinitionBuildingContext;
 import com.github.lightning.generator.DefinitionVisitor;
 import com.github.lightning.generator.PropertyDescriptorFactory;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.logging.Logger;
@@ -46,7 +47,7 @@ public final class InternalSerializerCreator {
 	private final Map<Class<?>, InternalClassDescriptor> classDescriptors = new HashMap<Class<?>, InternalClassDescriptor>();
 	private final List<SerializerDefinition> serializerDefinitions = new ArrayList<SerializerDefinition>();
 	private final Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
-	private final ObjenesisSerializer objenesisSerializer = new ObjenesisSerializer(true);
+	private final ObjectInstantiatorFactory objectInstantiatorFactory = new ObjenesisSerializer(true);
 
 	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 	private Class<? extends Annotation> attributeAnnotation = Attribute.class;
@@ -90,7 +91,7 @@ public final class InternalSerializerCreator {
 		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy, propertyDescriptorFactory);
 		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
 		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
-			serializerDefinition.configure(definitionBuildingContext, objenesisSerializer);
+			serializerDefinition.configure(definitionBuildingContext, objectInstantiatorFactory);
 			serializerDefinition.acceptVisitor(definitionVisitor);
 		}
 
@@ -105,7 +106,7 @@ public final class InternalSerializerCreator {
 		}
 
 		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions),
-				classComparisonStrategy, cleanedClassDescriptors, marshallers, objenesisSerializer, logger);
+				classComparisonStrategy, cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger);
 	}
 
 	private InternalClassDescriptor findClassDescriptor(Class<?> type) {

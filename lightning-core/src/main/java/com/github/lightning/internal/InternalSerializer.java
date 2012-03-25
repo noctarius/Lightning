@@ -34,8 +34,8 @@ import com.github.lightning.ClassComparisonStrategy;
 import com.github.lightning.Marshaller;
 import com.github.lightning.exceptions.ClassDefinitionNotConstistentException;
 import com.github.lightning.exceptions.SerializerExecutionException;
-import com.github.lightning.internal.generator.MarshallerGenerator;
-import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
+import com.github.lightning.internal.generator.BytecodeMarshallerGenerator;
 import com.github.lightning.internal.io.BufferInputStream;
 import com.github.lightning.internal.io.BufferOutputStream;
 import com.github.lightning.internal.io.ReaderInputStream;
@@ -48,12 +48,12 @@ import com.github.lightning.metadata.ClassDescriptor;
 class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
-	private final MarshallerGenerator marshallerGenerator = new MarshallerGenerator();
+	private final BytecodeMarshallerGenerator marshallerGenerator = new BytecodeMarshallerGenerator();
 	private final ClassComparisonStrategy classComparisonStrategy;
 	private final Map<Class<?>, ClassDescriptor> classDescriptors;
 
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, ClassComparisonStrategy classComparisonStrategy,
-			Map<Class<?>, ClassDescriptor> classDescriptors, Map<Class<?>, Marshaller> marshallers, ObjenesisSerializer objenesisSerializer, Logger logger) {
+			Map<Class<?>, ClassDescriptor> classDescriptors, Map<Class<?>, Marshaller> marshallers, ObjectInstantiatorFactory objectInstantiatorFactory, Logger logger) {
 
 		this.classDefinitionContainer.set(classDefinitionContainer);
 		this.classComparisonStrategy = classComparisonStrategy;
@@ -62,7 +62,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 		for (ClassDescriptor classDescriptor : classDescriptors.values()) {
 			if (classDescriptor instanceof InternalClassDescriptor && classDescriptor.getMarshaller() == null) {
 				Marshaller marshaller = marshallerGenerator.generateMarshaller(classDescriptor.getType(),
-						classDescriptor.getPropertyDescriptors(), marshallers, this, objenesisSerializer);
+						classDescriptor.getPropertyDescriptors(), marshallers, this, objectInstantiatorFactory);
 
 				((InternalClassDescriptor) classDescriptor).setMarshaller(marshaller);
 				marshallers.put(classDescriptor.getType(), marshaller);
