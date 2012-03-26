@@ -82,13 +82,6 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 	private File targetBuildDirectory;
 
 	/**
-	 * The file encoding to use for source files.
-	 * 
-	 * @parameter default-value="${project.build.sourceEncoding}"
-	 */
-	private String encoding;
-
-	/**
 	 * Project classpath.
 	 * 
 	 * @parameter default-value="${project.compileClasspathElements}"
@@ -102,7 +95,6 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 		if (encoding == null) {
 			encoding = "UTF-8";
 		}
-		System.out.println(new File("./").getAbsolutePath());
 
 		MavenLoggerAdapter logger = new MavenLoggerAdapter(LightningGeneratorMojo.class.getCanonicalName());
 		getLog().info("Searching in path " + targetBuildDirectory.getAbsolutePath());

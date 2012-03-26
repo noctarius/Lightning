@@ -30,6 +30,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import com.github.lightning.logging.Logger;
 import com.github.lightning.metadata.PropertyDescriptor;
 
 public class SourceMarshallerGenerator {
@@ -37,9 +38,11 @@ public class SourceMarshallerGenerator {
 	private final VelocityEngine engine;
 	private final Template marshallerTemplate;
 	private final Charset charset;
+	private final Logger logger;
 
-	public SourceMarshallerGenerator(Charset charset) throws IOException {
+	public SourceMarshallerGenerator(Charset charset, Logger logger) throws IOException {
 		this.charset = charset;
+		this.logger = logger;
 
 		Properties properties = new Properties();
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("velocity.properties");
@@ -66,6 +69,9 @@ public class SourceMarshallerGenerator {
 		}
 
 		File outputFile = new File(packageFolder, className + ".java");
+		
+		logger.info("Generating source :" + outputFile.getAbsolutePath());
+		
 		FileOutputStream stream = new FileOutputStream(outputFile);
 		OutputStreamWriter writer = new OutputStreamWriter(stream, charset);
 

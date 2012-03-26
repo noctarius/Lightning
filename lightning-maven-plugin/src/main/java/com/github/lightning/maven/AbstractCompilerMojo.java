@@ -132,7 +132,7 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 	 * 
 	 * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
 	 */
-	private String encoding;
+	protected String encoding;
 
 	/**
 	 * Sets the granularity in milliseconds of the last modification

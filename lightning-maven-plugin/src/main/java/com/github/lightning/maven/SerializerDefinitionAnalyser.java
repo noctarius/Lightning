@@ -78,7 +78,7 @@ public class SerializerDefinitionAnalyser {
 		for (ClassDescriptor classDescriptor : classDescriptors.values()) {
 			if (classDescriptor instanceof InternalClassDescriptor && classDescriptor.getMarshaller() == null) {
 				try {
-					SourceMarshallerGenerator generator = new SourceMarshallerGenerator(charset);
+					SourceMarshallerGenerator generator = new SourceMarshallerGenerator(charset, logger);
 					File sourceFile = generator.generateMarshaller(classDescriptor.getType(),
 							classDescriptor.getPropertyDescriptors(), outputFolder);
 
