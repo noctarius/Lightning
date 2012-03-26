@@ -19,8 +19,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.github.lightning.SerializationContext;
 import com.github.lightning.base.AbstractMarshaller;
-import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class DoubleMarshaller extends AbstractMarshaller {
 
@@ -30,7 +30,7 @@ public class DoubleMarshaller extends AbstractMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		if (Double.class == type) {
 			if (!writePossibleNull(value, dataOutput)) {
 				return;
@@ -42,7 +42,7 @@ public class DoubleMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (Double.class == type) {
 			if (isNull(dataInput)) {
 				return null;

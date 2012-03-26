@@ -177,6 +177,37 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 	private void createMarshallMethod(ClassWriter cw, String className, List<PropertyDescriptor> propertyDescriptors) {
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "marshall", MARSHALLER_MARSHALL_SIGNATURE, null, MARSHALLER_EXCEPTIONS);
 
+		// Load this to method stack
+		mv.visitVarInsn(ALOAD, 0);
+
+		// Load value to method stack
+		mv.visitVarInsn(ALOAD, 1);
+
+		// Load type to method stack
+		mv.visitVarInsn(ALOAD, 2);
+
+		// Load dataOutput to method stack
+		mv.visitVarInsn(ALOAD, 3);
+
+		// Load serializationContext to method stack
+		mv.visitVarInsn(ALOAD, 4);
+
+		// Call super.isAlreadyMarshalled(...);
+		mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "isAlreadyMarshalled",
+				MARSHALLER_IS_ALREADY_MARSHALLED_SIGNATURE);
+
+		// Label if value is not yet marshalled
+		Label notYetMarshalled = new Label();
+
+		// Test if already marshalled
+		mv.visitJumpInsn(IFEQ, notYetMarshalled);
+
+		// If marshalled - just return
+		mv.visitInsn(RETURN);
+
+		// Visit label - if not yet marshalled - marshall it
+		mv.visitLabel(notYetMarshalled);
+
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 			String fieldName = toFinalFieldName(propertyDescriptor);
 			Class<?> type = propertyDescriptor.getType();
@@ -202,7 +233,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
 			mv.visitVarInsn(ASTORE, 5);
 
-			// Load this to method stack
+			// Load value to method stack
 			mv.visitVarInsn(ALOAD, 1);
 
 			// Load value by type on stack
@@ -219,7 +250,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			// Load DataOutput to method stack
 			mv.visitVarInsn(ALOAD, 3);
 
-			// Load ClassDefinitionContainer to method stack
+			// Load SerializationContext to method stack
 			mv.visitVarInsn(ALOAD, 4);
 
 			// Call Marshaller#marshall on properties marshaller
@@ -271,7 +302,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			// Load DataInput to method stack
 			mv.visitVarInsn(ALOAD, 3);
 
-			// Load ClassDefinitionContainer to method stack
+			// Load SerializationContext to method stack
 			mv.visitVarInsn(ALOAD, 4);
 
 			// Call Marshaller#unmarshall on properties marshaller

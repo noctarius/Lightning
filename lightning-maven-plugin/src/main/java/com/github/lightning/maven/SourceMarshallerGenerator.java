@@ -30,6 +30,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import com.github.lightning.SerializationStrategy;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.metadata.PropertyDescriptor;
 
@@ -53,8 +54,8 @@ public class SourceMarshallerGenerator {
 		marshallerTemplate = engine.getTemplate("marshaller.vm", "UTF-8");
 	}
 
-	public File generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors, File outputFolder)
-			throws IOException {
+	public File generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors,
+			SerializationStrategy serializationStrategy, File outputFolder)	throws IOException {
 
 		// Copy properties and sort them by name
 		List<PropertyDescriptor> propertyDescriptorsCopy = new ArrayList<PropertyDescriptor>(propertyDescriptors);
@@ -81,6 +82,7 @@ public class SourceMarshallerGenerator {
 		context.put("packageName", packageName);
 		context.put("className", className);
 		context.put("properties", propertyDescriptorsCopy);
+		context.put("strategy", serializationStrategy.name());
 
 		marshallerTemplate.merge(context, writer);
 

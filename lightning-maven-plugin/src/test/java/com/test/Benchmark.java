@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import com.github.lightning.Lightning;
+import com.github.lightning.SerializationContext;
 import com.github.lightning.Serializer;
 import com.github.lightning.base.AbstractObjectMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
@@ -41,7 +42,6 @@ import com.github.lightning.io.SerializerOutputStream;
 import com.github.lightning.logging.LogLevel;
 import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.Attribute;
-import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class Benchmark {
 
@@ -412,12 +412,12 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer)
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext)
 				throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer)
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext)
 				throws IOException {
 			return null;
 		}
@@ -431,12 +431,12 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer)
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext)
 				throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer)
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext)
 				throws IOException {
 			return value;
 		}

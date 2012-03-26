@@ -34,6 +34,8 @@ import org.codehaus.plexus.compiler.util.scan.SimpleSourceInclusionScanner;
 import org.codehaus.plexus.compiler.util.scan.SourceInclusionScanner;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 
+import com.github.lightning.MarshallerStrategy;
+import com.github.lightning.SerializationStrategy;
 import com.github.lightning.Serializer;
 import com.github.lightning.base.AbstractSerializerDefinition;
 import com.github.lightning.configuration.SerializerDefinition;
@@ -90,12 +92,22 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 	 */
 	private List<String> classpathElements;
 
+	/**
+	 * The generator strategy.
+	 * 
+	 * @parameter default-value="speed"
+	 */
+	private String strategy;
+	
 	@Override
 	public void execute() throws MojoExecutionException, CompilationFailureException {
 		if (encoding == null) {
 			encoding = "UTF-8";
 		}
 
+		SerializationStrategy serializationStrategy = "size".equalsIgnoreCase(strategy) ?
+				SerializationStrategy.SizeOptimized : SerializationStrategy.SpeedOptimized;
+		
 		MavenLoggerAdapter logger = new MavenLoggerAdapter(LightningGeneratorMojo.class.getCanonicalName());
 		getLog().info("Searching in path " + targetBuildDirectory.getAbsolutePath());
 		List<File> files = SupportUtil.recursiveGetAllJavaSources(targetBuildDirectory, new ArrayList<File>(), fileFilter);
@@ -133,7 +145,7 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 
 					SerializerDefinitionAnalyser analyser = new SerializerDefinitionAnalyser(logger);
 					analyser.analyse(definition);
-					analyser.build(generatedSourceDirectory, encoding);
+					analyser.build(generatedSourceDirectory, serializationStrategy, encoding);
 				}
 			}
 			catch (Exception e) {

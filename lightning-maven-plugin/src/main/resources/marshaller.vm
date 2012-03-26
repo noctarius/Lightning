@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.generator.AbstractGeneratedMarshaller;
@@ -51,20 +52,24 @@ public final class ${className} extends AbstractGeneratedMarshaller {
 #end	
 	}
 	
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+		if (isAlreadyMarshalled(value, type, dataOutput, serializationContext)) {
+			return;
+		}
+
 #foreach( $property in ${properties} )
 		PropertyAccessor ${property.propertyName}PropertyAccessor = getPropertyAccessor("${property.propertyName}");
 		Class<?> ${property.propertyName}PropertyType = ${property.propertyName}PropertyAccessor.getType();
-		this.${support.toFinalFieldName($property)}.marshall(${support.generateReader($property)}, ${property.propertyName}PropertyType, dataOutput, classDefinitionContainer);
+		this.${support.toFinalFieldName($property)}.marshall(${support.generateReader($property)}, ${property.propertyName}PropertyType, dataOutput, serializationContext);
 
 #end
 	}
 	
-	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 #foreach( $property in ${properties} )
 		PropertyAccessor ${property.propertyName}PropertyAccessor = getPropertyAccessor("${property.propertyName}");
 		Class<?> ${property.propertyName}PropertyType = ${property.propertyName}PropertyAccessor.getType();
-		Object ${property.propertyName}Value = this.${support.toFinalFieldName($property)}.unmarshall(${property.propertyName}PropertyType, dataInput, classDefinitionContainer);
+		Object ${property.propertyName}Value = this.${support.toFinalFieldName($property)}.unmarshall(${property.propertyName}PropertyType, dataInput, serializationContext);
 		${support.generateWriter($property, "instance")}
 
 #end

@@ -17,6 +17,7 @@ package com.github.lightning;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
@@ -35,6 +36,7 @@ public class ClassDefinitionContainerTestCase {
 	@Test
 	public void testLightningChecksum() throws Exception {
 		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger())
+				.debugCacheDirectory(new File("target"))
 				.serializerDefinitions(new SerializerDefinition()).build();
 
 		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();

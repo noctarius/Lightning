@@ -20,8 +20,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
-import com.github.lightning.metadata.ClassDefinitionContainer;
 
 class ObjenesisDelegatingMarshaller implements Marshaller {
 
@@ -40,17 +40,17 @@ class ObjenesisDelegatingMarshaller implements Marshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer)
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext)
 			throws IOException {
-		delegatedMarshaller.marshall(value, type, dataOutput, classDefinitionContainer);
+		delegatedMarshaller.marshall(value, type, dataOutput, serializationContext);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer)
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext)
 			throws IOException {
 		V value = (V) objectInstantiatorFactory.newInstance(type);
-		return delegatedMarshaller.unmarshall(value, type, dataInput, classDefinitionContainer);
+		return delegatedMarshaller.unmarshall(value, type, dataInput, serializationContext);
 	}
 
 }

@@ -19,14 +19,12 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import com.github.lightning.metadata.ClassDefinitionContainer;
-
 public interface Marshaller {
 
 	boolean acceptType(Class<?> type);
 
-	void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException;
+	void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException;
 
-	<V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException;
+	<V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException;
 
 }

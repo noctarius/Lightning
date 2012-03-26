@@ -27,6 +27,7 @@ import java.util.Stack;
 
 import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerStrategy;
+import com.github.lightning.SerializationStrategy;
 import com.github.lightning.configuration.SerializerDefinition;
 import com.github.lightning.generator.DefinitionBuildingContext;
 import com.github.lightning.generator.DefinitionVisitor;
@@ -66,7 +67,7 @@ public class SerializerDefinitionAnalyser {
 		serializerDefinition.acceptVisitor(definitionVisitor);
 	}
 
-	public List<File> build(File outputFolder, String encoding) {
+	public List<File> build(File outputFolder, SerializationStrategy serializationStrategy, String encoding) {
 		Charset charset = Charset.forName(encoding);
 
 		List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>();
@@ -80,7 +81,7 @@ public class SerializerDefinitionAnalyser {
 				try {
 					SourceMarshallerGenerator generator = new SourceMarshallerGenerator(charset, logger);
 					File sourceFile = generator.generateMarshaller(classDescriptor.getType(),
-							classDescriptor.getPropertyDescriptors(), outputFolder);
+							classDescriptor.getPropertyDescriptors(), serializationStrategy, outputFolder);
 
 					files.add(sourceFile);
 				}

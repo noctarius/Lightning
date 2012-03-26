@@ -20,12 +20,12 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import com.github.lightning.Marshaller;
-import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.SerializationContext;
 
 public abstract class AbstractMarshaller implements Marshaller {
 
 	@Override
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		return null;
 	}
 

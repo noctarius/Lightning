@@ -97,6 +97,7 @@ public final class InternalSerializerCreator {
 		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
 		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy,
 				propertyDescriptorFactory);
+
 		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
 		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
 			serializerDefinition.configure(definitionBuildingContext, objectInstantiatorFactory);
@@ -113,8 +114,9 @@ public final class InternalSerializerCreator {
 			cleanedClassDescriptors.put(entry.getKey(), entry.getValue());
 		}
 
-		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), classComparisonStrategy,
-				cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger, debugCacheDirectory);
+		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), serializationStrategy,
+				classComparisonStrategy, cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger,
+				debugCacheDirectory);
 	}
 
 	private InternalClassDescriptor findClassDescriptor(Class<?> type) {

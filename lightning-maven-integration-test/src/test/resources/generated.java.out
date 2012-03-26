@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.generator.AbstractGeneratedMarshaller;
@@ -41,26 +42,30 @@ public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMars
 		PROPERTY_FOO_LIGHTNING = fooMarshaller;
 	}
 	
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+		if (isAlreadyMarshalled(value, type, dataOutput, serializationContext)) {
+			return;
+		}
+
 		PropertyAccessor barPropertyAccessor = getPropertyAccessor("bar");
 		Class<?> barPropertyType = barPropertyAccessor.getType();
-		this.PROPERTY_BAR_LIGHTNING.marshall(Integer.valueOf(barPropertyAccessor.readInt(value)), barPropertyType, dataOutput, classDefinitionContainer);
+		this.PROPERTY_BAR_LIGHTNING.marshall(Integer.valueOf(barPropertyAccessor.readInt(value)), barPropertyType, dataOutput, serializationContext);
 
 		PropertyAccessor fooPropertyAccessor = getPropertyAccessor("foo");
 		Class<?> fooPropertyType = fooPropertyAccessor.getType();
-		this.PROPERTY_FOO_LIGHTNING.marshall(fooPropertyAccessor.readObject(value), fooPropertyType, dataOutput, classDefinitionContainer);
+		this.PROPERTY_FOO_LIGHTNING.marshall(fooPropertyAccessor.readObject(value), fooPropertyType, dataOutput, serializationContext);
 
 	}
 	
-	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		PropertyAccessor barPropertyAccessor = getPropertyAccessor("bar");
 		Class<?> barPropertyType = barPropertyAccessor.getType();
-		Object barValue = this.PROPERTY_BAR_LIGHTNING.unmarshall(barPropertyType, dataInput, classDefinitionContainer);
+		Object barValue = this.PROPERTY_BAR_LIGHTNING.unmarshall(barPropertyType, dataInput, serializationContext);
 		barPropertyAccessor.writeInt(instance, ((Integer) barValue).intValue());
 
 		PropertyAccessor fooPropertyAccessor = getPropertyAccessor("foo");
 		Class<?> fooPropertyType = fooPropertyAccessor.getType();
-		Object fooValue = this.PROPERTY_FOO_LIGHTNING.unmarshall(fooPropertyType, dataInput, classDefinitionContainer);
+		Object fooValue = this.PROPERTY_FOO_LIGHTNING.unmarshall(fooPropertyType, dataInput, serializationContext);
 		fooPropertyAccessor.writeObject(instance, fooValue);
 
 		return instance;

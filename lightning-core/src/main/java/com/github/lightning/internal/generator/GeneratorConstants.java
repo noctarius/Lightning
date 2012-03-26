@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.objectweb.asm.Type;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
-import com.github.lightning.metadata.ClassDefinitionContainer;
 import com.github.lightning.metadata.PropertyAccessor;
 import com.github.lightning.metadata.PropertyDescriptor;
 
@@ -35,20 +35,24 @@ public interface GeneratorConstants {
 
 	static String MARSHALLER_MARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
 			new Type[] { Type.getType(Object.class), Type.getType(Class.class),
-					Type.getType(DataOutput.class), Type.getType(ClassDefinitionContainer.class) });
+					Type.getType(DataOutput.class), Type.getType(SerializationContext.class) });
 
 	static String MARSHALLER_BASE_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
-			new Type[] { Type.getType(Class.class), Type.getType(DataInput.class), Type.getType(ClassDefinitionContainer.class) });
+			new Type[] { Type.getType(Class.class), Type.getType(DataInput.class), Type.getType(SerializationContext.class) });
 
 	static String MARSHALLER_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
 			new Type[] { Type.getType(Object.class), Type.getType(Class.class),
-					Type.getType(DataInput.class), Type.getType(ClassDefinitionContainer.class) });
+					Type.getType(DataInput.class), Type.getType(SerializationContext.class) });
 
 	static String MARSHALLER_FIND_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class),
 			new Type[] { Type.getType(Class.class) });
 
 	static String MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE = Type.getMethodDescriptor(Type.getType(PropertyAccessor.class),
 			new Type[] { Type.getType(String.class) });
+
+	static String MARSHALLER_IS_ALREADY_MARSHALLED_SIGNATURE = Type.getMethodDescriptor(Type.BOOLEAN_TYPE,
+			new Type[] { Type.getType(Object.class), Type.getType(Class.class),
+					Type.getType(DataInput.class), Type.getType(SerializationContext.class) });
 
 	static String MARSHALLER_CONSTRUCTOR_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
 			new Type[] { Type.getType(Class.class), Type.getType(Map.class), Type.getType(ClassDescriptorAwareSerializer.class),

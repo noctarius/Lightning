@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning.base;
+package com.github.lightning;
 
-import java.io.DataInput;
-import java.io.IOException;
+import com.github.lightning.metadata.ClassDefinitionContainer;
 
-import com.github.lightning.SerializationContext;
+public interface SerializationContext {
 
-public abstract class AbstractObjectMarshaller extends AbstractMarshaller {
+	ClassDefinitionContainer getClassDefinitionContainer();
 
-	@Override
-	public final <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		// Should be never called!
-		return null;
-	}
+	SerializationStrategy getSerializationStrategy();
 
-	public abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException;
+	long findReferenceIdByObject(Object instance);
+
+	Object findObjectByReferenceId(long referenceId);
+
+	boolean containsReferenceId(long referenceId);
+
+	long putMarshalledInstance(Object instance);
+
+	long putUnmarshalledInstance(long refrenceId, Object instance);
+
 }

@@ -19,8 +19,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.github.lightning.SerializationContext;
 import com.github.lightning.base.AbstractMarshaller;
-import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class EnumMarshaller extends AbstractMarshaller {
 
@@ -30,25 +30,25 @@ public class EnumMarshaller extends AbstractMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		if (!writePossibleNull(value, dataOutput)) {
 			return;
 		}
 
-		dataOutput.writeLong(classDefinitionContainer.getClassDefinitionByType(type).getId());
+		dataOutput.writeLong(serializationContext.getClassDefinitionContainer().getClassDefinitionByType(type).getId());
 		dataOutput.writeInt(((Enum<?>) value).ordinal());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}
 
 		long typeId = dataInput.readLong();
-		Class<?> propertyType = classDefinitionContainer.getTypeById(typeId);
-		
+		Class<?> propertyType = serializationContext.getClassDefinitionContainer().getTypeById(typeId);
+
 		int ordinal = dataInput.readInt();
 		Enum<?>[] values = ((Class<Enum<?>>) propertyType).getEnumConstants();
 		for (Enum<?> value : values) {
@@ -56,7 +56,7 @@ public class EnumMarshaller extends AbstractMarshaller {
 				return (V) value;
 			}
 		}
-		
+
 		return null;
 	}
 }

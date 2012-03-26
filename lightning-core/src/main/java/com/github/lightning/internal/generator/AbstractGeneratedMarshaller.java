@@ -23,11 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.SerializationContext;
+import com.github.lightning.SerializationStrategy;
 import com.github.lightning.exceptions.SerializerDefinitionException;
 import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
-import com.github.lightning.metadata.ClassDefinitionContainer;
 import com.github.lightning.metadata.ClassDescriptor;
 import com.github.lightning.metadata.PropertyAccessor;
 import com.github.lightning.metadata.PropertyDescriptor;
@@ -57,13 +58,50 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
-		V value = (V) objectInstantiator.newInstance();
-		return unmarshall(value, type, dataInput, classDefinitionContainer);
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+		if (serializationContext.getSerializationStrategy() == SerializationStrategy.SizeOptimized) {
+			if (isReferenceCapable(type)) {
+				long referenceId = dataInput.readLong();
+				V instance;
+				if (containsReferenceId(referenceId, serializationContext)) {
+					instance = (V) findObjectByReferenceId(referenceId, serializationContext);
+				}
+				else {
+					// Instance not yet received, for first time deserialize it
+					instance = unmarshall((V) newInstance(), type, dataInput, serializationContext);
+					cacheObjectForUnmarshall(referenceId, instance, serializationContext);
+				}
+
+				return instance;
+			}
+		}
+
+		V value = (V) newInstance();
+		return unmarshall(value, type, dataInput, serializationContext);
 	}
 
-	protected abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException;
-	
+	protected abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException;
+
+	protected boolean isAlreadyMarshalled(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+		if (serializationContext.getSerializationStrategy() != SerializationStrategy.SizeOptimized) {
+			return false;
+		}
+
+		if (!isReferenceCapable(type)) {
+			return false;
+		}
+
+		long referenceId = findReferenceIdByObject(value, serializationContext);
+		if (referenceId == -1) {
+			referenceId = cacheObjectForMarshall(value, serializationContext);
+			dataOutput.writeLong(referenceId);
+			return false;
+		}
+
+		dataOutput.writeLong(referenceId);
+		return true;
+	}
+
 	protected ClassDescriptor getClassDescriptor() {
 		return classDescriptor;
 	}
@@ -96,6 +134,31 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		return new DelegatingMarshaller(type);
 	}
 
+	protected long findReferenceIdByObject(Object instance, SerializationContext serializationContext) {
+		return serializationContext.findReferenceIdByObject(instance);
+	}
+
+	protected Object findObjectByReferenceId(long referenceId, SerializationContext serializationContext) {
+		return serializationContext.findObjectByReferenceId(referenceId);
+	}
+
+	protected boolean containsReferenceId(long referenceId, SerializationContext serializationContext) {
+		return serializationContext.containsReferenceId(referenceId);
+	}
+
+	protected long cacheObjectForMarshall(Object instance, SerializationContext serializationContext) {
+		return serializationContext.putMarshalledInstance(instance);
+	}
+
+	protected long cacheObjectForUnmarshall(long referenceId, Object instance, SerializationContext serializationContext) {
+		return serializationContext.putUnmarshalledInstance(referenceId, instance);
+	}
+
+	private boolean isReferenceCapable(Class<?> type) {
+		return !type.isPrimitive() && Boolean.class != type && Byte.class != type && Short.class != type
+				&& Integer.class != type && Long.class != type && Float.class != type && Double.class != type;
+	}
+
 	private class DelegatingMarshaller implements Marshaller {
 
 		private final Class<?> type;
@@ -111,7 +174,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 			Marshaller marshaller = this.marshaller;
 			if (marshaller == null) {
 				marshaller = getMarshaller();
@@ -121,11 +184,11 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
 			}
 
-			marshaller.marshall(value, type, dataOutput, classDefinitionContainer);
+			marshaller.marshall(value, type, dataOutput, serializationContext);
 		}
 
 		@Override
-		public <V> V unmarshall(Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 			Marshaller marshaller = this.marshaller;
 			if (marshaller == null) {
 				marshaller = getMarshaller();
@@ -135,7 +198,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
 			}
 
-			return marshaller.unmarshall(type, dataInput, classDefinitionContainer);
+			return marshaller.unmarshall(type, dataInput, serializationContext);
 		}
 
 		private synchronized Marshaller getMarshaller() {
