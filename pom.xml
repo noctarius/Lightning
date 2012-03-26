@@ -29,6 +29,7 @@
 		<module>lightning-maven-plugin</module>
 		<module>lightning-api</module>
 		<module>lightning-maven-integration-test</module>
+		<module>lightning-maven-eclipse-helper</module>
 	</modules>
 
 	<distributionManagement>
@@ -265,6 +266,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>changelog-maven-plugin</artifactId>
+				<version>2.0-beta-1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -311,6 +313,7 @@
 								<exclude>src/**/bundle/**</exclude>
 								<exclude>src/**/jrockit/**</exclude>
 								<exclude>src/**/generated.java.out</exclude>
+								<exclude>META-INF/MANIFEST.MF</exclude>
 							</excludes>
 						</configuration>
 					</execution>
