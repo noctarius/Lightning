@@ -16,6 +16,7 @@
 package com.github.lightning.internal;
 
 import java.io.Externalizable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +85,10 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 			}
 		}
 
-		return serializableMarshaller;
-	}
+		if (Serializable.class.isAssignableFrom(type)) {
+			return serializableMarshaller;
+		}
 
+		return null;
+	}
 }

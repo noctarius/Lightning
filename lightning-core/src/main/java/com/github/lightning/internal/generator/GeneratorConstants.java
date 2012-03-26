@@ -52,7 +52,7 @@ public interface GeneratorConstants {
 
 	static String MARSHALLER_IS_ALREADY_MARSHALLED_SIGNATURE = Type.getMethodDescriptor(Type.BOOLEAN_TYPE,
 			new Type[] { Type.getType(Object.class), Type.getType(Class.class),
-					Type.getType(DataInput.class), Type.getType(SerializationContext.class) });
+					Type.getType(DataOutput.class), Type.getType(SerializationContext.class) });
 
 	static String MARSHALLER_CONSTRUCTOR_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
 			new Type[] { Type.getType(Class.class), Type.getType(Map.class), Type.getType(ClassDescriptorAwareSerializer.class),

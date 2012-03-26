@@ -238,7 +238,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		if (parent != null) {
-			return findAttributeAnnotation(parent);
+			return abstractSerializerDefinition.findAttributeAnnotation(parent);
 		}
 
 		return Attribute.class;
@@ -268,9 +268,6 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 				Map<Class<?>, Marshaller> marshallers = combineMarshallers(AbstractSerializerDefinition.this);
 				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
-				if (marshaller == null) {
-					throw new SerializerDefinitionException("Field " + field + " cannot be marshalled");
-				}
 
 				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(field, marshaller);
 
