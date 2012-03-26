@@ -30,6 +30,7 @@
 		<module>lightning-api</module>
 		<module>lightning-maven-integration-test</module>
 		<module>lightning-maven-eclipse-helper</module>
+		<module>lightning-maven-eclipse-helper-feature</module>
 	</modules>
 
 	<distributionManagement>
