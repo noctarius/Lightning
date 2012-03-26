@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 	Copyright 2012 the original author or authors.
 
@@ -351,6 +352,12 @@
 					<value>true</value>
 				</property>
 			</activation>
+			<modules>
+				<module>lightning-core</module>
+				<module>lightning-maven-plugin</module>
+				<module>lightning-api</module>
+				<module>lightning-maven-integration-test</module>
+			</modules>
 			<build>
 				<plugins>
 					<plugin>
