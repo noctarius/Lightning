@@ -18,6 +18,8 @@ package com.github.lightning.maven;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,20 +49,21 @@ import com.github.lightning.logging.Logger;
  * @phase process-classes
  * @execute phase="process-classes"
  * @execute goal="process-classes:generate"
+ * @requiresDependencyResolution compile
  * @requiresProject true
  * @threadSafe true
  */
 public class LightningGeneratorMojo extends AbstractCompilerMojo {
 
-    /**
-     * The current build session instance. This is used for
-     * toolchain manager API calls.
-     *
-     * @parameter default-value="${session}"
-     * @required
-     * @readonly
-     */
-    private MavenSession session;
+	/**
+	 * The current build session instance. This is used for
+	 * toolchain manager API calls.
+	 * 
+	 * @parameter default-value="${session}"
+	 * @required
+	 * @readonly
+	 */
+	private MavenSession session;
 
 	/**
 	 * The java generated-source directory.
@@ -102,9 +105,24 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 		System.out.println(new File("./").getAbsolutePath());
 
 		MavenLoggerAdapter logger = new MavenLoggerAdapter(LightningGeneratorMojo.class.getCanonicalName());
+		getLog().info("Searching in path " + targetBuildDirectory.getAbsolutePath());
 		List<File> files = SupportUtil.recursiveGetAllJavaSources(targetBuildDirectory, new ArrayList<File>(), fileFilter);
 
-		List<File> sourceFiles = null;
+		List<URL> urlClasspathElements = new ArrayList<URL>();
+		if (getClasspathElements() != null) {
+			for (String classpathElement : getClasspathElements()) {
+				try {
+					URL url = new File(classpathElement).toURI().toURL();
+					urlClasspathElements.add(url);
+				}
+				catch (Exception e) {
+					// Intentionally left blank
+				}
+			}
+		}
+		ClassLoader classLoader = new URLClassLoader(urlClasspathElements.toArray(new URL[urlClasspathElements.size()]),
+				getClass().getClassLoader());
+
 		for (File file : files) {
 			try {
 				String className = file.getAbsolutePath().replace(targetBuildDirectory.getAbsolutePath(), "");
@@ -114,13 +132,16 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 
 				className = className.replace(".class", "").replace("/", ".").replace("\\", ".");
 
-				Class<?> clazz = Class.forName(className);
+				getLog().debug("Trying class " + className);
+				Class<?> clazz = classLoader.loadClass(className);
 				if (AbstractSerializerDefinition.class.isAssignableFrom(clazz)) {
+					getLog().debug("Found SerializerDefinition in class " + className);
+
 					AbstractSerializerDefinition definition = (AbstractSerializerDefinition) clazz.newInstance();
 
 					SerializerDefinitionAnalyser analyser = new SerializerDefinitionAnalyser(logger);
 					analyser.analyse(definition);
-					sourceFiles = analyser.build(generatedSourceDirectory, encoding);
+					analyser.build(generatedSourceDirectory, encoding);
 				}
 			}
 			catch (Exception e) {
@@ -130,7 +151,7 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 
 		super.execute();
 
-		session.getCurrentProject().addCompileSourceRoot(generatedSourceDirectory.getAbsolutePath());
+		// session.getCurrentProject().addCompileSourceRoot(generatedSourceDirectory.getAbsolutePath());
 	}
 
 	@Override

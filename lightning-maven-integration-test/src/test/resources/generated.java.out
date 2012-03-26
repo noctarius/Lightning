@@ -1,0 +1,77 @@
+
+package com.github.lightning.maven.integration;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import com.github.lightning.Marshaller;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
+import com.github.lightning.internal.ClassDescriptorAwareSerializer;
+import com.github.lightning.internal.generator.AbstractGeneratedMarshaller;
+import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.PropertyAccessor;
+import com.github.lightning.metadata.PropertyDescriptor;
+
+public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMarshaller {
+
+	private final Marshaller PROPERTY_BAR_LIGHTNING;
+	private final Marshaller PROPERTY_FOO_LIGHTNING;
+
+	public FooLightningGeneratedMarshaller (Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers,
+		ClassDescriptorAwareSerializer serializer, ObjectInstantiatorFactory objectInstantiatorFactory,
+		List<PropertyDescriptor> propertyDescriptors) {
+		
+		super(marshalledType, marshallers, serializer, objectInstantiatorFactory);
+
+		PropertyDescriptor bar = findPropertyDescriptor("bar", propertyDescriptors);
+		Marshaller barMarshaller = bar.getMarshaller();
+		if (barMarshaller == null) {
+			barMarshaller = findMarshaller(bar.getType());
+		}
+		PROPERTY_BAR_LIGHTNING = barMarshaller;
+
+		PropertyDescriptor foo = findPropertyDescriptor("foo", propertyDescriptors);
+		Marshaller fooMarshaller = foo.getMarshaller();
+		if (fooMarshaller == null) {
+			fooMarshaller = findMarshaller(foo.getType());
+		}
+		PROPERTY_FOO_LIGHTNING = fooMarshaller;
+	}
+	
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		PropertyAccessor barPropertyAccessor = getPropertyAccessor("bar");
+		Class<?> barPropertyType = barPropertyAccessor.getType();
+		this.PROPERTY_BAR_LIGHTNING.marshall(Integer.valueOf(barPropertyAccessor.readInt(value)), barPropertyType, dataOutput, classDefinitionContainer);
+
+		PropertyAccessor fooPropertyAccessor = getPropertyAccessor("foo");
+		Class<?> fooPropertyType = fooPropertyAccessor.getType();
+		this.PROPERTY_FOO_LIGHTNING.marshall(fooPropertyAccessor.readObject(value), fooPropertyType, dataOutput, classDefinitionContainer);
+
+	}
+	
+	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, ClassDefinitionContainer classDefinitionContainer) throws IOException {
+		PropertyAccessor barPropertyAccessor = getPropertyAccessor("bar");
+		Class<?> barPropertyType = barPropertyAccessor.getType();
+		Object barValue = this.PROPERTY_BAR_LIGHTNING.unmarshall(barPropertyType, dataInput, classDefinitionContainer);
+		barPropertyAccessor.writeInt(instance, ((Integer) barValue).intValue());
+
+		PropertyAccessor fooPropertyAccessor = getPropertyAccessor("foo");
+		Class<?> fooPropertyType = fooPropertyAccessor.getType();
+		Object fooValue = this.PROPERTY_FOO_LIGHTNING.unmarshall(fooPropertyType, dataInput, classDefinitionContainer);
+		fooPropertyAccessor.writeObject(instance, fooValue);
+
+		return instance;
+	}
+	
+	private PropertyDescriptor findPropertyDescriptor(String propertyName, List<PropertyDescriptor> propertyDescriptors) {
+		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+			if (propertyDescriptor.getPropertyName().equals(propertyName)) {
+				return propertyDescriptor;
+			}
+		}
+		return null;
+	}
+}

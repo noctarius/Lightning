@@ -27,6 +27,7 @@
 		<module>lightning-core</module>
 		<module>lightning-maven-plugin</module>
 		<module>lightning-api</module>
+		<module>lightning-maven-integration-test</module>
 	</modules>
 
 	<distributionManagement>
@@ -308,6 +309,7 @@
 							<excludes>
 								<exclude>src/**/bundle/**</exclude>
 								<exclude>src/**/jrockit/**</exclude>
+								<exclude>src/**/generated.java.out</exclude>
 							</excludes>
 						</configuration>
 					</execution>
