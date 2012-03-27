@@ -1,3 +1,18 @@
+/**
+ * Copyright 2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.lightning.internal.marshaller;
 
 import java.io.DataInput;
@@ -7,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -36,7 +50,7 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 
 	@Override
 	public boolean acceptType(Class<?> type) {
-		return List.class.isAssignableFrom(type);
+		return Map.class.isAssignableFrom(type);
 	}
 
 	@Override
@@ -54,20 +68,21 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 				valueMarshaller = mapValueTypeMarshaller;
 			}
 			else {
-				keyMarshaller = serializationContext.findMarshaller(entry.getKey().getClass());
-				valueMarshaller = serializationContext.findMarshaller(entry.getValue().getClass());
+				keyMarshaller = entry.getKey() != null ? serializationContext.findMarshaller(entry.getKey().getClass()) : null;
+				valueMarshaller = entry.getValue() != null ? serializationContext.findMarshaller(entry.getValue().getClass()) : null;
 			}
 
-			ClassDefinition keyClassDefinition = serializationContext.getClassDefinitionContainer()
-					.getClassDefinitionByType(entry.getKey().getClass());
+			if (writePossibleNull(entry.getKey(), dataOutput)) {
+				ClassDefinition keyClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getKey().getClass());
+				dataOutput.writeLong(keyClassDefinition.getId());
+				keyMarshaller.marshall(entry.getKey(), entry.getKey().getClass(), dataOutput, serializationContext);
+			}
 
-			ClassDefinition valueClassDefinition = serializationContext.getClassDefinitionContainer()
-					.getClassDefinitionByType(entry.getValue().getClass());
-
-			dataOutput.writeLong(keyClassDefinition.getId());
-			dataOutput.writeLong(valueClassDefinition.getId());
-			keyMarshaller.marshall(entry.getKey(), entry.getKey().getClass(), dataOutput, serializationContext);
-			valueMarshaller.marshall(entry.getValue(), entry.getValue().getClass(), dataOutput, serializationContext);
+			if (writePossibleNull(entry.getValue(), dataOutput)) {
+				ClassDefinition valueClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getValue().getClass());
+				dataOutput.writeLong(valueClassDefinition.getId());
+				valueMarshaller.marshall(entry.getValue(), entry.getValue().getClass(), dataOutput, serializationContext);
+			}
 		}
 	}
 
@@ -81,30 +96,43 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 		int size = dataInput.readInt();
 		Map map = new LinkedHashMap(size);
 		if (size > 0) {
-			long keyClassId = dataInput.readLong();
-			long valueClassId = dataInput.readLong();
+			for (int i = 0; i < size; i++) {
+				Object key = null;
+				if (!isNull(dataInput)) {
+					long keyClassId = dataInput.readLong();
+					ClassDefinition keyClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionById(keyClassId);
 
-			ClassDefinition keyClassDefinition = serializationContext.getClassDefinitionContainer()
-					.getClassDefinitionById(keyClassId);
+					Marshaller keyMarshaller;
+					if (mapKeyType != null) {
+						ensureMarshallersInitialized(serializationContext);
+						keyMarshaller = mapKeyTypeMarshaller;
+					}
+					else {
+						keyMarshaller = serializationContext.findMarshaller(keyClassDefinition.getType());
+					}
 
-			ClassDefinition valueClassDefinition = serializationContext.getClassDefinitionContainer()
-					.getClassDefinitionById(valueClassId);
+					key = keyMarshaller.unmarshall(keyClassDefinition.getType(), dataInput, serializationContext);
+				}
 
-			Marshaller keyMarshaller;
-			Marshaller valueMarshaller;
-			if (mapKeyType != null) {
-				ensureMarshallersInitialized(serializationContext);
-				keyMarshaller = mapKeyTypeMarshaller;
-				valueMarshaller = mapValueTypeMarshaller;
+				Object value = null;
+				if (!isNull(dataInput)) {
+					long valueClassId = dataInput.readLong();
+					ClassDefinition valueClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionById(valueClassId);
+
+					Marshaller valueMarshaller;
+					if (mapKeyType != null) {
+						ensureMarshallersInitialized(serializationContext);
+						valueMarshaller = mapValueTypeMarshaller;
+					}
+					else {
+						valueMarshaller = serializationContext.findMarshaller(valueClassDefinition.getType());
+					}
+
+					value = valueMarshaller.unmarshall(valueClassDefinition.getType(), dataInput, serializationContext);
+				}
+
+				map.put(key, value);
 			}
-			else {
-				keyMarshaller = serializationContext.findMarshaller(keyClassDefinition.getType());
-				valueMarshaller = serializationContext.findMarshaller(valueClassDefinition.getType());
-			}
-
-			Object key = keyMarshaller.unmarshall(keyClassDefinition.getType(), dataInput, serializationContext);
-			Object value = valueMarshaller.unmarshall(valueClassDefinition.getType(), dataInput, serializationContext);
-			map.put(key, value);
 		}
 
 		return (V) map;

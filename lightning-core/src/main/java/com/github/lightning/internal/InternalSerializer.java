@@ -54,6 +54,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 	private final AtomicReference<ClassDefinitionContainer> classDefinitionContainer = new AtomicReference<ClassDefinitionContainer>();
 	private final MarshallerGenerator marshallerGenerator = new BytecodeMarshallerGenerator();
+	private final ObjectInstantiatorFactory objectInstantiatorFactory;
 	private final ClassComparisonStrategy classComparisonStrategy;
 	private final Map<Class<?>, ClassDescriptor> classDescriptors;
 	private final SerializationStrategy serializationStrategy;
@@ -61,9 +62,8 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	private final MarshallerStrategy marshallerStrategy;
 
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, SerializationStrategy serializationStrategy,
-			ClassComparisonStrategy classComparisonStrategy, Map<Class<?>, ClassDescriptor> classDescriptors,
-			Map<Class<?>, Marshaller> marshallers, ObjectInstantiatorFactory objectInstantiatorFactory,
-			Logger logger, MarshallerStrategy marshallerStrategy, File debugCacheDirectory) {
+			ClassComparisonStrategy classComparisonStrategy, Map<Class<?>, ClassDescriptor> classDescriptors, Map<Class<?>, Marshaller> marshallers,
+			ObjectInstantiatorFactory objectInstantiatorFactory, Logger logger, MarshallerStrategy marshallerStrategy, File debugCacheDirectory) {
 
 		this.classDefinitionContainer.set(classDefinitionContainer);
 		this.classComparisonStrategy = classComparisonStrategy;
@@ -72,9 +72,8 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 		for (ClassDescriptor classDescriptor : classDescriptors.values()) {
 			if (classDescriptor instanceof InternalClassDescriptor && classDescriptor.getMarshaller() == null) {
-				Marshaller marshaller = marshallerGenerator.generateMarshaller(classDescriptor.getType(),
-						classDescriptor.getPropertyDescriptors(), marshallers, this, serializationStrategy,
-						objectInstantiatorFactory, debugCacheDirectory);
+				Marshaller marshaller = marshallerGenerator.generateMarshaller(classDescriptor.getType(), classDescriptor.getPropertyDescriptors(),
+						marshallers, this, serializationStrategy, objectInstantiatorFactory, debugCacheDirectory);
 
 				((InternalClassDescriptor) classDescriptor).setMarshaller(marshaller);
 				marshallers.put(classDescriptor.getType(), marshaller);
@@ -83,6 +82,7 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 
 		this.definedMarshallers = marshallers;
 		this.marshallerStrategy = marshallerStrategy;
+		this.objectInstantiatorFactory = objectInstantiatorFactory;
 	}
 
 	@Override
@@ -103,8 +103,8 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	@Override
 	public <V> void serialize(V value, DataOutput dataOutput) {
 		try {
-			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(),
-					serializationStrategy, marshallerStrategy, definedMarshallers);
+			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(), serializationStrategy,
+					marshallerStrategy, objectInstantiatorFactory, definedMarshallers);
 
 			Class<?> type = value.getClass();
 			ClassDescriptor classDescriptor = findClassDescriptor(type);
@@ -138,8 +138,8 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	@SuppressWarnings("unchecked")
 	public <V> V deserialize(DataInput dataInput) {
 		try {
-			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(),
-					serializationStrategy, marshallerStrategy, definedMarshallers);
+			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(), serializationStrategy,
+					marshallerStrategy, objectInstantiatorFactory, definedMarshallers);
 
 			long typeId = dataInput.readLong();
 			Class<?> clazz = classDefinitionContainer.get().getTypeById(typeId);
@@ -175,30 +175,25 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 		return classDescriptors.get(type);
 	}
 
-	private void consistencyCheckClassChecksums(ClassDefinitionContainer oldClassDefinitionContainer,
-			ClassDefinitionContainer classDefinitionContainer) {
+	private void consistencyCheckClassChecksums(ClassDefinitionContainer oldClassDefinitionContainer, ClassDefinitionContainer classDefinitionContainer) {
 		for (ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions()) {
-			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition
-					.getCanonicalName());
+			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition.getCanonicalName());
 			if (oldClassDefinition == null) {
-				throw new ClassDefinitionNotConsistentException("No ClassDefinition for type "
-						+ classDefinition.getCanonicalName() + " was found");
+				throw new ClassDefinitionNotConsistentException("No ClassDefinition for type " + classDefinition.getCanonicalName() + " was found");
 			}
 
 			if (classComparisonStrategy == ClassComparisonStrategy.SerialVersionUID) {
 				long serialVersionUID = classDefinition.getSerialVersionUID();
 				long oldSerialVersionUID = oldClassDefinition.getSerialVersionUID();
 				if (serialVersionUID != oldSerialVersionUID) {
-					throw new ClassDefinitionNotConsistentException("SerialVersionUID of type "
-							+ classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionNotConsistentException("SerialVersionUID of type " + classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 			else {
 				byte[] checksum = classDefinition.getChecksum();
 				byte[] oldChecksum = oldClassDefinition.getChecksum();
 				if (!Arrays.equals(checksum, oldChecksum)) {
-					throw new ClassDefinitionNotConsistentException("Signature checksum of type "
-							+ classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionNotConsistentException("Signature checksum of type " + classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 		}

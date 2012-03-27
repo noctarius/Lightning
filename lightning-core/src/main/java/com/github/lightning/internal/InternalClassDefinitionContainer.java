@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.github.lightning.Streamed;
 import com.github.lightning.internal.bundle.cern.colt.map.AbstractLongObjectMap;
@@ -35,7 +38,7 @@ import com.github.lightning.metadata.ClassDefinitionContainer;
 
 class InternalClassDefinitionContainer implements ClassDefinitionContainer, Streamed, Externalizable {
 
-	private final List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>();
+	private final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
 	private final AbstractLongObjectMap<ClassDefinition> classDefinitionsMappings;
 
 	// Serialization
@@ -43,7 +46,7 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 		classDefinitionsMappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class);
 	}
 
-	InternalClassDefinitionContainer(List<ClassDefinition> classDefinitions) {
+	InternalClassDefinitionContainer(Set<ClassDefinition> classDefinitions) {
 		this.classDefinitions.addAll(classDefinitions);
 		classDefinitionsMappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class, classDefinitions.size());
 		initMappings(classDefinitions);
@@ -88,8 +91,17 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 
 	@Override
 	public void writeTo(DataOutput dataOutput) throws IOException {
-		dataOutput.writeInt(classDefinitions.size());
+		List<ClassDefinition> selectedClassDefinitions = new ArrayList<ClassDefinition>();
 		for (ClassDefinition classDefinition : classDefinitions) {
+			if (classDefinition.getId() < 1000) {
+				continue;
+			}
+
+			selectedClassDefinitions.add(classDefinition);
+		}
+
+		dataOutput.writeInt(selectedClassDefinitions.size());
+		for (ClassDefinition classDefinition : selectedClassDefinitions) {
 			final long id = classDefinition.getId();
 			final byte[] checksum = classDefinition.getChecksum();
 			final String canonicalName = classDefinition.getCanonicalName();
@@ -104,6 +116,8 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 
 	@Override
 	public void readFrom(DataInput dataInput) throws IOException {
+		classDefinitions.addAll(Arrays.asList(ClassUtil.CLASS_DESCRIPTORS));
+
 		int size = dataInput.readInt();
 		for (int i = 0; i < size; i++) {
 			final long id = dataInput.readLong();
@@ -134,7 +148,7 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 		readFrom(in);
 	}
 
-	private void initMappings(List<ClassDefinition> classDefinitions) {
+	private void initMappings(Set<ClassDefinition> classDefinitions) {
 		for (ClassDefinition classDefinition : classDefinitions) {
 			classDefinitionsMappings.put(classDefinition.getId(), classDefinition);
 		}

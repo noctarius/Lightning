@@ -22,6 +22,7 @@ import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.SerializationStrategy;
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.bundle.cern.colt.map.AbstractLongObjectMap;
 import com.github.lightning.internal.bundle.cern.colt.map.OpenLongObjectHashMap;
 import com.github.lightning.metadata.ClassDefinitionContainer;
@@ -35,16 +36,17 @@ public class InternalSerializationContext implements SerializationContext {
 	private final ClassDefinitionContainer classDefinitionContainer;
 	private final SerializationStrategy serializationStrategy;
 	private final MarshallerStrategy marshallerStrategy;
+	private final ObjectInstantiatorFactory objectInstantiatorFactory;
 
 	private long nextReferenceIdMarshall = 10000;
 
-	public InternalSerializationContext(ClassDefinitionContainer classDefinitionContainer,
-			SerializationStrategy serializationStrategy, MarshallerStrategy marshallerStrategy,
-			Map<Class<?>, Marshaller> definedMarshallers) {
+	public InternalSerializationContext(ClassDefinitionContainer classDefinitionContainer, SerializationStrategy serializationStrategy,
+			MarshallerStrategy marshallerStrategy, ObjectInstantiatorFactory objectInstantiatorFactory, Map<Class<?>, Marshaller> definedMarshallers) {
 
 		this.classDefinitionContainer = classDefinitionContainer;
 		this.serializationStrategy = serializationStrategy;
 		this.marshallerStrategy = marshallerStrategy;
+		this.objectInstantiatorFactory = objectInstantiatorFactory;
 		this.definedMarshallers.putAll(definedMarshallers);
 	}
 
@@ -56,6 +58,11 @@ public class InternalSerializationContext implements SerializationContext {
 	@Override
 	public SerializationStrategy getSerializationStrategy() {
 		return serializationStrategy;
+	}
+
+	@Override
+	public ObjectInstantiatorFactory getObjectInstantiatorFactory() {
+		return objectInstantiatorFactory;
 	}
 
 	@Override

@@ -15,6 +15,7 @@
  */
 package com.github.lightning;
 
+import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public interface SerializationContext {
@@ -22,6 +23,8 @@ public interface SerializationContext {
 	ClassDefinitionContainer getClassDefinitionContainer();
 
 	SerializationStrategy getSerializationStrategy();
+
+	ObjectInstantiatorFactory getObjectInstantiatorFactory();
 
 	Marshaller findMarshaller(Class<?> type);
 

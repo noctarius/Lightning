@@ -36,6 +36,7 @@ import com.github.lightning.internal.InternalClassDescriptor;
 import com.github.lightning.internal.InternalDefinitionBuildingContext;
 import com.github.lightning.internal.InternalMarshallerStrategy;
 import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
+import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.ClassDefinition;
@@ -72,7 +73,7 @@ public class SerializerDefinitionAnalyser {
 
 		List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>();
 		for (InternalClassDescriptor classDescriptor : classDescriptors.values()) {
-			classDefinitions.add(classDescriptor.build().getClassDefinition());
+			classDefinitions.add(classDescriptor.build(ClassUtil.CLASS_DESCRIPTORS).getClassDefinition());
 		}
 
 		List<File> files = new ArrayList<File>();

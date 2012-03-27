@@ -83,4 +83,45 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 	public int compareTo(ClassDefinition o) {
 		return canonicalName.compareTo(o.getCanonicalName());
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((canonicalName == null) ? 0 : canonicalName.hashCode());
+		result = prime * result + Arrays.hashCode(checksum);
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + (int) (serialVersionUID ^ (serialVersionUID >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InternalClassDefinition other = (InternalClassDefinition) obj;
+		if (canonicalName == null) {
+			if (other.canonicalName != null)
+				return false;
+		}
+		else if (!canonicalName.equals(other.canonicalName))
+			return false;
+		if (!Arrays.equals(checksum, other.checksum))
+			return false;
+		if (id != other.id)
+			return false;
+		if (serialVersionUID != other.serialVersionUID)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "InternalClassDefinition [canonicalName=" + canonicalName + ", type=" + type + ", checksum=" + Arrays.toString(checksum) + ", serialVersionUID="
+				+ serialVersionUID + ", id=" + id + "]";
+	}
 }

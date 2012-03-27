@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.github.lightning.Marshaller;
 import com.github.lightning.SerializationContext;
@@ -30,36 +30,36 @@ import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
 import com.github.lightning.metadata.ClassDefinition;
 
-public class ListMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
+public class SetMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
 
-	private final Class<?> listType;
+	private final Class<?> setType;
 
-	private Marshaller listTypeMarshaller;
+	private Marshaller setTypeMarshaller;
 
-	public ListMarshaller() {
+	public SetMarshaller() {
 		this(null);
 	}
 
-	private ListMarshaller(Class<?> listType) {
-		this.listType = listType;
+	private SetMarshaller(Class<?> setType) {
+		this.setType = setType;
 	}
 
 	@Override
 	public boolean acceptType(Class<?> type) {
-		return List.class.isAssignableFrom(type);
+		return Set.class.isAssignableFrom(type);
 	}
 
 	@Override
 	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		if (writePossibleNull(value, dataOutput)) {
-			List<?> list = (List<?>) value;
-			dataOutput.writeInt(list.size());
-			for (Object entry : list) {
+			Set<?> set = (Set<?>) value;
+			dataOutput.writeInt(set.size());
+			for (Object entry : set) {
 				if (writePossibleNull(entry, dataOutput)) {
 					Marshaller marshaller;
-					if (listType != null) {
+					if (setType != null) {
 						ensureMarshallerInitialized(serializationContext);
-						marshaller = listTypeMarshaller;
+						marshaller = setTypeMarshaller;
 					}
 					else {
 						marshaller = serializationContext.findMarshaller(entry.getClass());
@@ -82,31 +82,31 @@ public class ListMarshaller extends AbstractMarshaller implements TypeBindableMa
 		}
 
 		int size = dataInput.readInt();
-		List list = new ArrayList(size);
+		Set set = new HashSet(size);
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				if (isNull(dataInput)) {
-					list.add(null);
+					set.add(null);
 				}
 				else {
 					long classId = dataInput.readLong();
 					ClassDefinition classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionById(classId);
 
 					Marshaller marshaller;
-					if (listType != null) {
+					if (setType != null) {
 						ensureMarshallerInitialized(serializationContext);
-						marshaller = listTypeMarshaller;
+						marshaller = setTypeMarshaller;
 					}
 					else {
 						marshaller = serializationContext.findMarshaller(classDefinition.getType());
 					}
 
-					list.add(marshaller.unmarshall(classDefinition.getType(), dataInput, serializationContext));
+					set.add(marshaller.unmarshall(classDefinition.getType(), dataInput, serializationContext));
 				}
 			}
 		}
 
-		return (V) list;
+		return (V) set;
 	}
 
 	@Override
@@ -116,18 +116,18 @@ public class ListMarshaller extends AbstractMarshaller implements TypeBindableMa
 			ParameterizedType type = (ParameterizedType) genericType;
 			Type[] types = type.getActualTypeArguments();
 			if (types.length == 1) {
-				Class<?> listType = (Class<?>) types[0];
-				return new ListMarshaller(listType);
+				Class<?> setType = (Class<?>) types[0];
+				return new SetMarshaller(setType);
 			}
 		}
 
-		return new ListMarshaller();
+		return new SetMarshaller();
 	}
 
 	private void ensureMarshallerInitialized(SerializationContext serializationContext) {
-		if (listTypeMarshaller != null)
+		if (setTypeMarshaller != null)
 			return;
 
-		listTypeMarshaller = serializationContext.findMarshaller(listType);
+		setTypeMarshaller = serializationContext.findMarshaller(setType);
 	}
 }

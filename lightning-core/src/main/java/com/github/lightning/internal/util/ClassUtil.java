@@ -25,12 +25,16 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.objectweb.asm.ClassReader;
@@ -39,7 +43,22 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import com.github.lightning.metadata.ClassDefinition;
+
 public final class ClassUtil {
+
+	public static final ClassDefinition[] CLASS_DESCRIPTORS = new ClassDefinition[] { new JavaBuildInTypeClassDefinition(boolean.class, 1),
+			new JavaBuildInTypeClassDefinition(Boolean.class, 2), new JavaBuildInTypeClassDefinition(byte.class, 3),
+			new JavaBuildInTypeClassDefinition(Byte.class, 4), new JavaBuildInTypeClassDefinition(char.class, 5),
+			new JavaBuildInTypeClassDefinition(Character.class, 6), new JavaBuildInTypeClassDefinition(double.class, 7),
+			new JavaBuildInTypeClassDefinition(Double.class, 8), new JavaBuildInTypeClassDefinition(float.class, 9),
+			new JavaBuildInTypeClassDefinition(Float.class, 10), new JavaBuildInTypeClassDefinition(int.class, 11),
+			new JavaBuildInTypeClassDefinition(Integer.class, 12), new JavaBuildInTypeClassDefinition(long.class, 13),
+			new JavaBuildInTypeClassDefinition(Long.class, 14), new JavaBuildInTypeClassDefinition(short.class, 15),
+			new JavaBuildInTypeClassDefinition(Short.class, 16), new JavaBuildInTypeClassDefinition(String.class, 17),
+			new JavaBuildInTypeClassDefinition(List.class, 18), new JavaBuildInTypeClassDefinition(Set.class, 19),
+			new JavaBuildInTypeClassDefinition(Map.class, 20), new JavaBuildInTypeClassDefinition(BigInteger.class, 21),
+			new JavaBuildInTypeClassDefinition(BigDecimal.class, 22) };
 
 	private static final Map<Class<?>, Long> SERIAL_VERSION_UID_CACHE = new ConcurrentHashMap<Class<?>, Long>();
 
@@ -47,8 +66,8 @@ public final class ClassUtil {
 	}
 
 	public static boolean isReferenceCapable(Class<?> type) {
-		return !type.isPrimitive() && Boolean.class != type && Byte.class != type && Short.class != type
-				&& Integer.class != type && Long.class != type && Float.class != type && Double.class != type;
+		return !type.isPrimitive() && Boolean.class != type && Byte.class != type && Short.class != type && Integer.class != type && Long.class != type
+				&& Float.class != type && Double.class != type;
 	}
 
 	public static Class<?> loadClass(String canonicalName) throws ClassNotFoundException {
@@ -271,5 +290,86 @@ public final class ClassUtil {
 			}
 		}
 		return null;
+	}
+
+	private static class JavaBuildInTypeClassDefinition implements ClassDefinition {
+
+		private final long id;
+		private final Class<?> type;
+		private final String canonicalName;
+		private final byte[] checksum = new byte[20];
+		private final long serialVersionUID = -1L;
+
+		JavaBuildInTypeClassDefinition(Class<?> type, long id) {
+			this.id = id;
+			this.type = type;
+			this.canonicalName = type.getCanonicalName();
+		}
+
+		@Override
+		public String getCanonicalName() {
+			return canonicalName;
+		}
+
+		@Override
+		public Class<?> getType() {
+			return type;
+		}
+
+		@Override
+		public byte[] getChecksum() {
+			return checksum;
+		}
+
+		@Override
+		public long getId() {
+			return id;
+		}
+
+		@Override
+		public long getSerialVersionUID() {
+			return serialVersionUID;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((canonicalName == null) ? 0 : canonicalName.hashCode());
+			result = prime * result + Arrays.hashCode(checksum);
+			result = prime * result + (int) (id ^ (id >>> 32));
+			result = prime * result + (int) (serialVersionUID ^ (serialVersionUID >>> 32));
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			JavaBuildInTypeClassDefinition other = (JavaBuildInTypeClassDefinition) obj;
+			if (canonicalName == null) {
+				if (other.canonicalName != null)
+					return false;
+			}
+			else if (!canonicalName.equals(other.canonicalName))
+				return false;
+			if (!Arrays.equals(checksum, other.checksum))
+				return false;
+			if (id != other.id)
+				return false;
+			if (serialVersionUID != other.serialVersionUID)
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "JavaBuildInTypeClassDefinition [id=" + id + ", type=" + type + ", canonicalName=" + canonicalName + ", checksum="
+					+ Arrays.toString(checksum) + ", serialVersionUID=" + serialVersionUID + "]";
+		}
 	}
 }

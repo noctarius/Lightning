@@ -23,9 +23,10 @@ import com.github.lightning.SerializationContext;
 public abstract class AbstractObjectMarshaller extends AbstractMarshaller {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public final <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		// Should be never called!
-		return null;
+		Object value = serializationContext.getObjectInstantiatorFactory().getInstantiatorOf(type);
+		return unmarshall((V) value, type, dataInput, serializationContext);
 	}
 
 	public abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException;

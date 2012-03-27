@@ -18,10 +18,13 @@ package com.github.lightning.internal;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 
 import com.github.lightning.ClassComparisonStrategy;
@@ -36,6 +39,7 @@ import com.github.lightning.generator.PropertyDescriptorFactory;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
+import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.Attribute;
@@ -95,8 +99,7 @@ public final class InternalSerializerCreator {
 	public Serializer build() {
 		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
 		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
-		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy,
-				propertyDescriptorFactory);
+		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy, propertyDescriptorFactory);
 
 		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
 		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
@@ -104,9 +107,9 @@ public final class InternalSerializerCreator {
 			serializerDefinition.acceptVisitor(definitionVisitor);
 		}
 
-		List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>();
+		Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>(Arrays.asList(ClassUtil.CLASS_DESCRIPTORS));
 		for (InternalClassDescriptor classDescriptor : classDescriptors.values()) {
-			classDefinitions.add(classDescriptor.build().getClassDefinition());
+			classDefinitions.add(classDescriptor.build(ClassUtil.CLASS_DESCRIPTORS).getClassDefinition());
 		}
 
 		Map<Class<?>, ClassDescriptor> cleanedClassDescriptors = new HashMap<Class<?>, ClassDescriptor>(classDescriptors.size());
@@ -114,9 +117,8 @@ public final class InternalSerializerCreator {
 			cleanedClassDescriptors.put(entry.getKey(), entry.getValue());
 		}
 
-		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), serializationStrategy,
-				classComparisonStrategy, cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger,
-				marshallerStrategy, debugCacheDirectory);
+		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), serializationStrategy, classComparisonStrategy,
+				cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger, marshallerStrategy, debugCacheDirectory);
 	}
 
 	private InternalClassDescriptor findClassDescriptor(Class<?> type) {
@@ -171,8 +173,8 @@ public final class InternalSerializerCreator {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
 
 			if (logger.isTraceEnabled()) {
-				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature()
-						+ ") on type " + propertyDescriptor.getDeclaringClass().getCanonicalName());
+				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
+						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);
@@ -183,8 +185,8 @@ public final class InternalSerializerCreator {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
 
 			if (logger.isTraceEnabled()) {
-				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature()
-						+ ") on type " + propertyDescriptor.getDeclaringClass().getCanonicalName());
+				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
+						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);

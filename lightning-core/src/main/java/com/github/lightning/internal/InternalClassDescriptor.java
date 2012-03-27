@@ -66,7 +66,14 @@ public class InternalClassDescriptor implements ClassDescriptor {
 		this.marshaller = marshaller;
 	}
 
-	public ClassDescriptor build() {
+	public ClassDescriptor build(ClassDefinition[] classDefinitions) {
+		for (ClassDefinition classDefinition : classDefinitions) {
+			if (classDefinition.getType() == type) {
+				this.classDefinition = classDefinition;
+				return this;
+			}
+		}
+
 		classDefinition = new InternalClassDefinition(getType(), getPropertyDescriptors(), logger);
 		return this;
 	}
