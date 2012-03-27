@@ -30,6 +30,7 @@ class ObjenesisDelegatingMarshaller implements Marshaller {
 
 	ObjenesisDelegatingMarshaller(AbstractObjectMarshaller delegatedMarshaller,
 			ObjectInstantiatorFactory objectInstantiatorFactory) {
+
 		this.delegatedMarshaller = delegatedMarshaller;
 		this.objectInstantiatorFactory = objectInstantiatorFactory;
 	}

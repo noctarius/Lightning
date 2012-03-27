@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.lightning.ClassComparisonStrategy;
 import com.github.lightning.Marshaller;
+import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.SerializationStrategy;
 import com.github.lightning.exceptions.ClassDefinitionNotConsistentException;
@@ -56,11 +57,13 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	private final ClassComparisonStrategy classComparisonStrategy;
 	private final Map<Class<?>, ClassDescriptor> classDescriptors;
 	private final SerializationStrategy serializationStrategy;
+	private final Map<Class<?>, Marshaller> definedMarshallers;
+	private final MarshallerStrategy marshallerStrategy;
 
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, SerializationStrategy serializationStrategy,
 			ClassComparisonStrategy classComparisonStrategy, Map<Class<?>, ClassDescriptor> classDescriptors,
 			Map<Class<?>, Marshaller> marshallers, ObjectInstantiatorFactory objectInstantiatorFactory,
-			Logger logger, File debugCacheDirectory) {
+			Logger logger, MarshallerStrategy marshallerStrategy, File debugCacheDirectory) {
 
 		this.classDefinitionContainer.set(classDefinitionContainer);
 		this.classComparisonStrategy = classComparisonStrategy;
@@ -77,6 +80,9 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 				marshallers.put(classDescriptor.getType(), marshaller);
 			}
 		}
+
+		this.definedMarshallers = marshallers;
+		this.marshallerStrategy = marshallerStrategy;
 	}
 
 	@Override
@@ -97,7 +103,9 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	@Override
 	public <V> void serialize(V value, DataOutput dataOutput) {
 		try {
-			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(), serializationStrategy);
+			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(),
+					serializationStrategy, marshallerStrategy, definedMarshallers);
+
 			Class<?> type = value.getClass();
 			ClassDescriptor classDescriptor = findClassDescriptor(type);
 			dataOutput.writeLong(classDescriptor.getClassDefinition().getId());
@@ -130,7 +138,9 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	@SuppressWarnings("unchecked")
 	public <V> V deserialize(DataInput dataInput) {
 		try {
-			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(), serializationStrategy);
+			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(),
+					serializationStrategy, marshallerStrategy, definedMarshallers);
+
 			long typeId = dataInput.readLong();
 			Class<?> clazz = classDefinitionContainer.get().getTypeById(typeId);
 			ClassDescriptor classDescriptor = findClassDescriptor(clazz);

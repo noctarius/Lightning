@@ -23,6 +23,8 @@ public interface SerializationContext {
 
 	SerializationStrategy getSerializationStrategy();
 
+	Marshaller findMarshaller(Class<?> type);
+
 	long findReferenceIdByObject(Object instance);
 
 	Object findObjectByReferenceId(long referenceId);

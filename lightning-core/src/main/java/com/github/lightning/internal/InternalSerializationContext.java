@@ -15,9 +15,11 @@
  */
 package com.github.lightning.internal;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
+import com.github.lightning.Marshaller;
+import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.SerializationStrategy;
 import com.github.lightning.internal.bundle.cern.colt.map.AbstractLongObjectMap;
@@ -26,19 +28,24 @@ import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class InternalSerializationContext implements SerializationContext {
 
-	private final Map<Object, Long> referencesMarshall = new HashMap<Object, Long>();
+	private final Map<Object, Long> referencesMarshall = new IdentityHashMap<Object, Long>();
 	private final AbstractLongObjectMap<Object> referencesUnmarshall = new OpenLongObjectHashMap<Object>(Object.class);
+	private final Map<Class<?>, Marshaller> definedMarshallers = new IdentityHashMap<Class<?>, Marshaller>();
 
 	private final ClassDefinitionContainer classDefinitionContainer;
 	private final SerializationStrategy serializationStrategy;
+	private final MarshallerStrategy marshallerStrategy;
 
 	private long nextReferenceIdMarshall = 10000;
 
 	public InternalSerializationContext(ClassDefinitionContainer classDefinitionContainer,
-			SerializationStrategy serializationStrategy) {
+			SerializationStrategy serializationStrategy, MarshallerStrategy marshallerStrategy,
+			Map<Class<?>, Marshaller> definedMarshallers) {
 
 		this.classDefinitionContainer = classDefinitionContainer;
 		this.serializationStrategy = serializationStrategy;
+		this.marshallerStrategy = marshallerStrategy;
+		this.definedMarshallers.putAll(definedMarshallers);
 	}
 
 	@Override
@@ -81,6 +88,11 @@ public class InternalSerializationContext implements SerializationContext {
 	public long putUnmarshalledInstance(long refrenceId, Object instance) {
 		referencesUnmarshall.put(refrenceId, instance);
 		return refrenceId;
+	}
+
+	@Override
+	public Marshaller findMarshaller(Class<?> type) {
+		return marshallerStrategy.getMarshaller(type, definedMarshallers);
 	}
 
 	public Map<Object, Long> getReferencesMarshall() {

@@ -116,7 +116,7 @@ public final class InternalSerializerCreator {
 
 		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), serializationStrategy,
 				classComparisonStrategy, cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger,
-				debugCacheDirectory);
+				marshallerStrategy, debugCacheDirectory);
 	}
 
 	private InternalClassDescriptor findClassDescriptor(Class<?> type) {

@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.bindings.AnnotatedBinder;
 import com.github.lightning.bindings.ClassBinder;
 import com.github.lightning.bindings.MarshallerBinder;
@@ -227,7 +228,12 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 			@Override
 			public void byMarshaller(Marshaller marshaller) {
-				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller), marshaller);
+				if (marshaller instanceof TypeBindableMarshaller) {
+					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
+				}
+
+				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory()
+						.byField(property, marshaller), marshaller);
 			}
 		};
 	}
@@ -260,19 +266,23 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		public void acceptVisitor(DefinitionVisitor visitor) {
 			Class<? extends Annotation> attributeAnnotation = findAttributeAnnotation(AbstractSerializerDefinition.this);
 			Class<T> type = classBinder.getType();
-			List<Field> fields = findFields(type, attributeAnnotation);
-			fields.addAll(findByMethods(type, attributeAnnotation));
+			List<Field> properties = findFields(type, attributeAnnotation);
+			properties.addAll(findByMethods(type, attributeAnnotation));
 
-			for (Field field : fields) {
-				Class<?> fieldType = field.getType();
+			for (Field property : properties) {
+				if (isExcluded(property.getName()))
+					continue;
+
+				Class<?> fieldType = property.getType();
 
 				Map<Class<?>, Marshaller> marshallers = combineMarshallers(AbstractSerializerDefinition.this);
 				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
 
-				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(field, marshaller);
+				if (marshaller instanceof TypeBindableMarshaller) {
+					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
+				}
 
-				if (isExcluded(propertyDescriptor.getPropertyName()))
-					continue;
+				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller);
 
 				visitor.visitAnnotatedAttribute(propertyDescriptor, marshaller);
 
