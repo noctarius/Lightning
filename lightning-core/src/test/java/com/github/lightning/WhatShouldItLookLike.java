@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -29,20 +28,17 @@ import com.github.lightning.base.AbstractObjectMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
 import com.github.lightning.io.SerializerInputStream;
 import com.github.lightning.io.SerializerOutputStream;
-import com.github.lightning.logging.LogLevel;
-import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightningtesting.utils.DebugLogger;
 
 public class WhatShouldItLookLike {
 
 	public static void main(String[] args) {
-		Serializer serializer2 = Lightning.newBuilder().logger(new DebugLogger())
-				.serializerDefinitions(new BookingEngineSerializerFactory()).build();
+		Serializer serializer2 = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new BookingEngineSerializerFactory()).build();
 
 		ClassDefinitionContainer container2 = serializer2.getClassDefinitionContainer();
 
-		Serializer remoteSerializer2 = Lightning.newBuilder().logger(new DebugLogger())
-				.serializerDefinitions(new BookingEngineSerializerFactory()).build();
+		Serializer remoteSerializer2 = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new BookingEngineSerializerFactory()).build();
 
 		remoteSerializer2.setClassDefinitionContainer(container2);
 
@@ -51,21 +47,21 @@ public class WhatShouldItLookLike {
 
 		Serializer remoteSerializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
 		remoteSerializer.setClassDefinitionContainer(container);
-		
+
 		Foo foo = new Foo();
 		foo.enumValue = Bar.Value2;
 		foo.first = "first";
-		foo.second= "second";
+		foo.second = "second";
 		foo.someOther = 123;
-		
+
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
 		out.writeObject(foo);
 		System.out.println(foo);
-		
+
 		byte[] data = baos.toByteArray();
 		System.out.println(Arrays.toString(data));
-		
+
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 		Object value = in.readObject();
@@ -76,11 +72,11 @@ public class WhatShouldItLookLike {
 
 		@Override
 		protected void configure() {
-			//define(Bar.class).byMarshaller(new BarMarshaller());
+			// define(Bar.class).byMarshaller(new BarMarshaller());
 
-			//bind(Foo.class).with(Attribute.class).exclude("value");
-			//bind(Foo.class).property("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
-			//bind(Foo.class).property("enumValue").byMarshaller(BarMarshaller.class);
+			// bind(Foo.class).with(Attribute.class).exclude("value");
+			// bind(Foo.class).property("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
+			// bind(Foo.class).property("enumValue").byMarshaller(BarMarshaller.class);
 
 			install(new SomeChildSerializerFactory());
 		}
@@ -92,8 +88,10 @@ public class WhatShouldItLookLike {
 		public void configure() {
 			describesAttributes(Attribute.class);
 
-			bind(Foo.class).attributes();//.exclude("enumValue"); // like .with(Attribute.class)
-			//bind(Foo.class).property("enumValue").byMarshaller(new BarMarshaller());
+			bind(Foo.class).attributes();// .exclude("enumValue"); // like
+											// .with(Attribute.class)
+			// bind(Foo.class).property("enumValue").byMarshaller(new
+			// BarMarshaller());
 		}
 	}
 
@@ -103,7 +101,7 @@ public class WhatShouldItLookLike {
 		private String second;
 		private Integer value;
 		private int someOther;
-		
+
 		@Attribute
 		private Bar enumValue;
 
@@ -154,7 +152,8 @@ public class WhatShouldItLookLike {
 
 		@Override
 		public String toString() {
-			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue=" + enumValue + "]";
+			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue="
+					+ enumValue + "]";
 		}
 	}
 
@@ -202,118 +201,5 @@ public class WhatShouldItLookLike {
 			return value;
 		}
 
-	}
-
-	public static class DebugLogger extends LoggerAdapter {
-
-		@Override
-		public boolean isLogLevelEnabled(LogLevel logLevel) {
-			return true;
-		}
-
-		@Override
-		public boolean isTraceEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isDebugEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isInfoEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isWarnEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isErrorEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isFatalEnabled() {
-			return true;
-		}
-
-		@Override
-		public void trace(String message) {
-			log(LogLevel.Trace, message, null);
-		}
-
-		@Override
-		public void trace(String message, Throwable throwable) {
-			log(LogLevel.Trace, message, throwable);
-		}
-
-		@Override
-		public void debug(String message) {
-			log(LogLevel.Debug, message, null);
-		}
-
-		@Override
-		public void debug(String message, Throwable throwable) {
-			log(LogLevel.Debug, message, throwable);
-		}
-
-		@Override
-		public void info(String message) {
-			log(LogLevel.Info, message, null);
-		}
-
-		@Override
-		public void info(String message, Throwable throwable) {
-			log(LogLevel.Info, message, throwable);
-		}
-
-		@Override
-		public void warn(String message) {
-			log(LogLevel.Warn, message, null);
-		}
-
-		@Override
-		public void warn(String message, Throwable throwable) {
-			log(LogLevel.Warn, message, throwable);
-		}
-
-		@Override
-		public void error(String message) {
-			log(LogLevel.Error, message, null);
-		}
-
-		@Override
-		public void error(String message, Throwable throwable) {
-			log(LogLevel.Error, message, throwable);
-		}
-
-		@Override
-		public void fatal(String message) {
-			log(LogLevel.Fatal, message, null);
-		}
-
-		@Override
-		public void fatal(String message, Throwable throwable) {
-			log(LogLevel.Fatal, message, throwable);
-		}
-
-		private void log(LogLevel logLevel, String message, Throwable throwable) {
-			PrintStream stream;
-			if (throwable != null) {
-				stream = System.err;
-			}
-			else {
-				stream = System.out;
-			}
-
-			stream.println(getName() + " - " + logLevel.name() + ": " + message);
-			if (throwable != null) {
-				throwable.printStackTrace();
-			}
-		}
 	}
 }

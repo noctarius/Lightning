@@ -15,9 +15,9 @@
  */
 package com.github.lightning.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.objectweb.asm.tree.LabelNode;
@@ -33,12 +33,11 @@ public class ClassDefinitionContainerTestCase {
 
 	@Test
 	public void testClassDefinitionContainer() throws Exception {
-		final List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>();
+		final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
 
 		for (Class<?> clazz : CLASSES) {
 			PropertyDescriptor label = null;
-			classDefinitions.add(new InternalClassDefinition(clazz, Collections.<PropertyDescriptor> emptyList(),
-					new LoggerAdapter()));
+			classDefinitions.add(new InternalClassDefinition(clazz, Collections.<PropertyDescriptor> emptyList(), new LoggerAdapter()));
 		}
 
 		ClassDefinitionContainer classDefinitionContainer = new InternalClassDefinitionContainer(classDefinitions);

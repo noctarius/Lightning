@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +36,6 @@ import com.github.lightning.base.AbstractObjectMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
 import com.github.lightning.io.SerializerInputStream;
 import com.github.lightning.io.SerializerOutputStream;
-import com.github.lightning.logging.LogLevel;
-import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.Attribute;
 
 public class Benchmark {
@@ -49,9 +46,8 @@ public class Benchmark {
 	@Test
 	public void benchmarkLightningSerialization() throws Exception {
 		long buildStartTime = System.nanoTime();
-		Serializer serializer = Lightning.newBuilder()
-				.debugCacheDirectory(new File("target"))
-				.serializerDefinitions(new BenchmarkSerializerDefinition()).build();
+		Serializer serializer = Lightning.newBuilder().debugCacheDirectory(new File("target")).serializerDefinitions(new BenchmarkSerializerDefinition())
+				.build();
 		long nanos = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - buildStartTime);
 		System.out.println("Lightning Serializer build time: " + nanos + " ms");
 
@@ -88,8 +84,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Lightning Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Lightning Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -148,8 +143,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Lightning Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Lightning Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -196,8 +190,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Java Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Java Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -255,8 +248,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Java Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Java Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -348,8 +340,8 @@ public class Benchmark {
 
 		@Override
 		public String toString() {
-			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther="
-					+ someOther + ", enumValue=" + enumValue + "]";
+			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue="
+					+ enumValue + "]";
 		}
 
 		@Override
@@ -437,118 +429,5 @@ public class Benchmark {
 			return value;
 		}
 
-	}
-
-	public static class DebugLogger extends LoggerAdapter {
-
-		@Override
-		public boolean isLogLevelEnabled(LogLevel logLevel) {
-			return true;
-		}
-
-		@Override
-		public boolean isTraceEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isDebugEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isInfoEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isWarnEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isErrorEnabled() {
-			return true;
-		}
-
-		@Override
-		public boolean isFatalEnabled() {
-			return true;
-		}
-
-		@Override
-		public void trace(String message) {
-			log(LogLevel.Trace, message, null);
-		}
-
-		@Override
-		public void trace(String message, Throwable throwable) {
-			log(LogLevel.Trace, message, throwable);
-		}
-
-		@Override
-		public void debug(String message) {
-			log(LogLevel.Debug, message, null);
-		}
-
-		@Override
-		public void debug(String message, Throwable throwable) {
-			log(LogLevel.Debug, message, throwable);
-		}
-
-		@Override
-		public void info(String message) {
-			log(LogLevel.Info, message, null);
-		}
-
-		@Override
-		public void info(String message, Throwable throwable) {
-			log(LogLevel.Info, message, throwable);
-		}
-
-		@Override
-		public void warn(String message) {
-			log(LogLevel.Warn, message, null);
-		}
-
-		@Override
-		public void warn(String message, Throwable throwable) {
-			log(LogLevel.Warn, message, throwable);
-		}
-
-		@Override
-		public void error(String message) {
-			log(LogLevel.Error, message, null);
-		}
-
-		@Override
-		public void error(String message, Throwable throwable) {
-			log(LogLevel.Error, message, throwable);
-		}
-
-		@Override
-		public void fatal(String message) {
-			log(LogLevel.Fatal, message, null);
-		}
-
-		@Override
-		public void fatal(String message, Throwable throwable) {
-			log(LogLevel.Fatal, message, throwable);
-		}
-
-		private void log(LogLevel logLevel, String message, Throwable throwable) {
-			PrintStream stream;
-			if (throwable != null) {
-				stream = System.err;
-			}
-			else {
-				stream = System.out;
-			}
-
-			stream.println(getName() + " - " + logLevel.name() + ": " + message);
-			if (throwable != null) {
-				throwable.printStackTrace();
-			}
-		}
 	}
 }
