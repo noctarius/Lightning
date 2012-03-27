@@ -46,6 +46,11 @@ public final class ClassUtil {
 	private ClassUtil() {
 	}
 
+	public static boolean isReferenceCapable(Class<?> type) {
+		return !type.isPrimitive() && Boolean.class != type && Byte.class != type && Short.class != type
+				&& Integer.class != type && Long.class != type && Float.class != type && Double.class != type;
+	}
+
 	public static Class<?> loadClass(String canonicalName) throws ClassNotFoundException {
 		return loadClass(canonicalName, ClassUtil.class.getClassLoader());
 	}

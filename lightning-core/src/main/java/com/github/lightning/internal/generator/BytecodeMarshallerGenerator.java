@@ -32,9 +32,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.SerializationStrategy;
 import com.github.lightning.exceptions.SerializerMarshallerGeneratorException;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
+import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.metadata.PropertyDescriptor;
 
 public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants, MarshallerGenerator {
@@ -43,7 +45,8 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 
 	public Marshaller generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors,
 			Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
-			ObjectInstantiatorFactory objectInstantiatorFactory, File debugCacheDirectory) {
+			SerializationStrategy serializationStrategy, ObjectInstantiatorFactory objectInstantiatorFactory,
+			File debugCacheDirectory) {
 
 		try {
 			ClassWriter cw = new ClassWriter(0);
@@ -66,7 +69,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			createConstructor(cw, className, propertyDescriptorsCopy);
 
 			// Build Marshaller#marshall method
-			createMarshallMethod(cw, className, propertyDescriptorsCopy);
+			createMarshallMethod(cw, className, type, serializationStrategy, propertyDescriptorsCopy);
 
 			// Build Marshaller#unmarshall method
 			createUnmarshallMethod(cw, className, type, propertyDescriptorsCopy);
@@ -174,43 +177,48 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		mv.visitEnd();
 	}
 
-	private void createMarshallMethod(ClassWriter cw, String className, List<PropertyDescriptor> propertyDescriptors) {
+	private void createMarshallMethod(ClassWriter cw, String className, Class<?> type,
+			SerializationStrategy serializationStrategy, List<PropertyDescriptor> propertyDescriptors) {
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "marshall", MARSHALLER_MARSHALL_SIGNATURE, null, MARSHALLER_EXCEPTIONS);
 
-		// Load this to method stack
-		mv.visitVarInsn(ALOAD, 0);
+		// If element type is not reference capable or SerializationStrategy is
+		// not SizeOptimized just prevent generation of code
+		if (serializationStrategy == SerializationStrategy.SizeOptimized && ClassUtil.isReferenceCapable(type)) {
+			// Load this to method stack
+			mv.visitVarInsn(ALOAD, 0);
 
-		// Load value to method stack
-		mv.visitVarInsn(ALOAD, 1);
+			// Load value to method stack
+			mv.visitVarInsn(ALOAD, 1);
 
-		// Load type to method stack
-		mv.visitVarInsn(ALOAD, 2);
+			// Load type to method stack
+			mv.visitVarInsn(ALOAD, 2);
 
-		// Load dataOutput to method stack
-		mv.visitVarInsn(ALOAD, 3);
+			// Load dataOutput to method stack
+			mv.visitVarInsn(ALOAD, 3);
 
-		// Load serializationContext to method stack
-		mv.visitVarInsn(ALOAD, 4);
+			// Load serializationContext to method stack
+			mv.visitVarInsn(ALOAD, 4);
 
-		// Call super.isAlreadyMarshalled(...);
-		mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "isAlreadyMarshalled",
-				MARSHALLER_IS_ALREADY_MARSHALLED_SIGNATURE);
+			// Call super.isAlreadyMarshalled(...);
+			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "isAlreadyMarshalled",
+					MARSHALLER_IS_ALREADY_MARSHALLED_SIGNATURE);
 
-		// Label if value is not yet marshalled
-		Label notYetMarshalled = new Label();
+			// Label if value is not yet marshalled
+			Label notYetMarshalled = new Label();
 
-		// Test if already marshalled
-		mv.visitJumpInsn(IFEQ, notYetMarshalled);
+			// Test if already marshalled
+			mv.visitJumpInsn(IFEQ, notYetMarshalled);
 
-		// If marshalled - just return
-		mv.visitInsn(RETURN);
+			// If marshalled - just return
+			mv.visitInsn(RETURN);
 
-		// Visit label - if not yet marshalled - marshall it
-		mv.visitLabel(notYetMarshalled);
+			// Visit label - if not yet marshalled - marshall it
+			mv.visitLabel(notYetMarshalled);
+		}
 
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 			String fieldName = toFinalFieldName(propertyDescriptor);
-			Class<?> type = propertyDescriptor.getType();
+			Class<?> propertyType = propertyDescriptor.getType();
 
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
@@ -237,11 +245,11 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			mv.visitVarInsn(ALOAD, 1);
 
 			// Load value by type on stack
-			visitPropertyAccessorRead(type, mv);
+			visitPropertyAccessorRead(propertyType, mv);
 
 			// If type is primitive add some "autoboxing" magic
-			if (type.isPrimitive()) {
-				visitWrapperAutoboxing(type, mv);
+			if (propertyType.isPrimitive()) {
+				visitWrapperAutoboxing(propertyType, mv);
 			}
 
 			// Load type to method stack

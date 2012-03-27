@@ -29,6 +29,7 @@ import com.github.lightning.exceptions.SerializerDefinitionException;
 import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
+import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.metadata.ClassDescriptor;
 import com.github.lightning.metadata.PropertyAccessor;
 import com.github.lightning.metadata.PropertyDescriptor;
@@ -60,7 +61,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 	@SuppressWarnings("unchecked")
 	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (serializationContext.getSerializationStrategy() == SerializationStrategy.SizeOptimized) {
-			if (isReferenceCapable(type)) {
+			if (ClassUtil.isReferenceCapable(type)) {
 				long referenceId = dataInput.readLong();
 				V instance;
 				if (containsReferenceId(referenceId, serializationContext)) {
@@ -87,7 +88,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 			return false;
 		}
 
-		if (!isReferenceCapable(type)) {
+		if (!ClassUtil.isReferenceCapable(type)) {
 			return false;
 		}
 
@@ -152,11 +153,6 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 	protected long cacheObjectForUnmarshall(long referenceId, Object instance, SerializationContext serializationContext) {
 		return serializationContext.putUnmarshalledInstance(referenceId, instance);
-	}
-
-	private boolean isReferenceCapable(Class<?> type) {
-		return !type.isPrimitive() && Boolean.class != type && Byte.class != type && Short.class != type
-				&& Integer.class != type && Long.class != type && Float.class != type && Double.class != type;
 	}
 
 	private class DelegatingMarshaller implements Marshaller {

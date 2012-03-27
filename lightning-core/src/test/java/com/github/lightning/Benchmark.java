@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -48,7 +49,9 @@ public class Benchmark {
 	@Test
 	public void benchmarkLightningSerialization() throws Exception {
 		long buildStartTime = System.nanoTime();
-		Serializer serializer = Lightning.newBuilder().serializerDefinitions(new BenchmarkSerializerDefinition()).build();
+		Serializer serializer = Lightning.newBuilder()
+				.debugCacheDirectory(new File("target"))
+				.serializerDefinitions(new BenchmarkSerializerDefinition()).build();
 		long nanos = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - buildStartTime);
 		System.out.println("Lightning Serializer build time: " + nanos + " ms");
 

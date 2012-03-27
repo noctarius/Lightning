@@ -25,7 +25,7 @@ import java.io.PrintStream;
 import org.junit.Test;
 
 import com.github.lightning.base.AbstractSerializerDefinition;
-import com.github.lightning.exceptions.ClassDefinitionNotConstistentException;
+import com.github.lightning.exceptions.ClassDefinitionNotConsistentException;
 import com.github.lightning.logging.LogLevel;
 import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.Attribute;
@@ -47,7 +47,7 @@ public class ClassDefinitionContainerTestCase {
 		remoteSerializer.setClassDefinitionContainer(container);
 	}
 
-	@Test(expected = ClassDefinitionNotConstistentException.class)
+	@Test(expected = ClassDefinitionNotConsistentException.class)
 	public void testLightningChecksumFailing() throws Exception {
 		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger())
 				.serializerDefinitions(new SerializerDefinition()).build();
@@ -73,7 +73,7 @@ public class ClassDefinitionContainerTestCase {
 		remoteSerializer.setClassDefinitionContainer(container);
 	}
 
-	@Test(expected = ClassDefinitionNotConstistentException.class)
+	@Test(expected = ClassDefinitionNotConsistentException.class)
 	public void testSerialVersionUIDFailing() throws Exception {
 		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger())
 				.classComparisonStrategy(ClassComparisonStrategy.SerialVersionUID)

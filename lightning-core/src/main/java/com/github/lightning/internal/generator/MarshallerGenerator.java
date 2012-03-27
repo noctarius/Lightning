@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.lightning.Marshaller;
+import com.github.lightning.SerializationStrategy;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.metadata.PropertyDescriptor;
@@ -28,6 +29,7 @@ public interface MarshallerGenerator {
 
 	Marshaller generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors,
 			Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
-			ObjectInstantiatorFactory objectInstantiatorFactory, File debugCacheDirectory);
+			SerializationStrategy serializationStrategy, ObjectInstantiatorFactory objectInstantiatorFactory,
+			File debugCacheDirectory);
 
 }
