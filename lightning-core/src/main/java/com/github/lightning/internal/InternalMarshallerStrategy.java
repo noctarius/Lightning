@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.carrotsearch.hppc.ObjectObjectMap;
 import com.github.lightning.Marshaller;
+import com.github.lightning.MarshallerContext;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.Streamed;
 import com.github.lightning.internal.marshaller.BigDecimalMarshaller;
@@ -75,7 +75,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 		baseMarshaller = Collections.unmodifiableList(marshallers);
 	}
 
-	public Marshaller getMarshaller(Class<?> type, ObjectObjectMap<Class<?>, Marshaller> definedMarshallers) {
+	public Marshaller getMarshaller(Class<?> type, MarshallerContext marshallerContext) {
 		if (Streamed.class.isAssignableFrom(type)) {
 			return streamedMarshaller;
 		}
@@ -84,7 +84,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 			return externalizableMarshaller;
 		}
 
-		Marshaller marshaller = definedMarshallers.get(type);
+		Marshaller marshaller = marshallerContext.getMarshaller(type);
 		if (marshaller != null) {
 			return marshaller;
 		}

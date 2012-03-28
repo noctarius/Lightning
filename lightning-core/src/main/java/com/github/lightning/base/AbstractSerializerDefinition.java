@@ -27,10 +27,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.carrotsearch.hppc.ObjectObjectMap;
-import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 import com.github.lightning.Marshaller;
+import com.github.lightning.MarshallerContext;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.bindings.AnnotatedBinder;
 import com.github.lightning.bindings.ClassBinder;
@@ -41,13 +40,14 @@ import com.github.lightning.exceptions.SerializerDefinitionException;
 import com.github.lightning.generator.DefinitionBuildingContext;
 import com.github.lightning.generator.DefinitionVisitor;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
+import com.github.lightning.internal.InternalMarshallerContext;
 import com.github.lightning.internal.util.BeanUtil;
 import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.PropertyDescriptor;
 
 public abstract class AbstractSerializerDefinition implements SerializerDefinition {
 
-	private final ObjectObjectMap<Class<?>, Marshaller> marshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
+	private final InternalMarshallerContext marshallerContext = new InternalMarshallerContext();
 	private final Set<SerializerDefinition> children = new HashSet<SerializerDefinition>();
 	private final Map<PropertyDescriptor, Marshaller> propertyMarshallers = new HashMap<PropertyDescriptor, Marshaller>();
 	private final Map<AnnotatedBinder, AnnotationBinderDefinition<?>> annotationBinders = new HashMap<AnnotatedBinder, AnnotationBinderDefinition<?>>();
@@ -81,7 +81,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		// Visit all direct marshallers
-		Iterator<ObjectObjectCursor<Class<?>, Marshaller>> iterator = marshallers.iterator();
+		Iterator<ObjectObjectCursor<Class<?>, Marshaller>> iterator = marshallerContext.getInternalMap().iterator();
 		while (iterator.hasNext()) {
 			ObjectObjectCursor<Class<?>, Marshaller> entry = iterator.next();
 			visitor.visitClassDefine(entry.key, entry.value);
@@ -152,10 +152,10 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			@Override
 			public void byMarshaller(Marshaller marshaller) {
 				if (marshaller instanceof AbstractObjectMarshaller) {
-					marshallers.put(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objectInstantiatorFactory));
+					marshallerContext.bindMarshaller(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objectInstantiatorFactory));
 				}
 				else {
-					marshallers.put(clazz, marshaller);
+					marshallerContext.bindMarshaller(clazz, marshaller);
 				}
 			}
 		};
@@ -281,7 +281,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 				Class<?> fieldType = property.getType();
 
-				ObjectObjectMap<Class<?>, Marshaller> marshallers = combineMarshallers(AbstractSerializerDefinition.this);
+				MarshallerContext marshallers = combineMarshallers(AbstractSerializerDefinition.this);
 				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
 
 				if (marshaller instanceof TypeBindableMarshaller) {
@@ -300,14 +300,8 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			}
 		}
 
-		private ObjectObjectMap<Class<?>, Marshaller> combineMarshallers(AbstractSerializerDefinition abstractSerializerDefinition) {
-			ObjectObjectMap<Class<?>, Marshaller> marshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
-			if (abstractSerializerDefinition.parent != null) {
-				marshallers.putAll(combineMarshallers(abstractSerializerDefinition.parent));
-			}
-
-			marshallers.putAll(abstractSerializerDefinition.marshallers);
-			return marshallers;
+		private MarshallerContext combineMarshallers(AbstractSerializerDefinition abstractSerializerDefinition) {
+			return new InternalMarshallerContext(abstractSerializerDefinition.marshallerContext);
 		}
 
 		private boolean isExcluded(String propertyName) {

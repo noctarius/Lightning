@@ -37,7 +37,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>lightning-api</artifactId>
 			<version>${project.version}</version>
-			<scope>import</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>

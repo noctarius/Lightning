@@ -12,14 +12,15 @@ import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.internal.generator.AbstractGeneratedMarshaller;
-import com.github.lightning.metadata.ClassDefinitionContainer;
 import com.github.lightning.metadata.PropertyAccessor;
 import com.github.lightning.metadata.PropertyDescriptor;
 
 public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMarshaller {
 
-	private final Marshaller PROPERTY_BAR_LIGHTNING;
-	private final Marshaller PROPERTY_FOO_LIGHTNING;
+	private final Marshaller MARSHALLER_BAR_LIGHTNING;
+	private final PropertyAccessor ACCESSOR_BAR_LIGHTNING;
+	private final Marshaller MARSHALLER_FOO_LIGHTNING;
+	private final PropertyAccessor ACCESSOR_FOO_LIGHTNING;
 
 	public FooLightningGeneratedMarshaller (Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers,
 		ClassDescriptorAwareSerializer serializer, ObjectInstantiatorFactory objectInstantiatorFactory,
@@ -32,14 +33,18 @@ public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMars
 		if (barMarshaller == null) {
 			barMarshaller = findMarshaller(bar.getType());
 		}
-		PROPERTY_BAR_LIGHTNING = barMarshaller;
+		MARSHALLER_BAR_LIGHTNING = barMarshaller;
+
+		ACCESSOR_BAR_LIGHTNING = getPropertyAccessor("bar");
 
 		PropertyDescriptor foo = findPropertyDescriptor("foo", propertyDescriptors);
 		Marshaller fooMarshaller = foo.getMarshaller();
 		if (fooMarshaller == null) {
 			fooMarshaller = findMarshaller(foo.getType());
 		}
-		PROPERTY_FOO_LIGHTNING = fooMarshaller;
+		MARSHALLER_FOO_LIGHTNING = fooMarshaller;
+
+		ACCESSOR_FOO_LIGHTNING = getPropertyAccessor("foo");
 	}
 	
 	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
@@ -47,25 +52,25 @@ public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMars
 			return;
 		}
 
-		PropertyAccessor barPropertyAccessor = getPropertyAccessor("bar");
+		PropertyAccessor barPropertyAccessor = this.ACCESSOR_BAR_LIGHTNING;
 		Class<?> barPropertyType = barPropertyAccessor.getType();
-		this.PROPERTY_BAR_LIGHTNING.marshall(Integer.valueOf(barPropertyAccessor.readInt(value)), barPropertyType, dataOutput, serializationContext);
+		this.MARSHALLER_BAR_LIGHTNING.marshall(Integer.valueOf(barPropertyAccessor.readInt(value)), barPropertyType, dataOutput, serializationContext);
 
-		PropertyAccessor fooPropertyAccessor = getPropertyAccessor("foo");
+		PropertyAccessor fooPropertyAccessor = this.ACCESSOR_FOO_LIGHTNING;
 		Class<?> fooPropertyType = fooPropertyAccessor.getType();
-		this.PROPERTY_FOO_LIGHTNING.marshall(fooPropertyAccessor.readObject(value), fooPropertyType, dataOutput, serializationContext);
+		this.MARSHALLER_FOO_LIGHTNING.marshall(fooPropertyAccessor.readObject(value), fooPropertyType, dataOutput, serializationContext);
 
 	}
 	
 	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		PropertyAccessor barPropertyAccessor = getPropertyAccessor("bar");
+		PropertyAccessor barPropertyAccessor = this.ACCESSOR_BAR_LIGHTNING;
 		Class<?> barPropertyType = barPropertyAccessor.getType();
-		Object barValue = this.PROPERTY_BAR_LIGHTNING.unmarshall(barPropertyType, dataInput, serializationContext);
+		Object barValue = this.MARSHALLER_BAR_LIGHTNING.unmarshall(barPropertyType, dataInput, serializationContext);
 		barPropertyAccessor.writeInt(instance, ((Integer) barValue).intValue());
 
-		PropertyAccessor fooPropertyAccessor = getPropertyAccessor("foo");
+		PropertyAccessor fooPropertyAccessor = this.ACCESSOR_FOO_LIGHTNING;
 		Class<?> fooPropertyType = fooPropertyAccessor.getType();
-		Object fooValue = this.PROPERTY_FOO_LIGHTNING.unmarshall(fooPropertyType, dataInput, serializationContext);
+		Object fooValue = this.MARSHALLER_FOO_LIGHTNING.unmarshall(fooPropertyType, dataInput, serializationContext);
 		fooPropertyAccessor.writeObject(instance, fooValue);
 
 		return instance;
@@ -80,3 +85,4 @@ public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMars
 		return null;
 	}
 }
+

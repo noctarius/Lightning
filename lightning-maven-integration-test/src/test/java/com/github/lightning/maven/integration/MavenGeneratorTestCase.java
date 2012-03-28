@@ -23,6 +23,10 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
+import com.github.lightning.Lightning;
+import com.github.lightning.Serializer;
+import com.github.lightning.base.AbstractSerializerDefinition;
+
 public class MavenGeneratorTestCase {
 
 	@Test

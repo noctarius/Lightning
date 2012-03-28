@@ -34,7 +34,6 @@ import org.codehaus.plexus.compiler.util.scan.SimpleSourceInclusionScanner;
 import org.codehaus.plexus.compiler.util.scan.SourceInclusionScanner;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 
-import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationStrategy;
 import com.github.lightning.Serializer;
 import com.github.lightning.base.AbstractSerializerDefinition;

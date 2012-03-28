@@ -15,8 +15,10 @@
  */
 package com.github.lightning;
 
-public interface MarshallerStrategy {
+public interface MarshallerContext {
 
-	Marshaller getMarshaller(Class<?> type, MarshallerContext marshallerContext);
+	Marshaller getMarshaller(Class<?> type);
+
+	void bindMarshaller(Class<?> type, Marshaller marshaller);
 
 }

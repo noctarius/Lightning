@@ -55,7 +55,7 @@ public class SourceMarshallerGenerator {
 	}
 
 	public File generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors,
-			SerializationStrategy serializationStrategy, File outputFolder)	throws IOException {
+			SerializationStrategy serializationStrategy, File outputFolder) throws IOException {
 
 		// Copy properties and sort them by name
 		List<PropertyDescriptor> propertyDescriptorsCopy = new ArrayList<PropertyDescriptor>(propertyDescriptors);
@@ -70,9 +70,9 @@ public class SourceMarshallerGenerator {
 		}
 
 		File outputFile = new File(packageFolder, className + ".java");
-		
+
 		logger.info("Generating source :" + outputFile.getAbsolutePath());
-		
+
 		FileOutputStream stream = new FileOutputStream(outputFile);
 		OutputStreamWriter writer = new OutputStreamWriter(stream, charset);
 
@@ -94,9 +94,9 @@ public class SourceMarshallerGenerator {
 
 	public static class Support {
 
-		public String toFinalFieldName(PropertyDescriptor propertyDescriptor) {
-			return new StringBuilder("PROPERTY_").append(propertyDescriptor.getPropertyName().toUpperCase()).append("_LIGHTNING")
-					.toString();
+		public String toFinalFieldName(String prefix, PropertyDescriptor propertyDescriptor) {
+			return new StringBuilder(prefix.toUpperCase()).append("_").append(propertyDescriptor.getPropertyName()
+					.toUpperCase()).append("_LIGHTNING").toString();
 		}
 
 		public String generateWriter(PropertyDescriptor propertyDescriptor, String instanceName) {

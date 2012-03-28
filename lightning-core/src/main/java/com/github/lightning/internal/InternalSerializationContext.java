@@ -24,6 +24,7 @@ import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.carrotsearch.hppc.ObjectObjectMap;
 import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 import com.github.lightning.Marshaller;
+import com.github.lightning.MarshallerContext;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.SerializationStrategy;
@@ -34,7 +35,7 @@ public class InternalSerializationContext implements SerializationContext {
 
 	private final Map<Object, Long> referencesMarshall;
 	private final LongObjectMap<Object> referencesUnmarshall;
-	private final ObjectObjectMap<Class<?>, Marshaller> definedMarshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
+	private final MarshallerContext marshallerContext = new InternalMarshallerContext();
 
 	private final ClassDefinitionContainer classDefinitionContainer;
 	private final SerializationStrategy serializationStrategy;
@@ -52,7 +53,7 @@ public class InternalSerializationContext implements SerializationContext {
 		this.objectInstantiatorFactory = objectInstantiatorFactory;
 
 		for (Entry<Class<?>, Marshaller> entry : definedMarshallers.entrySet()) {
-			this.definedMarshallers.put(entry.getKey(), entry.getValue());
+			this.marshallerContext.bindMarshaller(entry.getKey(), entry.getValue());
 		}
 
 		if (serializationStrategy == SerializationStrategy.SizeOptimized) {
@@ -114,7 +115,7 @@ public class InternalSerializationContext implements SerializationContext {
 
 	@Override
 	public Marshaller findMarshaller(Class<?> type) {
-		return marshallerStrategy.getMarshaller(type, definedMarshallers);
+		return marshallerStrategy.getMarshaller(type, marshallerContext);
 	}
 
 	public Map<Object, Long> getReferencesMarshall() {

@@ -26,6 +26,7 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	private final String name;
 	private final String propertyName;
 	private final String internalSignature;
+	private final String declaringCanonicalClassname;
 
 	private final PropertyAccessor propertyAccessor;
 	private final Marshaller marshaller;
@@ -35,6 +36,7 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 		this.propertyName = propertyName;
 		this.propertyAccessor = propertyAccessor;
 		this.marshaller = marshaller;
+		this.declaringCanonicalClassname = propertyAccessor.getType().getCanonicalName();
 		this.internalSignature = BeanUtil.buildInternalSignature(propertyName, propertyAccessor);
 	}
 
@@ -76,5 +78,58 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public int compareTo(PropertyDescriptor o) {
 		return propertyName.compareTo(o.getPropertyName());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((declaringCanonicalClassname == null) ? 0 : declaringCanonicalClassname.hashCode());
+		result = prime * result + ((internalSignature == null) ? 0 : internalSignature.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InternalPropertyDescriptor other = (InternalPropertyDescriptor) obj;
+		if (declaringCanonicalClassname == null) {
+			if (other.declaringCanonicalClassname != null)
+				return false;
+		}
+		else if (!declaringCanonicalClassname.equals(other.declaringCanonicalClassname))
+			return false;
+		if (internalSignature == null) {
+			if (other.internalSignature != null)
+				return false;
+		}
+		else if (!internalSignature.equals(other.internalSignature))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		}
+		else if (!name.equals(other.name))
+			return false;
+		if (propertyName == null) {
+			if (other.propertyName != null)
+				return false;
+		}
+		else if (!propertyName.equals(other.propertyName))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "InternalPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature=" + internalSignature + ", declaringCanonicalClassname="
+				+ declaringCanonicalClassname + ", propertyAccessor=" + propertyAccessor + ", marshaller=" + marshaller + "]";
 	}
 }

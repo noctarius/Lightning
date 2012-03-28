@@ -16,7 +16,9 @@
 package com.github.lightning.internal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.github.lightning.Marshaller;
 import com.github.lightning.logging.Logger;
@@ -26,7 +28,7 @@ import com.github.lightning.metadata.PropertyDescriptor;
 
 public class InternalClassDescriptor implements ClassDescriptor {
 
-	private final List<PropertyDescriptor> propertyDescriptors = new ArrayList<PropertyDescriptor>();
+	private final Set<PropertyDescriptor> propertyDescriptors = new HashSet<PropertyDescriptor>();
 	private final Logger logger;
 	private final Class<?> type;
 
@@ -50,7 +52,7 @@ public class InternalClassDescriptor implements ClassDescriptor {
 
 	@Override
 	public List<PropertyDescriptor> getPropertyDescriptors() {
-		return propertyDescriptors;
+		return new ArrayList<PropertyDescriptor>(propertyDescriptors);
 	}
 
 	@Override
@@ -58,8 +60,8 @@ public class InternalClassDescriptor implements ClassDescriptor {
 		return marshaller;
 	}
 
-	public void push(PropertyDescriptor propertyDescriptor) {
-		propertyDescriptors.add(propertyDescriptor);
+	public boolean push(PropertyDescriptor propertyDescriptor) {
+		return propertyDescriptors.add(propertyDescriptor);
 	}
 
 	public void setMarshaller(Marshaller marshaller) {
