@@ -25,6 +25,8 @@ import java.util.Map;
 import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.Streamed;
+import com.github.lightning.internal.marshaller.BigDecimalMarshaller;
+import com.github.lightning.internal.marshaller.BigIntegerMarshaller;
 import com.github.lightning.internal.marshaller.BooleanMarshaller;
 import com.github.lightning.internal.marshaller.ByteMarshaller;
 import com.github.lightning.internal.marshaller.CharacterMarshaller;
@@ -67,6 +69,8 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 		marshallers.add(new ListMarshaller());
 		marshallers.add(new SetMarshaller());
 		marshallers.add(new MapMarshaller());
+		marshallers.add(new BigIntegerMarshaller());
+		marshallers.add(new BigDecimalMarshaller());
 
 		baseMarshaller = Collections.unmodifiableList(marshallers);
 	}
