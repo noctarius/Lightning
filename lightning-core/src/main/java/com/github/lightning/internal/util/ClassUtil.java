@@ -257,6 +257,7 @@ public final class ClassUtil {
 			InputStream stream = classLoader.getResourceAsStream(internalName + ".class");
 			byte[] data = new byte[stream.available()];
 			stream.read(data);
+			stream.close();
 			return data;
 		}
 		catch (IOException e) {
