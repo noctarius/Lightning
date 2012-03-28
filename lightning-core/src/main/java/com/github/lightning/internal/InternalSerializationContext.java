@@ -19,6 +19,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.carrotsearch.hppc.LongObjectMap;
+import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.carrotsearch.hppc.ObjectObjectMap;
 import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 import com.github.lightning.Marshaller;
@@ -26,14 +28,12 @@ import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.SerializationStrategy;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
-import com.github.lightning.internal.bundle.cern.colt.map.AbstractLongObjectMap;
-import com.github.lightning.internal.bundle.cern.colt.map.OpenLongObjectHashMap;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class InternalSerializationContext implements SerializationContext {
 
 	private final Map<Object, Long> referencesMarshall;
-	private final AbstractLongObjectMap<Object> referencesUnmarshall;
+	private final LongObjectMap<Object> referencesUnmarshall;
 	private final ObjectObjectMap<Class<?>, Marshaller> definedMarshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
 
 	private final ClassDefinitionContainer classDefinitionContainer;
@@ -57,7 +57,7 @@ public class InternalSerializationContext implements SerializationContext {
 
 		if (serializationStrategy == SerializationStrategy.SizeOptimized) {
 			this.referencesMarshall = new IdentityHashMap<Object, Long>();
-			this.referencesUnmarshall = new OpenLongObjectHashMap<Object>(Object.class);
+			this.referencesUnmarshall = new LongObjectOpenHashMap<Object>();
 		}
 		else {
 			this.referencesMarshall = null;
@@ -121,7 +121,7 @@ public class InternalSerializationContext implements SerializationContext {
 		return referencesMarshall;
 	}
 
-	public AbstractLongObjectMap<Object> getReferencesUnmarshall() {
+	public LongObjectMap<Object> getReferencesUnmarshall() {
 		return referencesUnmarshall;
 	}
 

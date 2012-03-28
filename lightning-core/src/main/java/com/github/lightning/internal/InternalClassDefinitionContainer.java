@@ -29,9 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.carrotsearch.hppc.LongObjectMap;
+import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.github.lightning.Streamed;
-import com.github.lightning.internal.bundle.cern.colt.map.AbstractLongObjectMap;
-import com.github.lightning.internal.bundle.cern.colt.map.OpenLongObjectHashMap;
 import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.ClassDefinitionContainer;
@@ -39,16 +39,16 @@ import com.github.lightning.metadata.ClassDefinitionContainer;
 class InternalClassDefinitionContainer implements ClassDefinitionContainer, Streamed, Externalizable {
 
 	private final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
-	private final AbstractLongObjectMap<ClassDefinition> classDefinitionsMappings;
+	private final LongObjectMap<ClassDefinition> classDefinitionsMappings;
 
 	// Serialization
 	public InternalClassDefinitionContainer() {
-		classDefinitionsMappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class);
+		classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>();
 	}
 
 	InternalClassDefinitionContainer(Set<ClassDefinition> classDefinitions) {
 		this.classDefinitions.addAll(classDefinitions);
-		classDefinitionsMappings = new OpenLongObjectHashMap<ClassDefinition>(ClassDefinition.class, classDefinitions.size());
+		classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>(classDefinitions.size());
 		initMappings(classDefinitions);
 	}
 
