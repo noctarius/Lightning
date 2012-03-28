@@ -55,7 +55,7 @@ public class ObjectStreamClassInstantiator implements ObjectInstantiator {
 
 	private final ObjectStreamClass objStreamClass;
 
-	public ObjectStreamClassInstantiator(Class type) {
+	public ObjectStreamClassInstantiator(Class<?> type) {
 		initialize();
 		objStreamClass = ObjectStreamClass.lookup(type);
 	}

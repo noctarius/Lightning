@@ -30,13 +30,13 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  */
 public class JRockit131Instantiator implements ObjectInstantiator {
 
-	private Constructor mungedConstructor;
+	private Constructor<?> mungedConstructor;
 
 	private static Method newConstructorForSerializationMethod;
 
 	private static void initialize() {
 		if (newConstructorForSerializationMethod == null) {
-			Class cl;
+			Class<?> cl;
 			try {
 				cl = Class.forName("COM.jrockit.reflect.MemberAccess");
 				newConstructorForSerializationMethod = cl.getDeclaredMethod(
@@ -55,12 +55,12 @@ public class JRockit131Instantiator implements ObjectInstantiator {
 		}
 	}
 
-	public JRockit131Instantiator(Class type) {
+	public JRockit131Instantiator(Class<?> type) {
 		initialize();
 
 		if (newConstructorForSerializationMethod != null) {
 
-			Constructor javaLangObjectConstructor;
+			Constructor<?> javaLangObjectConstructor;
 
 			try {
 				javaLangObjectConstructor = Object.class.getConstructor((Class[]) null);
@@ -70,7 +70,7 @@ public class JRockit131Instantiator implements ObjectInstantiator {
 			}
 
 			try {
-				mungedConstructor = (Constructor) newConstructorForSerializationMethod.invoke(null,
+				mungedConstructor = (Constructor<?>) newConstructorForSerializationMethod.invoke(null,
 						new Object[] { javaLangObjectConstructor, type });
 			}
 			catch (Exception e) {

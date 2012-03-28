@@ -30,9 +30,9 @@ import com.github.lightning.internal.instantiator.SerializationInstantiatorHelpe
  */
 public class GCJSerializationInstantiator extends GCJInstantiatorBase {
 
-	private Class superType;
+	private Class<?> superType;
 
-	public GCJSerializationInstantiator(Class type) {
+	public GCJSerializationInstantiator(Class<?> type) {
 		super(type);
 		this.superType = SerializationInstantiatorHelper.getNonSerializableSuperClass(type);
 	}

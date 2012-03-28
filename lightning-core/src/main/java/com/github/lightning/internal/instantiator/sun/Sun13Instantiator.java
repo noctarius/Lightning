@@ -30,7 +30,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  */
 public class Sun13Instantiator extends Sun13InstantiatorBase {
 
-	public Sun13Instantiator(Class type) {
+	public Sun13Instantiator(Class<?> type) {
 		super(type);
 	}
 

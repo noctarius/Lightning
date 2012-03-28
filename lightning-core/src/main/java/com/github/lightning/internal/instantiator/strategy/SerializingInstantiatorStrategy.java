@@ -15,11 +15,7 @@
  */
 package com.github.lightning.internal.instantiator.strategy;
 
-import java.io.NotSerializableException;
-import java.io.Serializable;
-
 import com.github.lightning.instantiator.ObjectInstantiator;
-import com.github.lightning.internal.instantiator.ObjenesisException;
 import com.github.lightning.internal.instantiator.basic.ObjectStreamClassInstantiator;
 import com.github.lightning.internal.instantiator.gcj.GCJSerializationInstantiator;
 import com.github.lightning.internal.instantiator.perc.PercSerializationInstantiator;
@@ -56,7 +52,7 @@ public class SerializingInstantiatorStrategy extends BaseInstantiatorStrategy {
 	 * @return The ObjectInstantiator for the class
 	 */
 	@Override
-	public ObjectInstantiator newInstantiatorOf(Class type) {
+	public ObjectInstantiator newInstantiatorOf(Class<?> type) {
 		if (JVM_NAME.startsWith(SUN)) {
 			if (VM_VERSION.startsWith("1.3")) {
 				return new Sun13SerializationInstantiator(type);

@@ -28,9 +28,9 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  */
 public class NewInstanceInstantiator implements ObjectInstantiator {
 
-	private final Class type;
+	private final Class<?> type;
 
-	public NewInstanceInstantiator(Class type) {
+	public NewInstanceInstantiator(Class<?> type) {
 		this.type = type;
 	}
 

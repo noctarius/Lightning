@@ -37,7 +37,7 @@ public class PercInstantiator implements ObjectInstantiator {
 
 	private final Object[] typeArgs = new Object[] { null, Boolean.FALSE };
 
-	public PercInstantiator(Class type) {
+	public PercInstantiator(Class<?> type) {
 
 		typeArgs[0] = type;
 

@@ -37,7 +37,7 @@ public class JRockitLegacyInstantiator implements ObjectInstantiator {
 
 	private static void initialize() {
 		if (safeAllocObjectMethod == null) {
-			Class memSystem;
+			Class<?> memSystem;
 			try {
 				memSystem = Class.forName("jrockit.vm.MemSystem");
 				safeAllocObjectMethod = memSystem.getDeclaredMethod("safeAllocObject",
@@ -56,9 +56,9 @@ public class JRockitLegacyInstantiator implements ObjectInstantiator {
 		}
 	}
 
-	private final Class type;
+	private final Class<?> type;
 
-	public JRockitLegacyInstantiator(Class type) {
+	public JRockitLegacyInstantiator(Class<?> type) {
 		initialize();
 		this.type = type;
 	}

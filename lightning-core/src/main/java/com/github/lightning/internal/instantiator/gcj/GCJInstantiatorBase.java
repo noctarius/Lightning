@@ -62,9 +62,9 @@ public abstract class GCJInstantiatorBase implements ObjectInstantiator {
 		}
 	}
 
-	protected final Class type;
+	protected final Class<?> type;
 
-	public GCJInstantiatorBase(Class type) {
+	public GCJInstantiatorBase(Class<?> type) {
 		this.type = type;
 		initialize();
 	}

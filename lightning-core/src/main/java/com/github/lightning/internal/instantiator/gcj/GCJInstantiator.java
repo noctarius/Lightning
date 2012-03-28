@@ -29,7 +29,7 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  */
 public class GCJInstantiator extends GCJInstantiatorBase {
 
-	public GCJInstantiator(Class type) {
+	public GCJInstantiator(Class<?> type) {
 		super(type);
 	}
 

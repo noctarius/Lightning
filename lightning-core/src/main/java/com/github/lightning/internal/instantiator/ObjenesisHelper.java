@@ -42,7 +42,7 @@ public final class ObjenesisHelper {
 	 *            Class to instantiate
 	 * @return New instance of clazz
 	 */
-	public static Object newInstance(Class clazz) {
+	public static Object newInstance(Class<?> clazz) {
 		return OBJENESIS_STD.newInstance(clazz);
 	}
 
@@ -55,7 +55,7 @@ public final class ObjenesisHelper {
 	 *            Class to instantiate
 	 * @return New instance of clazz
 	 */
-	public static Serializable newSerializableInstance(Class clazz) {
+	public static Serializable newSerializableInstance(Class<?> clazz) {
 		return (Serializable) OBJENESIS_SERIALIZER.newInstance(clazz);
 	}
 
@@ -70,7 +70,7 @@ public final class ObjenesisHelper {
 	 *            Class to instantiate
 	 * @return Instantiator dedicated to the class
 	 */
-	public static ObjectInstantiator getInstantiatorOf(Class clazz) {
+	public static ObjectInstantiator getInstantiatorOf(Class<?> clazz) {
 		return OBJENESIS_STD.getInstantiatorOf(clazz);
 	}
 
@@ -84,7 +84,7 @@ public final class ObjenesisHelper {
 	 *            Class to instantiate
 	 * @return Instantiator dedicated to the class
 	 */
-	public static ObjectInstantiator getSerializableObjectInstantiatorOf(Class clazz) {
+	public static ObjectInstantiator getSerializableObjectInstantiatorOf(Class<?> clazz) {
 		return OBJENESIS_SERIALIZER.getInstantiatorOf(clazz);
 	}
 }

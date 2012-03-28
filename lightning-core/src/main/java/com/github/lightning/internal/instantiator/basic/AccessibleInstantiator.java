@@ -27,7 +27,7 @@ package com.github.lightning.internal.instantiator.basic;
  */
 public class AccessibleInstantiator extends ConstructorInstantiator {
 
-	public AccessibleInstantiator(Class type) {
+	public AccessibleInstantiator(Class<?> type) {
 		super(type);
 		if (constructor != null) {
 			constructor.setAccessible(true);

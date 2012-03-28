@@ -48,9 +48,9 @@ public abstract class Sun13InstantiatorBase implements ObjectInstantiator {
 		}
 	}
 
-	protected final Class type;
+	protected final Class<?> type;
 
-	public Sun13InstantiatorBase(Class type) {
+	public Sun13InstantiatorBase(Class<?> type) {
 		this.type = type;
 		initialize();
 	}

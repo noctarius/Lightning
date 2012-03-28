@@ -21,8 +21,6 @@ import java.util.Map.Entry;
 
 import com.carrotsearch.hppc.LongObjectMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
-import com.carrotsearch.hppc.ObjectObjectMap;
-import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerContext;
 import com.github.lightning.MarshallerStrategy;

@@ -30,9 +30,9 @@ import com.github.lightning.internal.instantiator.ObjenesisException;
  */
 public class ConstructorInstantiator implements ObjectInstantiator {
 
-	protected Constructor constructor;
+	protected Constructor<?> constructor;
 
-	public ConstructorInstantiator(Class type) {
+	public ConstructorInstantiator(Class<?> type) {
 		try {
 			constructor = type.getDeclaredConstructor((Class[]) null);
 		}

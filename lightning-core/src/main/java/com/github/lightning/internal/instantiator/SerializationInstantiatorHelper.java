@@ -40,8 +40,8 @@ public class SerializationInstantiatorHelper {
 	 * @return The first non-serializable superclass of 'type'.
 	 * @see java.io.Serializable
 	 */
-	public static Class getNonSerializableSuperClass(Class type) {
-		Class result = type;
+	public static Class<?> getNonSerializableSuperClass(Class<?> type) {
+		Class<?> result = type;
 		while (Serializable.class.isAssignableFrom(result)) {
 			result = result.getSuperclass();
 			if (result == null) {

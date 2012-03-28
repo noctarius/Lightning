@@ -18,11 +18,11 @@ package com.github.lightning.internal.instantiator.sun;
 import java.io.NotSerializableException;
 import java.lang.reflect.Constructor;
 
+import sun.reflect.ReflectionFactory;
+
 import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.ObjenesisException;
 import com.github.lightning.internal.instantiator.SerializationInstantiatorHelper;
-
-import sun.reflect.ReflectionFactory;
 
 /**
  * Instantiates an object using internal sun.reflect.ReflectionFactory - a class
@@ -38,15 +38,16 @@ import sun.reflect.ReflectionFactory;
  * @author Leonardo Mesquita
  * @see ObjectInstantiator
  */
+@SuppressWarnings("restriction")
 public class SunReflectionFactorySerializationInstantiator implements ObjectInstantiator {
 
-	private final Constructor mungedConstructor;
+	private final Constructor<?> mungedConstructor;
 
-	public SunReflectionFactorySerializationInstantiator(Class type) {
+	public SunReflectionFactorySerializationInstantiator(Class<?> type) {
 
-		Class nonSerializableAncestor = SerializationInstantiatorHelper.getNonSerializableSuperClass(type);
+		Class<?> nonSerializableAncestor = SerializationInstantiatorHelper.getNonSerializableSuperClass(type);
 		ReflectionFactory reflectionFactory = ReflectionFactory.getReflectionFactory();
-		Constructor nonSerializableAncestorConstructor;
+		Constructor<?> nonSerializableAncestorConstructor;
 		try {
 			nonSerializableAncestorConstructor = nonSerializableAncestor
 					.getConstructor((Class[]) null);

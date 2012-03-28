@@ -51,7 +51,7 @@ public class StdInstantiatorStrategy extends BaseInstantiatorStrategy {
 	 * @return The ObjectInstantiator for the class
 	 */
 	@Override
-	public ObjectInstantiator newInstantiatorOf(Class type) {
+	public ObjectInstantiator newInstantiatorOf(Class<?> type) {
 
 		if (JVM_NAME.startsWith(SUN)) {
 			if (VM_VERSION.startsWith("1.3")) {

@@ -35,7 +35,7 @@ public class ObjenesisBase implements ObjectInstantiatorFactory {
 	protected final InstantiatorStrategy strategy;
 
 	/** Strategy cache. Key = Class, Value = InstantiatorStrategy */
-	protected Map cache;
+	protected Map<String, ObjectInstantiator> cache;
 
 	/**
 	 * Constructor allowing to pick a strategy and using cache
@@ -61,7 +61,7 @@ public class ObjenesisBase implements ObjectInstantiatorFactory {
 			throw new IllegalArgumentException("A strategy can't be null");
 		}
 		this.strategy = strategy;
-		this.cache = useCache ? new HashMap() : null;
+		this.cache = useCache ? new HashMap<String, ObjectInstantiator>() : null;
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class ObjenesisBase implements ObjectInstantiatorFactory {
 	 * @return New instance of clazz
 	 */
 	@Override
-	public Object newInstance(Class clazz) {
+	public Object newInstance(Class<?> clazz) {
 		return getInstantiatorOf(clazz).newInstance();
 	}
 
@@ -95,7 +95,7 @@ public class ObjenesisBase implements ObjectInstantiatorFactory {
 	 * @return Instantiator dedicated to the class
 	 */
 	@Override
-	public ObjectInstantiator getInstantiatorOf(Class clazz) {
+	public ObjectInstantiator getInstantiatorOf(Class<?> clazz) {
 		if (cache == null) {
 			return strategy.newInstantiatorOf(clazz);
 		}

@@ -33,14 +33,15 @@ import sun.reflect.ReflectionFactory;
  * @author Joe Walnes
  * @see ObjectInstantiator
  */
+@SuppressWarnings("restriction")
 public class SunReflectionFactoryInstantiator implements ObjectInstantiator {
 
-	private final Constructor mungedConstructor;
+	private final Constructor<?> mungedConstructor;
 
-	public SunReflectionFactoryInstantiator(Class type) {
+	public SunReflectionFactoryInstantiator(Class<?> type) {
 
 		ReflectionFactory reflectionFactory = ReflectionFactory.getReflectionFactory();
-		Constructor javaLangObjectConstructor;
+		Constructor<?> javaLangObjectConstructor;
 
 		try {
 			javaLangObjectConstructor = Object.class.getConstructor((Class[]) null);

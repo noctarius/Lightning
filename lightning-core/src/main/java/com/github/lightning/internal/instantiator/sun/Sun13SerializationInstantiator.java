@@ -31,9 +31,9 @@ import com.github.lightning.internal.instantiator.SerializationInstantiatorHelpe
  */
 public class Sun13SerializationInstantiator extends Sun13InstantiatorBase {
 
-	private final Class superType;
+	private final Class<?> superType;
 
-	public Sun13SerializationInstantiator(Class type) {
+	public Sun13SerializationInstantiator(Class<?> type) {
 		super(type);
 		this.superType = SerializationInstantiatorHelper.getNonSerializableSuperClass(type);
 	}

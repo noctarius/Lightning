@@ -82,7 +82,7 @@ public class ObjectInputStreamInstantiator implements ObjectInstantiator {
 
 		}
 
-		public MockStream(Class clazz) {
+		public MockStream(Class<?> clazz) {
 			this.pointer = 0;
 			this.sequence = 0;
 			this.data = HEADER;
@@ -159,7 +159,7 @@ public class ObjectInputStreamInstantiator implements ObjectInstantiator {
 
 	private ObjectInputStream inputStream;
 
-	public ObjectInputStreamInstantiator(Class clazz) {
+	public ObjectInputStreamInstantiator(Class<?> clazz) {
 		if (Serializable.class.isAssignableFrom(clazz)) {
 			try {
 				this.inputStream = new ObjectInputStream(new MockStream(clazz));
