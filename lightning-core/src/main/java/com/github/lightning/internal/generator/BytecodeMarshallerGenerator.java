@@ -102,8 +102,16 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 	private void createMarshallerFields(ClassWriter cw, List<PropertyDescriptor> propertyDescriptors) {
 		for (int i = 0; i < propertyDescriptors.size(); i++) {
 			PropertyDescriptor propertyDescriptor = propertyDescriptors.get(i);
-			FieldVisitor fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName(propertyDescriptor),
+
+			// Write Marshaller field
+			FieldVisitor fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName("marshaller", propertyDescriptor),
 					MARSHALLER_CLASS_DESCRIPTOR, null, null);
+
+			fv.visitEnd();
+
+			// Write PropertyAccessor field
+			fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName("accessor", propertyDescriptor),
+					PROPERTYACCESSOR_CLASS_DESCRIPTOR, null, null);
 
 			fv.visitEnd();
 		}
@@ -134,7 +142,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		// Fill fields with marshallers
 		for (int i = 0; i < propertyDescriptors.size(); i++) {
 			PropertyDescriptor propertyDescriptor = propertyDescriptors.get(i);
-			String fieldName = toFinalFieldName(propertyDescriptor);
+			String fieldName = toFinalFieldName("marshaller", propertyDescriptor);
 			mv.visitVarInsn(ALOAD, 0);
 
 			// Load property type
@@ -170,6 +178,20 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			mv.visitLabel(labelNonNull);
 			mv.visitVarInsn(ALOAD, 7);
 			mv.visitFieldInsn(PUTFIELD, className, fieldName, MARSHALLER_CLASS_DESCRIPTOR);
+
+			// Load this to method stack
+			mv.visitVarInsn(ALOAD, 0);
+			mv.visitInsn(DUP);
+
+			// Push property name to method stack
+			mv.visitLdcInsn(propertyDescriptor.getPropertyName());
+
+			// Load property accessor
+			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "getPropertyAccessor",
+					MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
+
+			// Save PropertyAccessor to field
+			mv.visitFieldInsn(PUTFIELD, className, toFinalFieldName("accessor", propertyDescriptor), PROPERTYACCESSOR_CLASS_DESCRIPTOR);
 		}
 
 		mv.visitInsn(RETURN);
@@ -217,7 +239,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		}
 
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			String fieldName = toFinalFieldName(propertyDescriptor);
+			String fieldName = toFinalFieldName("marshaller", propertyDescriptor);
 			Class<?> propertyType = propertyDescriptor.getType();
 
 			// Load this to method stack
@@ -229,12 +251,8 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
 
-			// Push property name to method stack
-			mv.visitLdcInsn(propertyDescriptor.getPropertyName());
-
-			// Load property accessor
-			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "getPropertyAccessor",
-					MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
+			// Read PropertyAccessor from field
+			mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("accessor", propertyDescriptor), PROPERTYACCESSOR_CLASS_DESCRIPTOR);
 
 			// Load property type
 			mv.visitInsn(DUP);
@@ -279,18 +297,14 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "unmarshall", MARSHALLER_UNMARSHALL_SIGNATURE, null, MARSHALLER_EXCEPTIONS);
 
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			String fieldName = toFinalFieldName(propertyDescriptor);
+			String fieldName = toFinalFieldName("marshaller", propertyDescriptor);
 			Class<?> propertyType = propertyDescriptor.getType();
 
 			// Load this to method stack
 			mv.visitVarInsn(ALOAD, 0);
 
-			// Push property name to method stack
-			mv.visitLdcInsn(propertyDescriptor.getPropertyName());
-
-			// Load property accessor
-			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "getPropertyAccessor",
-					MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
+			// Read PropertyAccessor from field
+			mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("accessor", propertyDescriptor), PROPERTYACCESSOR_CLASS_DESCRIPTOR);
 
 			// Store PropertyAccessor for later use
 			mv.visitVarInsn(ASTORE, 5);
@@ -533,9 +547,9 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		}
 	}
 
-	private String toFinalFieldName(PropertyDescriptor propertyDescriptor) {
-		return new StringBuilder("PROPERTY_").append(propertyDescriptor.getPropertyName().toUpperCase()).append("_LIGHTNING")
-				.toString();
+	private String toFinalFieldName(String prefix, PropertyDescriptor propertyDescriptor) {
+		return new StringBuilder(prefix.toUpperCase()).append("_").append(propertyDescriptor.getPropertyName()
+				.toUpperCase()).append("_LIGHTNING").toString();
 	}
 
 	protected void visitSystemOutPrintln(MethodVisitor mv, int stackPosition) {

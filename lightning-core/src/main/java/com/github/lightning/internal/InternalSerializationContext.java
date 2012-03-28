@@ -17,7 +17,10 @@ package com.github.lightning.internal;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import com.carrotsearch.hppc.ObjectObjectMap;
+import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
@@ -31,7 +34,7 @@ public class InternalSerializationContext implements SerializationContext {
 
 	private final Map<Object, Long> referencesMarshall;
 	private final AbstractLongObjectMap<Object> referencesUnmarshall;
-	private final Map<Class<?>, Marshaller> definedMarshallers = new IdentityHashMap<Class<?>, Marshaller>();
+	private final ObjectObjectMap<Class<?>, Marshaller> definedMarshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
 
 	private final ClassDefinitionContainer classDefinitionContainer;
 	private final SerializationStrategy serializationStrategy;
@@ -47,7 +50,10 @@ public class InternalSerializationContext implements SerializationContext {
 		this.serializationStrategy = serializationStrategy;
 		this.marshallerStrategy = marshallerStrategy;
 		this.objectInstantiatorFactory = objectInstantiatorFactory;
-		this.definedMarshallers.putAll(definedMarshallers);
+
+		for (Entry<Class<?>, Marshaller> entry : definedMarshallers.entrySet()) {
+			this.definedMarshallers.put(entry.getKey(), entry.getValue());
+		}
 
 		if (serializationStrategy == SerializationStrategy.SizeOptimized) {
 			this.referencesMarshall = new IdentityHashMap<Object, Long>();

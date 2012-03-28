@@ -75,6 +75,7 @@ public interface GeneratorConstants {
 
 	static String MARSHALLER_CLASS_DESCRIPTOR = Type.getType(Marshaller.class).getDescriptor();
 	static String PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR = Type.getType(PropertyDescriptor.class).getDescriptor();
+	static String PROPERTYACCESSOR_CLASS_DESCRIPTOR = Type.getType(PropertyAccessor.class).getDescriptor();
 
 	static String[] MARSHALLER_EXCEPTIONS = { IOEXCEPTION_CLASS_INTERNAL_TYPE };
 

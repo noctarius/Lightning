@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.ClassVisitor;
 
 import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.ClassDefinition;
@@ -29,7 +29,7 @@ import com.github.lightning.metadata.PropertyDescriptor;
 
 public class ClassDefinitionContainerTestCase {
 
-	private static final Class<?>[] CLASSES = { LabelNode.class };
+	private static final Class<?>[] CLASSES = { ClassVisitor.class };
 
 	@Test
 	public void testClassDefinitionContainer() throws Exception {

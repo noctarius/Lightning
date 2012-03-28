@@ -21,11 +21,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.carrotsearch.hppc.ObjectObjectMap;
+import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
+import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 import com.github.lightning.Marshaller;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.bindings.AnnotatedBinder;
@@ -43,7 +47,7 @@ import com.github.lightning.metadata.PropertyDescriptor;
 
 public abstract class AbstractSerializerDefinition implements SerializerDefinition {
 
-	private final Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
+	private final ObjectObjectMap<Class<?>, Marshaller> marshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
 	private final Set<SerializerDefinition> children = new HashSet<SerializerDefinition>();
 	private final Map<PropertyDescriptor, Marshaller> propertyMarshallers = new HashMap<PropertyDescriptor, Marshaller>();
 	private final Map<AnnotatedBinder, AnnotationBinderDefinition<?>> annotationBinders = new HashMap<AnnotatedBinder, AnnotationBinderDefinition<?>>();
@@ -77,8 +81,10 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		// Visit all direct marshallers
-		for (Entry<Class<?>, Marshaller> entry : marshallers.entrySet()) {
-			visitor.visitClassDefine(entry.getKey(), entry.getValue());
+		Iterator<ObjectObjectCursor<Class<?>, Marshaller>> iterator = marshallers.iterator();
+		while (iterator.hasNext()) {
+			ObjectObjectCursor<Class<?>, Marshaller> entry = iterator.next();
+			visitor.visitClassDefine(entry.key, entry.value);
 		}
 
 		// Visit annotated properties
@@ -275,7 +281,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 				Class<?> fieldType = property.getType();
 
-				Map<Class<?>, Marshaller> marshallers = combineMarshallers(AbstractSerializerDefinition.this);
+				ObjectObjectMap<Class<?>, Marshaller> marshallers = combineMarshallers(AbstractSerializerDefinition.this);
 				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
 
 				if (marshaller instanceof TypeBindableMarshaller) {
@@ -294,8 +300,8 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			}
 		}
 
-		private Map<Class<?>, Marshaller> combineMarshallers(AbstractSerializerDefinition abstractSerializerDefinition) {
-			Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
+		private ObjectObjectMap<Class<?>, Marshaller> combineMarshallers(AbstractSerializerDefinition abstractSerializerDefinition) {
+			ObjectObjectMap<Class<?>, Marshaller> marshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
 			if (abstractSerializerDefinition.parent != null) {
 				marshallers.putAll(combineMarshallers(abstractSerializerDefinition.parent));
 			}

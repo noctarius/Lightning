@@ -15,10 +15,10 @@
  */
 package com.github.lightning;
 
-import java.util.Map;
+import com.carrotsearch.hppc.ObjectObjectMap;
 
 public interface MarshallerStrategy {
 
-	Marshaller getMarshaller(Class<?> type, Map<Class<?>, Marshaller> definedMarshallers);
+	Marshaller getMarshaller(Class<?> type, ObjectObjectMap<Class<?>, Marshaller> definedMarshallers);
 
 }

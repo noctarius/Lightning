@@ -32,15 +32,18 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>lightning-api</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>asm</groupId>
-			<artifactId>asm-all</artifactId>
+			<artifactId>asm</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode</groupId>
 			<artifactId>reflectasm</artifactId>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>asm</groupId>
@@ -55,4 +58,58 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>jarjar-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<includes>
+						<include>com.carrotsearch:hppc</include>
+						<include>${project.groupId}:lightning-api</include>
+						<include>asm:asm</include>
+						<include>com.googlecode:reflectasm</include>
+					</includes>
+					<rules>
+						<rule>
+							<pattern>com.carrotsearch.**</pattern>
+							<result>com.github.lightning.internal.bundle.@1</result>
+						</rule>
+						<rule>
+							<pattern>org.objectweb.**</pattern>
+							<result>com.github.lightning.internal.bundle.@1</result>
+						</rule>
+						<rule>
+							<pattern>com.esotericsoftware.**</pattern>
+							<result>com.github.lightning.internal.bundle.@1</result>
+						</rule>
+					</rules>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jarjar-classes</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>jarjar</goal>
+						</goals>
+						<configuration>
+							<input>{classes}</input>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jarjar-test-classes</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>jarjar</goal>
+						</goals>
+						<configuration>
+							<input>{test-classes}</input>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
