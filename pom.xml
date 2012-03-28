@@ -31,6 +31,7 @@
 		<module>lightning-maven-integration-test</module>
 		<module>lightning-maven-eclipse-helper</module>
 		<module>lightning-maven-eclipse-helper-feature</module>
+		<module>lightning-integration</module>
 	</modules>
 
 	<distributionManagement>
@@ -80,6 +81,7 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Core dependencies -->
 			<dependency>
 				<groupId>asm</groupId>
 				<artifactId>asm-all</artifactId>
@@ -96,6 +98,29 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.9</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- Core dependencies -->
+
+			<!-- Integration dependencies -->
+			<dependency>
+				<groupId>org.jgroups</groupId>
+				<artifactId>jgroups</artifactId>
+				<version>3.0.4.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>2.5.6</version>
+			</dependency>
+			<!-- Integration dependencies -->
+			
+			<!-- Maven plugin dependencies -->
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity</artifactId>
@@ -192,12 +217,7 @@
 				<version>2.0-alpha-1</version>
 				<scope>test</scope>
 			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.9</version>
-				<scope>test</scope>
-			</dependency>
+			<!-- Maven plugin dependencies -->
 		</dependencies>
 	</dependencyManagement>
 
@@ -361,6 +381,7 @@
 				<module>lightning-maven-plugin</module>
 				<module>lightning-api</module>
 				<module>lightning-maven-integration-test</module>
+				<module>lightning-integration</module>
 			</modules>
 			<build>
 				<plugins>
