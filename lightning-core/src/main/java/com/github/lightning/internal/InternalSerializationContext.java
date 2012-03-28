@@ -29,8 +29,8 @@ import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class InternalSerializationContext implements SerializationContext {
 
-	private final Map<Object, Long> referencesMarshall = new IdentityHashMap<Object, Long>();
-	private final AbstractLongObjectMap<Object> referencesUnmarshall = new OpenLongObjectHashMap<Object>(Object.class);
+	private final Map<Object, Long> referencesMarshall;
+	private final AbstractLongObjectMap<Object> referencesUnmarshall;
 	private final Map<Class<?>, Marshaller> definedMarshallers = new IdentityHashMap<Class<?>, Marshaller>();
 
 	private final ClassDefinitionContainer classDefinitionContainer;
@@ -48,6 +48,15 @@ public class InternalSerializationContext implements SerializationContext {
 		this.marshallerStrategy = marshallerStrategy;
 		this.objectInstantiatorFactory = objectInstantiatorFactory;
 		this.definedMarshallers.putAll(definedMarshallers);
+
+		if (serializationStrategy == SerializationStrategy.SizeOptimized) {
+			this.referencesMarshall = new IdentityHashMap<Object, Long>();
+			this.referencesUnmarshall = new OpenLongObjectHashMap<Object>(Object.class);
+		}
+		else {
+			this.referencesMarshall = null;
+			this.referencesUnmarshall = null;
+		}
 	}
 
 	@Override
