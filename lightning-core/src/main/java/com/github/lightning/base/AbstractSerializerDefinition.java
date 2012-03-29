@@ -17,7 +17,6 @@ package com.github.lightning.base;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -272,9 +271,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		public void acceptVisitor(DefinitionVisitor visitor) {
 			Class<? extends Annotation> attributeAnnotation = findAttributeAnnotation(AbstractSerializerDefinition.this);
 			Class<T> type = classBinder.getType();
-			Set<Field> properties = findFields(type, attributeAnnotation);
-			properties.addAll(findByMethods(type, type, attributeAnnotation));
-			properties.addAll(searchInterfaces(type, attributeAnnotation));
+			Set<Field> properties = BeanUtil.findPropertyFields(type, attributeAnnotation);
+			properties.addAll(BeanUtil.findPropertiesByMethods(type, type, attributeAnnotation));
+			properties.addAll(BeanUtil.searchPropertiesByInterfaces(type, attributeAnnotation));
 
 			for (Field property : properties) {
 				if (isExcluded(property.getName()))
@@ -307,66 +306,6 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 		private boolean isExcluded(String propertyName) {
 			return excludes.contains(propertyName);
-		}
-
-		private Set<Field> findFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
-			Set<Field> attributes = new HashSet<Field>();
-			for (Field field : type.getDeclaredFields()) {
-				if (field.isAnnotationPresent(attributeAnnotation)) {
-					attributes.add(field);
-				}
-			}
-
-			return attributes;
-		}
-
-		private Set<Field> findByMethods(Class<?> type, Class<?> searchType, Class<? extends Annotation> attributeAnnotation) {
-			Set<Field> attributes = new HashSet<Field>();
-			for (Method method : searchType.getDeclaredMethods()) {
-				if (method.isAnnotationPresent(attributeAnnotation)) {
-					String propertyName = BeanUtil.buildPropertyName(method);
-					Field field = BeanUtil.getFieldByPropertyName(propertyName, type);
-					if (field == null) {
-						if (attributeAnnotation == Attribute.class) {
-							Attribute attribute = method.getAnnotation(Attribute.class);
-							field = BeanUtil.getFieldByPropertyName(attribute.property(), type);
-						}
-
-						if (field == null) {
-							throw new SerializerDefinitionException("No property for method " + method + " was found");
-						}
-					}
-
-					attributes.add(field);
-				}
-			}
-
-			return attributes;
-		}
-
-		private Set<Field> searchInterfaces(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
-			Set<Field> attributes = new HashSet<Field>();
-
-			for (Class<?> interfaze : type.getInterfaces()) {
-				// Add all annotated methods in interface
-				attributes.addAll(searchInterface(type, interfaze, attributeAnnotation));
-			}
-
-			return attributes;
-		}
-
-		private Set<Field> searchInterface(Class<?> type, Class<?> interfaze, Class<? extends Annotation> attributeAnnotation) {
-			Set<Field> attributes = new HashSet<Field>();
-
-			// Add all annotated methods in interface
-			attributes.addAll(findByMethods(type, interfaze, attributeAnnotation));
-
-			// Look up super-interface
-			if (interfaze.getSuperclass() != null) {
-				attributes.addAll(searchInterface(type, interfaze.getSuperclass(), attributeAnnotation));
-			}
-
-			return attributes;
 		}
 	}
 }

@@ -15,17 +15,82 @@
  */
 package com.github.lightning.internal.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.objectweb.asm.Type;
 
+import com.github.lightning.exceptions.SerializerDefinitionException;
+import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.PropertyAccessor;
 import com.github.lightning.metadata.PropertyDescriptor;
 
 public final class BeanUtil {
 
 	private BeanUtil() {
+	}
+
+	public static Set<Field> findPropertyFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
+		Set<Field> attributes = new HashSet<Field>();
+		for (Field field : type.getDeclaredFields()) {
+			if (field.isAnnotationPresent(attributeAnnotation)) {
+				attributes.add(field);
+			}
+		}
+
+		return attributes;
+	}
+
+	public static Set<Field> findPropertiesByMethods(Class<?> type, Class<?> searchType, Class<? extends Annotation> attributeAnnotation) {
+		Set<Field> attributes = new HashSet<Field>();
+		for (Method method : searchType.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(attributeAnnotation)) {
+				String propertyName = BeanUtil.buildPropertyName(method);
+				Field field = BeanUtil.getFieldByPropertyName(propertyName, type);
+				if (field == null) {
+					if (attributeAnnotation == Attribute.class) {
+						Attribute attribute = method.getAnnotation(Attribute.class);
+						field = BeanUtil.getFieldByPropertyName(attribute.property(), type);
+					}
+
+					if (field == null) {
+						throw new SerializerDefinitionException("No property for method " + method + " was found");
+					}
+				}
+
+				attributes.add(field);
+			}
+		}
+
+		return attributes;
+	}
+
+	public static Set<Field> searchPropertiesByInterfaces(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
+		Set<Field> attributes = new HashSet<Field>();
+
+		for (Class<?> interfaze : type.getInterfaces()) {
+			// Add all annotated methods in interface
+			attributes.addAll(searchInterfaceProperties(type, interfaze, attributeAnnotation));
+		}
+
+		return attributes;
+	}
+
+	public static Set<Field> searchInterfaceProperties(Class<?> type, Class<?> interfaze, Class<? extends Annotation> attributeAnnotation) {
+		Set<Field> attributes = new HashSet<Field>();
+
+		// Add all annotated methods in interface
+		attributes.addAll(findPropertiesByMethods(type, interfaze, attributeAnnotation));
+
+		// Look up super-interface
+		if (interfaze.getSuperclass() != null) {
+			attributes.addAll(searchInterfaceProperties(type, interfaze.getSuperclass(), attributeAnnotation));
+		}
+
+		return attributes;
 	}
 
 	public static Field getFieldByPropertyName(String propertyName, Class<?> type) {
