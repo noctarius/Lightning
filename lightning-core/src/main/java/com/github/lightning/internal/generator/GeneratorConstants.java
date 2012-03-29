@@ -28,8 +28,10 @@ import com.github.lightning.Marshaller;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
+import com.github.lightning.metadata.ArrayPropertyAccessor;
 import com.github.lightning.metadata.PropertyAccessor;
 import com.github.lightning.metadata.PropertyDescriptor;
+import com.github.lightning.metadata.ValuePropertyAccessor;
 
 public interface GeneratorConstants {
 
@@ -71,6 +73,8 @@ public interface GeneratorConstants {
 	static String IOEXCEPTION_CLASS_INTERNAL_TYPE = Type.getType(IOException.class).getInternalName();
 	static String LIST_CLASS_INTERNAL_TYPE = Type.getType(List.class).getInternalName();
 	static String PROPERTYACCESSOR_CLASS_INTERNAL_TYPE = Type.getType(PropertyAccessor.class).getInternalName();
+	static String VALUEPROPERTYACCESSOR_CLASS_INTERNAL_TYPE = Type.getType(ValuePropertyAccessor.class).getInternalName();
+	static String ARRAYPROPERTYACCESSOR_CLASS_INTERNAL_TYPE = Type.getType(ArrayPropertyAccessor.class).getInternalName();
 	static String PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE = Type.getType(PropertyDescriptor.class).getInternalName();
 
 	static String MARSHALLER_CLASS_DESCRIPTOR = Type.getType(Marshaller.class).getDescriptor();

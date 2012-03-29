@@ -34,7 +34,7 @@ import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 
-public class ListMarshallerTestCase {
+public class GenericTypedTestCase {
 
 	@Test
 	public void testSimpleObject() throws Exception {

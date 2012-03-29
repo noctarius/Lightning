@@ -261,7 +261,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 
 			// Load value to method stack
 			mv.visitVarInsn(ALOAD, 1);
-
+			
 			// Load value by type on stack
 			visitPropertyAccessorRead(propertyType, mv);
 
@@ -438,7 +438,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			methodSignature = PROPERTY_ACCESSOR_READ_OBJECT_SIGNATURE;
 		}
 
-		mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
+		mv.visitMethodInsn(INVOKEINTERFACE, VALUEPROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
 	}
 
 	private void visitPropertyAccessorWrite(Class<?> type, MethodVisitor mv) {
@@ -482,7 +482,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			methodSignature = PROPERTY_ACCESSOR_WRITE_OBJECT_SIGNATURE;
 		}
 
-		mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
+		mv.visitMethodInsn(INVOKEINTERFACE, VALUEPROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
 	}
 
 	private void visitPrimitiveAutoboxing(Class<?> type, MethodVisitor mv) {
