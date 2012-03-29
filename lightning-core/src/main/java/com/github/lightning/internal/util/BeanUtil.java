@@ -122,6 +122,26 @@ public final class BeanUtil {
 		}
 	}
 
+	public static Method findArraySetterMethod(Method method) {
+		if (method.getName().startsWith("set")) {
+			return method;
+		}
+
+		String propertyName = StringUtil.toUpperCamelCase(extractPropertyName(method.getName()));
+
+		Class<?> type = method.getReturnType();
+		Class<?> clazz = method.getDeclaringClass();
+		String setterName = "set" + propertyName;
+
+		try {
+			return clazz.getDeclaredMethod(setterName, type, int.class);
+		}
+		catch (Exception e) {
+			// Seems there's no setter, so ignore all exceptions
+			return null;
+		}
+	}
+
 	public static Method findGetterMethod(Method method) {
 		if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
 			return method;
@@ -141,6 +161,36 @@ public final class BeanUtil {
 			if (type == boolean.class) {
 				try {
 					return clazz.getDeclaredMethod(getterBooleanName, type);
+				}
+				catch (Exception ex) {
+					// Intentionally left blank - just fall through
+				}
+			}
+
+			// Seems there's no setter, so ignore all exceptions
+			return null;
+		}
+	}
+
+	public static Method findArrayGetterMethod(Method method) {
+		if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
+			return method;
+		}
+
+		String propertyName = StringUtil.toUpperCamelCase(extractPropertyName(method.getName()));
+
+		Class<?> type = method.getParameterTypes()[0];
+		Class<?> clazz = method.getDeclaringClass();
+		String getterObjectName = "get" + propertyName;
+		String getterBooleanName = "is" + propertyName;
+
+		try {
+			return clazz.getDeclaredMethod(getterObjectName, type);
+		}
+		catch (Exception e) {
+			if (type == boolean.class) {
+				try {
+					return clazz.getDeclaredMethod(getterBooleanName, type, int.class);
 				}
 				catch (Exception ex) {
 					// Intentionally left blank - just fall through

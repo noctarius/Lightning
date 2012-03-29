@@ -31,7 +31,11 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 
 	@Override
 	public PropertyAccessor fieldAccess(Field field) {
-		return buildForField(field);
+		if (field.getType().isArray()) {
+			return buildForArrayField(field);
+		}
+
+		return buildForValueField(field);
 	}
 
 	@Override
@@ -39,8 +43,8 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 		throw new UnsupportedOperationException("Method access is not supported by Unsafe style");
 	}
 
-	private PropertyAccessor buildForField(final Field field) {
-		return new FieldPropertyAccessor(field) {
+	private PropertyAccessor buildForValueField(final Field field) {
+		return new FieldValuePropertyAccessor(field) {
 
 			private final long offset;
 
@@ -137,6 +141,132 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 			@Override
 			public double readDouble(Object instance) {
 				return UNSAFE.getDouble(instance, offset);
+			}
+		};
+	}
+
+	private PropertyAccessor buildForArrayField(final Field field) {
+		return new FieldArrayPropertyAccessor(field) {
+
+			private final int arrayBaseOffset;
+			private final int arrayIndexScale;
+
+			{
+				arrayBaseOffset = UNSAFE.arrayBaseOffset(field.getType());
+				arrayIndexScale = UNSAFE.arrayIndexScale(field.getType());
+			}
+
+			@Override
+			public <T> void writeObject(Object instance, int index, T value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putObject(instance, offset, value);
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T readObject(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return (T) UNSAFE.getObject(instance, offset);
+			}
+
+			@Override
+			public void writeBoolean(Object instance, int index, boolean value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putBoolean(instance, offset, value);
+			}
+
+			@Override
+			public boolean readBoolean(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getBoolean(instance, offset);
+			}
+
+			@Override
+			public void writeByte(Object instance, int index, byte value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putByte(instance, offset, value);
+			}
+
+			@Override
+			public byte readByte(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getByte(instance, offset);
+			}
+
+			@Override
+			public void writeShort(Object instance, int index, short value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putShort(instance, offset, value);
+			}
+
+			@Override
+			public short readShort(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getShort(instance, offset);
+			}
+
+			@Override
+			public void writeChar(Object instance, int index, char value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putChar(instance, offset, value);
+			}
+
+			@Override
+			public char readChar(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getChar(instance, offset);
+			}
+
+			@Override
+			public void writeInt(Object instance, int index, int value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putInt(instance, offset, value);
+			}
+
+			@Override
+			public int readInt(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getInt(instance, offset);
+			}
+
+			@Override
+			public void writeLong(Object instance, int index, long value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putLong(instance, offset, value);
+			}
+
+			@Override
+			public long readLong(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getLong(instance, offset);
+			}
+
+			@Override
+			public void writeFloat(Object instance, int index, float value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putFloat(instance, offset, value);
+			}
+
+			@Override
+			public float readFloat(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getFloat(instance, offset);
+			}
+
+			@Override
+			public void writeDouble(Object instance, int index, double value) {
+				long offset = calculateIndexOffset(index);
+				UNSAFE.putDouble(instance, offset, value);
+			}
+
+			@Override
+			public double readDouble(Object instance, int index) {
+				long offset = calculateIndexOffset(index);
+				return UNSAFE.getDouble(instance, offset);
+			}
+
+			private long calculateIndexOffset(int index) {
+				return index + (arrayBaseOffset * arrayIndexScale);
 			}
 		};
 	}

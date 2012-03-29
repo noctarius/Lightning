@@ -19,11 +19,11 @@ import java.lang.reflect.Field;
 
 import com.github.lightning.metadata.AccessorType;
 
-public abstract class FieldPropertyAccessor extends AbstractValuePropertyAccessor {
+public abstract class FieldArrayPropertyAccessor extends AbstractArrayPropertyAccessor {
 
 	private final Field field;
 
-	protected FieldPropertyAccessor(Field field) {
+	protected FieldArrayPropertyAccessor(Field field) {
 		this.field = field;
 	}
 

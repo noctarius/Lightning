@@ -19,12 +19,12 @@ import java.lang.reflect.Method;
 
 import com.github.lightning.metadata.AccessorType;
 
-public abstract class MethodPropertyAccessor extends AbstractValuePropertyAccessor {
+public abstract class MethodValuePropertyAccessor extends AbstractValuePropertyAccessor {
 
 	private final Method setter;
 	private final Method getter;
 
-	protected MethodPropertyAccessor(Method setter, Method getter) {
+	protected MethodValuePropertyAccessor(Method setter, Method getter) {
 		this.setter = setter;
 		this.getter = getter;
 	}

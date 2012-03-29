@@ -32,6 +32,10 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 
 	@Override
 	public PropertyAccessor fieldAccess(Field field) {
+		if (field.getType().isArray()) {
+			return null;
+		}
+
 		try {
 			return buildForField(field);
 		}
@@ -43,6 +47,10 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 
 	@Override
 	public PropertyAccessor methodAccess(Method method) {
+		if (method.getReturnType().isArray()) {
+			return null;
+		}
+
 		try {
 			return buildForMethod(method);
 		}
@@ -82,7 +90,7 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 	private PropertyAccessor buildForField(Field field) {
 		final FieldAccess fieldAccess = getFieldAccess(field);
 		final int fieldIndex = fieldAccess.getIndex(field.getName());
-		return new FieldPropertyAccessor(field) {
+		return new FieldValuePropertyAccessor(field) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -106,7 +114,7 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 		final int getterMethodIndex = methodAccess.getIndex(getter.getName(), method.getParameterTypes());
 		final int setterMethodIndex = methodAccess.getIndex(setter.getName(), method.getParameterTypes());
 
-		return new MethodPropertyAccessor(setter, getter) {
+		return new MethodValuePropertyAccessor(setter, getter) {
 
 			@Override
 			public void writeShort(Object instance, short value) {

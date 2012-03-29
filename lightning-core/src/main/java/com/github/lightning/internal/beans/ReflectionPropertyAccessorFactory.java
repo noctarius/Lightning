@@ -15,6 +15,7 @@
  */
 package com.github.lightning.internal.beans;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -26,17 +27,25 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 
 	@Override
 	public PropertyAccessor fieldAccess(Field field) {
-		return buildForField(field);
+		if (field.getType().isArray()) {
+			return buildForArrayField(field);
+		}
+
+		return buildForValueField(field);
 	}
 
 	@Override
 	public PropertyAccessor methodAccess(Method method) {
-		return buildForMethod(method);
+		if (method.getReturnType().isArray()) {
+			return buildForArrayMethod(method);
+		}
+
+		return buildForValueMethod(method);
 	}
 
-	private PropertyAccessor buildForField(final Field field) {
+	private PropertyAccessor buildForValueField(final Field field) {
 		field.setAccessible(true);
-		return new FieldPropertyAccessor(field) {
+		return new FieldValuePropertyAccessor(field) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -61,14 +70,201 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForMethod(Method method) {
+	private PropertyAccessor buildForArrayField(final Field field) {
+		field.setAccessible(true);
+		return new FieldArrayPropertyAccessor(field) {
+
+			@Override
+			public <T> void writeObject(Object instance, int index, T value) {
+				try {
+					Array.set(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while writing field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T readObject(Object instance, int index) {
+				try {
+					return (T) Array.get(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeShort(Object instance, int index, short value) {
+				try {
+					Array.setShort(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeLong(Object instance, int index, long value) {
+				try {
+					Array.setLong(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeInt(Object instance, int index, int value) {
+				try {
+					Array.setInt(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeFloat(Object instance, int index, float value) {
+				try {
+					Array.setFloat(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeDouble(Object instance, int index, double value) {
+				try {
+					Array.setDouble(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeChar(Object instance, int index, char value) {
+				try {
+					Array.setChar(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeByte(Object instance, int index, byte value) {
+				try {
+					Array.setByte(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public void writeBoolean(Object instance, int index, boolean value) {
+				try {
+					Array.setBoolean(instance, index, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public short readShort(Object instance, int index) {
+				try {
+					return Array.getShort(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public long readLong(Object instance, int index) {
+				try {
+					return Array.getLong(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public int readInt(Object instance, int index) {
+				try {
+					return Array.getInt(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public float readFloat(Object instance, int index) {
+				try {
+					return Array.getFloat(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public double readDouble(Object instance, int index) {
+				try {
+					return Array.getDouble(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public char readChar(Object instance, int index) {
+				try {
+					return Array.getChar(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public byte readByte(Object instance, int index) {
+				try {
+					return Array.getByte(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			public boolean readBoolean(Object instance, int index) {
+				try {
+					return Array.getBoolean(instance, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+		};
+	}
+
+	private PropertyAccessor buildForValueMethod(Method method) {
 		Method getter = BeanUtil.findGetterMethod(method);
 		Method setter = BeanUtil.findSetterMethod(method);
 
 		getter.setAccessible(true);
 		setter.setAccessible(true);
 
-		return new MethodPropertyAccessor(setter, getter) {
+		return new MethodValuePropertyAccessor(setter, getter) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -85,6 +281,38 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 			public <T> T readObject(Object instance) {
 				try {
 					return (T) getGetterMethod().invoke(instance);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading with method " + getGetterMethod().getName(), e);
+				}
+			}
+		};
+	}
+
+	private PropertyAccessor buildForArrayMethod(Method method) {
+		Method getter = BeanUtil.findArrayGetterMethod(method);
+		Method setter = BeanUtil.findArraySetterMethod(method);
+
+		getter.setAccessible(true);
+		setter.setAccessible(true);
+
+		return new MethodArrayPropertyAccessor(setter, getter) {
+
+			@Override
+			public <T> void writeObject(Object instance, int index, T value) {
+				try {
+					getSetterMethod().invoke(instance, value, index);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while writing with method " + getSetterMethod().getName(), e);
+				}
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T readObject(Object instance, int index) {
+				try {
+					return (T) getGetterMethod().invoke(instance, index);
 				}
 				catch (Exception e) {
 					throw new IllegalPropertyAccessException("Exception while reading with method " + getGetterMethod().getName(), e);
