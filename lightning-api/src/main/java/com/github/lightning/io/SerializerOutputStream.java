@@ -17,11 +17,12 @@ package com.github.lightning.io;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.ObjectOutput;
 import java.io.OutputStream;
 
 import com.github.lightning.Serializer;
 
-public class SerializerOutputStream extends DataOutputStream {
+public class SerializerOutputStream extends DataOutputStream implements ObjectOutput {
 
 	private final Serializer serializer;
 
@@ -30,6 +31,7 @@ public class SerializerOutputStream extends DataOutputStream {
 		this.serializer = serializer;
 	}
 
+	@Override
 	public void writeObject(Object object) {
 		serializer.serialize(object, (DataOutput) this);
 	}

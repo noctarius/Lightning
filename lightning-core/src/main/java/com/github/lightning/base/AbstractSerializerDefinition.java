@@ -272,8 +272,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		public void acceptVisitor(DefinitionVisitor visitor) {
 			Class<? extends Annotation> attributeAnnotation = findAttributeAnnotation(AbstractSerializerDefinition.this);
 			Class<T> type = classBinder.getType();
-			List<Field> properties = findFields(type, attributeAnnotation);
-			properties.addAll(findByMethods(type, attributeAnnotation));
+			Set<Field> properties = findFields(type, attributeAnnotation);
+			properties.addAll(findByMethods(type, type, attributeAnnotation));
+			properties.addAll(searchInterfaces(type, attributeAnnotation));
 
 			for (Field property : properties) {
 				if (isExcluded(property.getName()))
@@ -308,8 +309,8 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			return excludes.contains(propertyName);
 		}
 
-		private List<Field> findFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
-			List<Field> attributes = new ArrayList<Field>();
+		private Set<Field> findFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
+			Set<Field> attributes = new HashSet<Field>();
 			for (Field field : type.getDeclaredFields()) {
 				if (field.isAnnotationPresent(attributeAnnotation)) {
 					attributes.add(field);
@@ -319,9 +320,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			return attributes;
 		}
 
-		private List<Field> findByMethods(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
-			List<Field> attributes = new ArrayList<Field>();
-			for (Method method : type.getDeclaredMethods()) {
+		private Set<Field> findByMethods(Class<?> type, Class<?> searchType, Class<? extends Annotation> attributeAnnotation) {
+			Set<Field> attributes = new HashSet<Field>();
+			for (Method method : searchType.getDeclaredMethods()) {
 				if (method.isAnnotationPresent(attributeAnnotation)) {
 					String propertyName = BeanUtil.buildPropertyName(method);
 					Field field = BeanUtil.getFieldByPropertyName(propertyName, type);
@@ -338,6 +339,31 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 					attributes.add(field);
 				}
+			}
+
+			return attributes;
+		}
+
+		private Set<Field> searchInterfaces(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
+			Set<Field> attributes = new HashSet<Field>();
+
+			for (Class<?> interfaze : type.getInterfaces()) {
+				// Add all annotated methods in interface
+				attributes.addAll(searchInterface(type, interfaze, attributeAnnotation));
+			}
+
+			return attributes;
+		}
+
+		private Set<Field> searchInterface(Class<?> type, Class<?> interfaze, Class<? extends Annotation> attributeAnnotation) {
+			Set<Field> attributes = new HashSet<Field>();
+
+			// Add all annotated methods in interface
+			attributes.addAll(findByMethods(type, interfaze, attributeAnnotation));
+
+			// Look up super-interface
+			if (interfaze.getSuperclass() != null) {
+				attributes.addAll(searchInterface(type, interfaze.getSuperclass(), attributeAnnotation));
 			}
 
 			return attributes;
