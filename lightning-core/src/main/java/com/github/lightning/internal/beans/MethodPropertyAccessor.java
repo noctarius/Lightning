@@ -17,7 +17,9 @@ package com.github.lightning.internal.beans;
 
 import java.lang.reflect.Method;
 
-public abstract class MethodPropertyAccessor extends AbstractPropertyAccessor {
+import com.github.lightning.metadata.AccessorType;
+
+public abstract class MethodPropertyAccessor extends AbstractValuePropertyAccessor {
 
 	private final Method setter;
 	private final Method getter;
@@ -33,7 +35,7 @@ public abstract class MethodPropertyAccessor extends AbstractPropertyAccessor {
 	}
 
 	@Override
-	public com.github.lightning.metadata.PropertyAccessor.AccessorType getAccessorType() {
+	public AccessorType getAccessorType() {
 		return AccessorType.Method;
 	}
 

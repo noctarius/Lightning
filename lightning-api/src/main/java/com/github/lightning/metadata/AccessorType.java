@@ -15,14 +15,7 @@
  */
 package com.github.lightning.metadata;
 
-public interface PropertyAccessor {
-
-	Class<?> getDeclaringClass();
-
-	AccessorType getAccessorType();
-
-	Class<?> getType();
-
-	boolean isArrayType();
-
+public enum AccessorType {
+	Field,
+	Method
 }

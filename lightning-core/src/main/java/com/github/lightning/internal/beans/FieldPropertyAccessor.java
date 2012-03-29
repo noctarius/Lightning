@@ -17,7 +17,9 @@ package com.github.lightning.internal.beans;
 
 import java.lang.reflect.Field;
 
-public abstract class FieldPropertyAccessor extends AbstractPropertyAccessor {
+import com.github.lightning.metadata.AccessorType;
+
+public abstract class FieldPropertyAccessor extends AbstractValuePropertyAccessor {
 
 	private final Field field;
 
@@ -31,7 +33,7 @@ public abstract class FieldPropertyAccessor extends AbstractPropertyAccessor {
 	}
 
 	@Override
-	public com.github.lightning.metadata.PropertyAccessor.AccessorType getAccessorType() {
+	public AccessorType getAccessorType() {
 		return AccessorType.Field;
 	}
 
