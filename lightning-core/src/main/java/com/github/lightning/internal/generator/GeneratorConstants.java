@@ -68,6 +68,8 @@ public interface GeneratorConstants {
 
 	static String OBJECT_GET_CLASS_SIGNATURE = Type.getMethodDescriptor(Type.getType(Class.class), new Type[0]);
 
+	static String ARRAY_LENGTH_SIGNATURE = Type.getMethodDescriptor(Type.INT_TYPE, new Type[0]);
+
 	static String SUPER_CLASS_INTERNAL_TYPE = Type.getType(AbstractGeneratedMarshaller.class).getInternalName();
 	static String MARSHALLER_CLASS_INTERNAL_TYPE = Type.getType(Marshaller.class).getInternalName();
 	static String IOEXCEPTION_CLASS_INTERNAL_TYPE = Type.getType(IOException.class).getInternalName();
@@ -140,6 +142,60 @@ public interface GeneratorConstants {
 
 	static String PROPERTY_ACCESSOR_WRITE_OBJECT_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
 			new Type[] { Type.getType(Object.class), Type.getType(Object.class) });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_BOOLEAN_SIGNATURE = Type.getMethodDescriptor(Type.BOOLEAN_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_BYTE_SIGNATURE = Type.getMethodDescriptor(Type.BYTE_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_CHAR_SIGNATURE = Type.getMethodDescriptor(Type.CHAR_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_SHORT_SIGNATURE = Type.getMethodDescriptor(Type.SHORT_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_INT_SIGNATURE = Type.getMethodDescriptor(Type.INT_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_LONG_SIGNATURE = Type.getMethodDescriptor(Type.LONG_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_FLOAT_SIGNATURE = Type.getMethodDescriptor(Type.FLOAT_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_DOUBLE_SIGNATURE = Type.getMethodDescriptor(Type.DOUBLE_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_READ_OBJECT_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_BOOLEAN_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.BOOLEAN_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_BYTE_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.BYTE_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_CHAR_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.CHAR_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_SHORT_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.SHORT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_INT_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.INT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_LONG_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.LONG_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_FLOAT_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.FLOAT_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_DOUBLE_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.DOUBLE_TYPE });
+
+	static String PROPERTY_ACCESSOR_ARRAY_WRITE_OBJECT_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.INT_TYPE, Type.getType(Object.class) });
 
 	static String BOOLEAN_VALUE_OF_SIGNATURE = Type.getMethodDescriptor(Type.getType(Boolean.class),
 			new Type[] { Type.BOOLEAN_TYPE });

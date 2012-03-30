@@ -254,20 +254,11 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			// Read PropertyAccessor from field
 			mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("accessor", propertyDescriptor), PROPERTYACCESSOR_CLASS_DESCRIPTOR);
 
-			// Load property type
-			mv.visitInsn(DUP);
-			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
-			mv.visitVarInsn(ASTORE, 5);
-
-			// Load value to method stack
-			mv.visitVarInsn(ALOAD, 1);
-			
-			// Load value by type on stack
-			visitPropertyAccessorRead(propertyType, mv);
-
-			// If type is primitive add some "autoboxing" magic
-			if (propertyType.isPrimitive()) {
-				visitWrapperAutoboxing(propertyType, mv);
+			if (propertyType.isArray()) {
+				visitArrayPropertyAccessorRead(mv, propertyType);
+			}
+			else {
+				visitValuePropertyAccessorRead(mv, propertyType);
 			}
 
 			// Load type to method stack
@@ -289,6 +280,46 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		// End visiting
 		mv.visitMaxs(6, 6);
 		mv.visitEnd();
+	}
+
+	private void visitValuePropertyAccessorRead(MethodVisitor mv, Class<?> propertyType) {
+		// Load property type
+		mv.visitInsn(DUP);
+		mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
+		mv.visitVarInsn(ASTORE, 5);
+
+		// Load value to method stack
+		mv.visitVarInsn(ALOAD, 1);
+
+		// Load value by type on stack
+		visitPropertyAccessorValueRead(propertyType, mv);
+
+		// If type is primitive add some "autoboxing" magic
+		if (propertyType.isPrimitive()) {
+			visitWrapperAutoboxing(propertyType, mv);
+		}
+	}
+
+	private void visitArrayPropertyAccessorRead(MethodVisitor mv, Class<?> propertyType) {
+		// Read size
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitFieldInsn(GETFIELD, Type.getType(propertyType).getInternalName(), arg2, arg3)
+		
+		// Load property type
+		mv.visitInsn(DUP);
+		mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
+		mv.visitVarInsn(ASTORE, 5);
+
+		// Load value to method stack
+		mv.visitVarInsn(ALOAD, 1);
+
+		// Load value by type on stack
+		visitPropertyAccessorArrayRead(propertyType, mv);
+
+		// If type is primitive add some "autoboxing" magic
+		if (propertyType.isPrimitive()) {
+			visitWrapperAutoboxing(propertyType, mv);
+		}
 	}
 
 	private void createUnmarshallMethod(ClassWriter cw, String className, Class<?> type,
@@ -349,7 +380,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			}
 
 			// Call PropertyAccessor#writeX
-			visitPropertyAccessorWrite(propertyType, mv);
+			visitPropertyAccessorValueWrite(propertyType, mv);
 		}
 
 		// Load instance to method stack
@@ -397,7 +428,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		mv.visitInsn(returnOpcode);
 	}
 
-	private void visitPropertyAccessorRead(Class<?> type, MethodVisitor mv) {
+	private void visitPropertyAccessorValueRead(Class<?> type, MethodVisitor mv) {
 		String methodName = null;
 		String methodSignature = null;
 
@@ -441,7 +472,51 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		mv.visitMethodInsn(INVOKEINTERFACE, VALUEPROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
 	}
 
-	private void visitPropertyAccessorWrite(Class<?> type, MethodVisitor mv) {
+	private void visitPropertyAccessorArrayRead(Class<?> type, MethodVisitor mv) {
+		String methodName = null;
+		String methodSignature = null;
+
+		if (type == boolean.class) {
+			methodName = "readBoolean";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_BOOLEAN_SIGNATURE;
+		}
+		else if (type == byte.class) {
+			methodName = "readByte";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_BYTE_SIGNATURE;
+		}
+		else if (type == char.class) {
+			methodName = "readChar";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_CHAR_SIGNATURE;
+		}
+		else if (type == short.class) {
+			methodName = "readShort";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_SHORT_SIGNATURE;
+		}
+		else if (type == int.class) {
+			methodName = "readInt";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_INT_SIGNATURE;
+		}
+		else if (type == long.class) {
+			methodName = "readLong";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_LONG_SIGNATURE;
+		}
+		else if (type == float.class) {
+			methodName = "readFloat";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_FLOAT_SIGNATURE;
+		}
+		else if (type == double.class) {
+			methodName = "readDouble";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_DOUBLE_SIGNATURE;
+		}
+		else {
+			methodName = "readObject";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_READ_OBJECT_SIGNATURE;
+		}
+
+		mv.visitMethodInsn(INVOKEINTERFACE, ARRAYPROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
+	}
+
+	private void visitPropertyAccessorValueWrite(Class<?> type, MethodVisitor mv) {
 		String methodName = null;
 		String methodSignature = null;
 
@@ -483,6 +558,50 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		}
 
 		mv.visitMethodInsn(INVOKEINTERFACE, VALUEPROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
+	}
+
+	private void visitPropertyAccessorArrayWrite(Class<?> type, MethodVisitor mv) {
+		String methodName = null;
+		String methodSignature = null;
+
+		if (type == boolean.class) {
+			methodName = "writeBoolean";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_BOOLEAN_SIGNATURE;
+		}
+		else if (type == byte.class) {
+			methodName = "writeByte";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_BYTE_SIGNATURE;
+		}
+		else if (type == char.class) {
+			methodName = "writeChar";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_CHAR_SIGNATURE;
+		}
+		else if (type == short.class) {
+			methodName = "writeShort";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_SHORT_SIGNATURE;
+		}
+		else if (type == int.class) {
+			methodName = "writeInt";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_INT_SIGNATURE;
+		}
+		else if (type == long.class) {
+			methodName = "writeLong";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_LONG_SIGNATURE;
+		}
+		else if (type == float.class) {
+			methodName = "writeFloat";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_FLOAT_SIGNATURE;
+		}
+		else if (type == double.class) {
+			methodName = "writeDouble";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_DOUBLE_SIGNATURE;
+		}
+		else {
+			methodName = "writeObject";
+			methodSignature = PROPERTY_ACCESSOR_ARRAY_WRITE_OBJECT_SIGNATURE;
+		}
+
+		mv.visitMethodInsn(INVOKEINTERFACE, ARRAYPROPERTYACCESSOR_CLASS_INTERNAL_TYPE, methodName, methodSignature);
 	}
 
 	private void visitPrimitiveAutoboxing(Class<?> type, MethodVisitor mv) {

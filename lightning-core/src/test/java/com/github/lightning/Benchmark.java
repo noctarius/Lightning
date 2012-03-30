@@ -45,7 +45,6 @@ public class Benchmark {
 	private static final int BENCHMARK_ROUNDS = 800000;
 
 	@Test
-	@Ignore
 	public void benchmarkLightningSerialization() throws Exception {
 		long buildStartTime = System.nanoTime();
 		Serializer serializer = Lightning.newBuilder().debugCacheDirectory(new File("target")).serializerDefinitions(new BenchmarkSerializerDefinition())
@@ -99,7 +98,6 @@ public class Benchmark {
 	}
 
 	@Test
-	@Ignore
 	public void benchmarkLightningDeserialization() throws Exception {
 		Serializer serializer = Lightning.newBuilder().serializerDefinitions(new BenchmarkSerializerDefinition()).build();
 
@@ -159,7 +157,6 @@ public class Benchmark {
 	}
 
 	@Test
-	@Ignore
 	public void benchmarkJavaSerialization() throws Exception {
 		long size = 0;
 		for (int i = 0; i < WARMUP_ROUNDS; i++) {
@@ -207,7 +204,6 @@ public class Benchmark {
 	}
 
 	@Test
-	@Ignore
 	public void benchmarkJavaDeserialization() throws Exception {
 		long size = 0;
 		for (int i = 0; i < WARMUP_ROUNDS; i++) {
