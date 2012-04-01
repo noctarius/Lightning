@@ -87,7 +87,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		// Visit annotated properties
-		for (AnnotationBinderDefinition<?> annotationBinderDefinition : annotationBinders.values()) {
+		Iterator<AnnotationBinderDefinition<?>> annotationIterator = annotationBinders.values().iterator();
+		while (annotationIterator.hasNext()) {
+			AnnotationBinderDefinition<?> annotationBinderDefinition = annotationIterator.next();
 			annotationBinderDefinition.acceptVisitor(visitor);
 		}
 
@@ -96,7 +98,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			visitor.visitPropertyDescriptor(entry.getKey(), entry.getValue());
 
 			Class<?> type = entry.getKey().getType();
-			if (type.isPrimitive() || type.isArray()) {
+			if (type.isPrimitive() || type.isArray() && type.getComponentType().isPrimitive()) {
 				continue;
 			}
 
@@ -151,7 +153,8 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			@Override
 			public void byMarshaller(Marshaller marshaller) {
 				if (marshaller instanceof AbstractObjectMarshaller) {
-					marshallerContext.bindMarshaller(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objectInstantiatorFactory));
+					marshallerContext
+							.bindMarshaller(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objectInstantiatorFactory));
 				}
 				else {
 					marshallerContext.bindMarshaller(clazz, marshaller);
@@ -181,8 +184,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 					return buildPropertyBinder(this, reflectiveField);
 				}
 				catch (Exception e) {
-					throw new SerializerDefinitionException("Property " + property + " could not be found for type "
-							+ clazz.getCanonicalName(), e);
+					throw new SerializerDefinitionException("Property " + property + " could not be found for type " + clazz.getCanonicalName(), e);
 				}
 			}
 
@@ -198,8 +200,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		};
 	}
 
-	private <T> AnnotatedBinder buildAnnotatedBinder(final ClassBinder<T> classBinder,
-			final Class<? extends Annotation> annotation) {
+	private <T> AnnotatedBinder buildAnnotatedBinder(final ClassBinder<T> classBinder, final Class<? extends Annotation> annotation) {
 
 		return new AnnotatedBinder() {
 
@@ -237,8 +238,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
 				}
 
-				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory()
-						.byField(property, marshaller), marshaller);
+				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller), marshaller);
 			}
 		};
 	}
@@ -284,6 +284,10 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 				MarshallerContext marshallers = combineMarshallers(AbstractSerializerDefinition.this);
 				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
 
+				if (marshaller == null && fieldType.isArray()) {
+					marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType.getComponentType(), marshallers);
+				}
+
 				if (marshaller instanceof TypeBindableMarshaller) {
 					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
 				}
@@ -292,12 +296,21 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 				visitor.visitAnnotatedAttribute(propertyDescriptor, marshaller);
 
-				if (fieldType.isPrimitive() || fieldType.isArray()) {
+				if (fieldType.isPrimitive() || fieldType.isArray() && fieldType.getComponentType().isPrimitive()) {
 					continue;
 				}
 
-				visitor.visitClassDefine(fieldType, marshaller);
+				visitor.visitClassDefine(!fieldType.isArray() ? fieldType : fieldType.getComponentType(), marshaller);
+				if (marshaller == null) {
+					visitFieldTypeAnnotatedProperties(!fieldType.isArray() ? fieldType : fieldType.getComponentType(), visitor);
+				}
 			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private <F> void visitFieldTypeAnnotatedProperties(Class<?> type, DefinitionVisitor visitor) {
+			ClassBinder<F> classBinder = (ClassBinder<F>) buildClassBinder(type);
+			new AnnotationBinderDefinition<F>(classBinder).acceptVisitor(visitor);
 		}
 
 		private MarshallerContext combineMarshallers(AbstractSerializerDefinition abstractSerializerDefinition) {

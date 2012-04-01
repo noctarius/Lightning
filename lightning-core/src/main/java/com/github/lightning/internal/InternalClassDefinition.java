@@ -40,7 +40,7 @@ class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefini
 		this.canonicalName = Type.getInternalName(type).replace("/", ".");
 		this.type = type;
 
-		byte[] classData = ClassUtil.getClassBytes(type);
+		byte[] classData = ClassUtil.getClassBytes(!type.isArray() ? type : type.getComponentType());
 		this.checksum = InternalUtil.getChecksum(propertyDescriptors, logger);
 		this.id = Crc64Util.checksum(classData);
 		this.serialVersionUID = ClassUtil.calculateSerialVersionUID(type);

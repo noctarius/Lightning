@@ -148,12 +148,25 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 	private PropertyAccessor buildForArrayField(final Field field) {
 		return new FieldArrayPropertyAccessor(field) {
 
+			private final long offset;
 			private final int arrayBaseOffset;
 			private final int arrayIndexScale;
 
 			{
+				offset = UNSAFE.objectFieldOffset(field);
 				arrayBaseOffset = UNSAFE.arrayBaseOffset(field.getType());
 				arrayIndexScale = UNSAFE.arrayIndexScale(field.getType());
+			}
+
+			@Override
+			public <T> void writeObject(Object instance, T value) {
+				UNSAFE.putObject(instance, offset, value);
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T readObject(Object instance) {
+				return (T) UNSAFE.getObject(instance, offset);
 			}
 
 			@Override
@@ -165,8 +178,8 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 			@Override
 			@SuppressWarnings("unchecked")
 			public <T> T readObject(Object instance, int index) {
-				long offset = calculateIndexOffset(index);
-				return (T) UNSAFE.getObject(instance, offset);
+				long localOffset = calculateIndexOffset(index);
+				return (T) UNSAFE.getObject(instance, localOffset);
 			}
 
 			@Override
@@ -266,7 +279,7 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 			}
 
 			private long calculateIndexOffset(int index) {
-				return index + (arrayBaseOffset * arrayIndexScale);
+				return arrayBaseOffset + (index * arrayIndexScale);
 			}
 		};
 	}

@@ -15,7 +15,7 @@
  */
 package com.github.lightning.metadata;
 
-public interface ArrayPropertyAccessor extends PropertyAccessor {
+public interface ArrayPropertyAccessor extends ValuePropertyAccessor {
 
 	<T> void writeObject(Object instance, int index, T value);
 

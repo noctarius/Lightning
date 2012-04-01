@@ -18,13 +18,20 @@ package com.github.lightning.internal.beans;
 import java.lang.reflect.Field;
 
 import com.github.lightning.metadata.AccessorType;
+import com.github.lightning.metadata.ArrayPropertyAccessor;
 
-public abstract class FieldArrayPropertyAccessor extends AbstractArrayPropertyAccessor {
+public abstract class FieldArrayPropertyAccessor extends FieldValuePropertyAccessor implements ArrayPropertyAccessor {
 
 	private final Field field;
 
 	protected FieldArrayPropertyAccessor(Field field) {
+		super(field);
 		this.field = field;
+	}
+
+	@Override
+	public boolean isArrayType() {
+		return true;
 	}
 
 	@Override

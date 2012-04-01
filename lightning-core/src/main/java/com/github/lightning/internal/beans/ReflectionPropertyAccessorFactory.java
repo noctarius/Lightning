@@ -75,6 +75,27 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		return new FieldArrayPropertyAccessor(field) {
 
 			@Override
+			public <T> void writeObject(Object instance, T value) {
+				try {
+					getField().set(instance, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while writing field " + getField().getName(), e);
+				}
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T readObject(Object instance) {
+				try {
+					return (T) getField().get(instance);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading field " + getField().getName(), e);
+				}
+			}
+
+			@Override
 			public <T> void writeObject(Object instance, int index, T value) {
 				try {
 					Array.set(instance, index, value);
@@ -290,8 +311,10 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 	}
 
 	private PropertyAccessor buildForArrayMethod(Method method) {
-		Method getter = BeanUtil.findArrayGetterMethod(method);
-		Method setter = BeanUtil.findArraySetterMethod(method);
+		final Method getter = BeanUtil.findGetterMethod(method);
+		final Method setter = BeanUtil.findSetterMethod(method);
+		final Method arrayGetter = BeanUtil.findArrayGetterMethod(method);
+		final Method arraySetter = BeanUtil.findArraySetterMethod(method);
 
 		getter.setAccessible(true);
 		setter.setAccessible(true);
@@ -299,9 +322,30 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		return new MethodArrayPropertyAccessor(setter, getter) {
 
 			@Override
+			public <T> void writeObject(Object instance, T value) {
+				try {
+					getSetterMethod().invoke(instance, value);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while writing with method " + getSetterMethod().getName(), e);
+				}
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T readObject(Object instance) {
+				try {
+					return (T) getGetterMethod().invoke(instance);
+				}
+				catch (Exception e) {
+					throw new IllegalPropertyAccessException("Exception while reading with method " + getGetterMethod().getName(), e);
+				}
+			}
+
+			@Override
 			public <T> void writeObject(Object instance, int index, T value) {
 				try {
-					getSetterMethod().invoke(instance, value, index);
+					arraySetter.invoke(instance, value, index);
 				}
 				catch (Exception e) {
 					throw new IllegalPropertyAccessException("Exception while writing with method " + getSetterMethod().getName(), e);
@@ -312,7 +356,7 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 			@SuppressWarnings("unchecked")
 			public <T> T readObject(Object instance, int index) {
 				try {
-					return (T) getGetterMethod().invoke(instance, index);
+					return (T) arrayGetter.invoke(instance, index);
 				}
 				catch (Exception e) {
 					throw new IllegalPropertyAccessException("Exception while reading with method " + getGetterMethod().getName(), e);

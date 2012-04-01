@@ -18,8 +18,9 @@ package com.github.lightning.internal.beans;
 import java.lang.reflect.Method;
 
 import com.github.lightning.metadata.AccessorType;
+import com.github.lightning.metadata.ArrayPropertyAccessor;
 
-public abstract class MethodArrayPropertyAccessor extends AbstractArrayPropertyAccessor {
+public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyAccessor implements ArrayPropertyAccessor {
 
 	private final Method setter;
 	private final Method getter;
@@ -27,6 +28,11 @@ public abstract class MethodArrayPropertyAccessor extends AbstractArrayPropertyA
 	protected MethodArrayPropertyAccessor(Method setter, Method getter) {
 		this.setter = setter;
 		this.getter = getter;
+	}
+
+	@Override
+	public boolean isArrayType() {
+		return true;
 	}
 
 	@Override
@@ -50,5 +56,85 @@ public abstract class MethodArrayPropertyAccessor extends AbstractArrayPropertyA
 
 	protected Method getSetterMethod() {
 		return setter;
+	}
+
+	@Override
+	public void writeBoolean(Object instance, int index, boolean value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public boolean readBoolean(Object instance, int index) {
+		return readObject(instance, index);
+	}
+
+	@Override
+	public void writeByte(Object instance, int index, byte value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public byte readByte(Object instance, int index) {
+		return readObject(instance, index);
+	}
+
+	@Override
+	public void writeChar(Object instance, int index, char value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public char readChar(Object instance, int index) {
+		return readObject(instance, index);
+	}
+
+	@Override
+	public void writeShort(Object instance, int index, short value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public short readShort(Object instance, int index) {
+		return readObject(instance, index);
+	}
+
+	@Override
+	public void writeInt(Object instance, int index, int value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public int readInt(Object instance, int index) {
+		return readObject(instance, index);
+	}
+
+	@Override
+	public void writeLong(Object instance, int index, long value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public long readLong(Object instance, int index) {
+		return readObject(instance, index);
+	}
+
+	@Override
+	public void writeFloat(Object instance, int index, float value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public float readFloat(Object instance, int index) {
+		return readObject(instance, index);
+	}
+
+	@Override
+	public void writeDouble(Object instance, int index, double value) {
+		writeObject(instance, index, value);
+	}
+
+	@Override
+	public double readDouble(Object instance, int index) {
+		return readObject(instance, index);
 	}
 }

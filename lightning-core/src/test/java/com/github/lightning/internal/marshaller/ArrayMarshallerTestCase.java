@@ -20,6 +20,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.junit.Test;
@@ -37,13 +39,13 @@ public class ArrayMarshallerTestCase {
 
 	@Test
 	public void testBooleanArrayMarshalling() throws Exception {
-		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
+		Serializer serializer = Lightning.newBuilder().debugCacheDirectory(new File("target")).serializerDefinitions(new AbstractSerializerDefinition() {
 
 			@Override
 			protected void configure() {
 				bind(BooleanArray.class).attributes();
 			}
-		});
+		}).build();
 
 		BooleanArray test = new BooleanArray();
 		fillArray(new Predicate() {
@@ -332,6 +334,48 @@ public class ArrayMarshallerTestCase {
 		assertEquals(test, result);
 	}
 
+	@Test
+	public void testDeepObjectArrayMarshalling() throws Exception {
+		Serializer serializer = Lightning.newBuilder()
+				.debugCacheDirectory(new File("target"))
+				.serializerDefinitions(new AbstractSerializerDefinition() {
+
+			@Override
+			protected void configure() {
+				bind(DeepObjectArray.class).attributes();
+			}
+		}).build();
+
+		DeepObjectArray test = new DeepObjectArray();
+		fillArray(new Predicate() {
+
+			@Override
+			public void execute(Object array, int index) {
+				((ObjectArray[]) array)[index] = new ObjectArray();
+				fillArray(new Predicate() {
+
+					@Override
+					public void execute(Object array, int index) {
+						((Object[]) array)[index] = "Hello-" + RANDOM.nextInt();
+					}
+				}, ((ObjectArray[]) array)[index].array);
+			}
+		}, test.array);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
+
+		out.writeObject(test);
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		SerializerInputStream in = new SerializerInputStream(bais, serializer);
+
+		DeepObjectArray result = in.readObject();
+
+		assertNotNull(result);
+		assertEquals(test, result);
+	}
+
 	private static void fillArray(Predicate predicate, Object array) {
 		for (int i = 0; i < 10; i++) {
 			predicate.execute(array, i);
@@ -355,6 +399,33 @@ public class ArrayMarshallerTestCase {
 		public void setArray(boolean[] array) {
 			this.array = array;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			BooleanArray other = (BooleanArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "BooleanArray [array=" + Arrays.toString(array) + "]";
+		}
 	}
 
 	public static class ByteArray {
@@ -368,6 +439,33 @@ public class ArrayMarshallerTestCase {
 
 		public void setArray(byte[] array) {
 			this.array = array;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ByteArray other = (ByteArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "ByteArray [array=" + Arrays.toString(array) + "]";
 		}
 	}
 
@@ -383,6 +481,33 @@ public class ArrayMarshallerTestCase {
 		public void setArray(char[] array) {
 			this.array = array;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			CharArray other = (CharArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "CharArray [array=" + Arrays.toString(array) + "]";
+		}
 	}
 
 	public static class ShortArray {
@@ -396,6 +521,33 @@ public class ArrayMarshallerTestCase {
 
 		public void setArray(short[] array) {
 			this.array = array;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ShortArray other = (ShortArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "ShortArray [array=" + Arrays.toString(array) + "]";
 		}
 	}
 
@@ -411,6 +563,33 @@ public class ArrayMarshallerTestCase {
 		public void setArray(int[] array) {
 			this.array = array;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			IntArray other = (IntArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "IntArray [array=" + Arrays.toString(array) + "]";
+		}
 	}
 
 	public static class LongArray {
@@ -424,6 +603,33 @@ public class ArrayMarshallerTestCase {
 
 		public void setArray(long[] array) {
 			this.array = array;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			LongArray other = (LongArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "LongArray [array=" + Arrays.toString(array) + "]";
 		}
 	}
 
@@ -439,6 +645,33 @@ public class ArrayMarshallerTestCase {
 		public void setArray(float[] array) {
 			this.array = array;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FloatArray other = (FloatArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "FloatArray [array=" + Arrays.toString(array) + "]";
+		}
 	}
 
 	public static class DoubleArray {
@@ -453,19 +686,114 @@ public class ArrayMarshallerTestCase {
 		public void setArray(double[] array) {
 			this.array = array;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			DoubleArray other = (DoubleArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "DoubleArray [array=" + Arrays.toString(array) + "]";
+		}
 	}
 
 	public static class ObjectArray {
 
 		@Attribute
-		private Object[] array = new Object[10];
+		private String[] array = new String[10];
 
-		public Object[] getArray() {
+		public String[] getArray() {
 			return array;
 		}
 
-		public void setArray(Object[] array) {
+		public void setArray(String[] array) {
 			this.array = array;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ObjectArray other = (ObjectArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "ObjectArray [array=" + Arrays.toString(array) + "]";
+		}
+	}
+
+	public static class DeepObjectArray {
+
+		@Attribute
+		private ObjectArray[] array = new ObjectArray[10];
+
+		public ObjectArray[] getArray() {
+			return array;
+		}
+
+		public void setArray(ObjectArray[] array) {
+			this.array = array;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(array);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			DeepObjectArray other = (DeepObjectArray) obj;
+			if (!Arrays.equals(array, other.array))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "DeepObjectArray [array=" + Arrays.toString(array) + "]";
 		}
 	}
 }

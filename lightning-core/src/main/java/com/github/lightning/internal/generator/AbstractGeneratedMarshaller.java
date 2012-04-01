@@ -42,8 +42,8 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 	private final List<PropertyDescriptor> propertyDescriptors;
 	private final ObjectInstantiator objectInstantiator;
 
-	public AbstractGeneratedMarshaller(Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers,
-			ClassDescriptorAwareSerializer serializer, ObjectInstantiatorFactory objectInstantiatorFactory) {
+	public AbstractGeneratedMarshaller(Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
+			ObjectInstantiatorFactory objectInstantiatorFactory) {
 
 		this.marshalledType = marshalledType;
 		this.marshallers = marshallers;
@@ -77,7 +77,11 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 			}
 		}
 
-		V value = (V) newInstance();
+		V value = null;
+		if (!type.isArray()) {
+			value = (V) newInstance();
+		}
+
 		return unmarshall(value, type, dataInput, serializationContext);
 	}
 

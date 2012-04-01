@@ -27,32 +27,36 @@ import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.Streamed;
 import com.github.lightning.internal.marshaller.BigDecimalMarshaller;
 import com.github.lightning.internal.marshaller.BigIntegerMarshaller;
+import com.github.lightning.internal.marshaller.BooleanArrayMarshaller;
 import com.github.lightning.internal.marshaller.BooleanMarshaller;
+import com.github.lightning.internal.marshaller.ByteArrayMarshaller;
 import com.github.lightning.internal.marshaller.ByteMarshaller;
+import com.github.lightning.internal.marshaller.CharacterArrayMarshaller;
 import com.github.lightning.internal.marshaller.CharacterMarshaller;
+import com.github.lightning.internal.marshaller.DoubleArrayMarshaller;
 import com.github.lightning.internal.marshaller.DoubleMarshaller;
 import com.github.lightning.internal.marshaller.EnumMarshaller;
 import com.github.lightning.internal.marshaller.ExternalizableMarshaller;
+import com.github.lightning.internal.marshaller.FloatArrayMarshaller;
 import com.github.lightning.internal.marshaller.FloatMarshaller;
+import com.github.lightning.internal.marshaller.IntegerArrayMarshaller;
 import com.github.lightning.internal.marshaller.IntegerMarshaller;
 import com.github.lightning.internal.marshaller.ListMarshaller;
+import com.github.lightning.internal.marshaller.LongArrayMarshaller;
 import com.github.lightning.internal.marshaller.LongMarshaller;
 import com.github.lightning.internal.marshaller.MapMarshaller;
 import com.github.lightning.internal.marshaller.SerializableMarshaller;
 import com.github.lightning.internal.marshaller.SetMarshaller;
+import com.github.lightning.internal.marshaller.ShortArrayMarshaller;
 import com.github.lightning.internal.marshaller.ShortMarshaller;
 import com.github.lightning.internal.marshaller.StreamedMarshaller;
 import com.github.lightning.internal.marshaller.StringMarshaller;
 
 public class InternalMarshallerStrategy implements MarshallerStrategy {
 
-	private final Marshaller externalizableMarshaller = new ExternalizableMarshaller();
-	private final Marshaller serializableMarshaller = new SerializableMarshaller();
-	private final Marshaller streamedMarshaller = new StreamedMarshaller();
+	public static final List<Marshaller> baseMarshaller;
 
-	public final List<Marshaller> baseMarshaller;
-
-	public InternalMarshallerStrategy() {
+	static {
 		List<Marshaller> marshallers = new ArrayList<Marshaller>();
 		marshallers.add(new StreamedMarshaller());
 		marshallers.add(new ExternalizableMarshaller());
@@ -71,9 +75,21 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 		marshallers.add(new MapMarshaller());
 		marshallers.add(new BigIntegerMarshaller());
 		marshallers.add(new BigDecimalMarshaller());
+		marshallers.add(new BooleanArrayMarshaller());
+		marshallers.add(new ByteArrayMarshaller());
+		marshallers.add(new CharacterArrayMarshaller());
+		marshallers.add(new ShortArrayMarshaller());
+		marshallers.add(new IntegerArrayMarshaller());
+		marshallers.add(new LongArrayMarshaller());
+		marshallers.add(new FloatArrayMarshaller());
+		marshallers.add(new DoubleArrayMarshaller());
 
 		baseMarshaller = Collections.unmodifiableList(marshallers);
 	}
+
+	private final Marshaller externalizableMarshaller = new ExternalizableMarshaller();
+	private final Marshaller serializableMarshaller = new SerializableMarshaller();
+	private final Marshaller streamedMarshaller = new StreamedMarshaller();
 
 	public Marshaller getMarshaller(Class<?> type, MarshallerContext marshallerContext) {
 		if (Streamed.class.isAssignableFrom(type)) {
@@ -84,9 +100,11 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 			return externalizableMarshaller;
 		}
 
-		Marshaller marshaller = marshallerContext.getMarshaller(type);
-		if (marshaller != null) {
-			return marshaller;
+		if (marshallerContext != null) {
+			Marshaller marshaller = marshallerContext.getMarshaller(type);
+			if (marshaller != null) {
+				return marshaller;
+			}
 		}
 
 		for (Marshaller temp : baseMarshaller) {
@@ -95,7 +113,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 			}
 		}
 
-		if (Serializable.class.isAssignableFrom(type)) {
+		if (Serializable.class.isAssignableFrom(type) && !type.isArray()) {
 			return serializableMarshaller;
 		}
 
