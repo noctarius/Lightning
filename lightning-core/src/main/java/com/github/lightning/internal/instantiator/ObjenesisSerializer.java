@@ -40,8 +40,8 @@ public class ObjenesisSerializer extends ObjenesisBase {
 	 * 
 	 * @param useCache
 	 *            If
-	 *            {@link com.github.lightning.instantiator.ObjectInstantiator}
-	 *            s should be cached
+	 *            {@link com.github.lightning.instantiator.ObjectInstantiator} s
+	 *            should be cached
 	 */
 	public ObjenesisSerializer(boolean useCache) {
 		super(new SerializingInstantiatorStrategy(), useCache);

@@ -43,5 +43,4 @@ public class NewInstanceInstantiator implements ObjectInstantiator {
 			throw new ObjenesisException(e);
 		}
 	}
-
 }

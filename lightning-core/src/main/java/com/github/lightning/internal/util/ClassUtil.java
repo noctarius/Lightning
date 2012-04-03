@@ -159,7 +159,7 @@ public final class ClassUtil {
 			// Interfaces
 			Collections.sort(classVisitor.interfaces);
 			for (int i = 0; i < classVisitor.interfaces.size(); i++) {
-				out.writeUTF(toJavaName((String) classVisitor.interfaces.get(i)));
+				out.writeUTF(toJavaName(classVisitor.interfaces.get(i)));
 			}
 
 			// Fields

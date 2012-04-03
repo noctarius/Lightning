@@ -49,8 +49,7 @@ public class SunReflectionFactorySerializationInstantiator implements ObjectInst
 		ReflectionFactory reflectionFactory = ReflectionFactory.getReflectionFactory();
 		Constructor<?> nonSerializableAncestorConstructor;
 		try {
-			nonSerializableAncestorConstructor = nonSerializableAncestor
-					.getConstructor((Class[]) null);
+			nonSerializableAncestorConstructor = nonSerializableAncestor.getConstructor((Class[]) null);
 		}
 		catch (NoSuchMethodException e) {
 			/**
@@ -65,8 +64,7 @@ public class SunReflectionFactorySerializationInstantiator implements ObjectInst
 			throw new ObjenesisException(new NotSerializableException(type + " has no suitable superclass constructor"));
 		}
 
-		mungedConstructor = reflectionFactory.newConstructorForSerialization(type,
-				nonSerializableAncestorConstructor);
+		mungedConstructor = reflectionFactory.newConstructorForSerialization(type, nonSerializableAncestorConstructor);
 		mungedConstructor.setAccessible(true);
 	}
 

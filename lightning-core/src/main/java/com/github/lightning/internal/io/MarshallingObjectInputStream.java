@@ -31,5 +31,4 @@ public class MarshallingObjectInputStream extends DataInputStream implements Obj
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

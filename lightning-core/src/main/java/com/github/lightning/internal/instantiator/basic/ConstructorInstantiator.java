@@ -50,5 +50,4 @@ public class ConstructorInstantiator implements ObjectInstantiator {
 			throw new ObjenesisException(e);
 		}
 	}
-
 }

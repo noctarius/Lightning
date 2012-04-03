@@ -27,9 +27,8 @@ import com.github.lightning.metadata.PropertyDescriptor;
 
 public interface MarshallerGenerator {
 
-	Marshaller generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors,
-			Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
-			SerializationStrategy serializationStrategy, ObjectInstantiatorFactory objectInstantiatorFactory,
+	Marshaller generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors, Map<Class<?>, Marshaller> marshallers,
+			ClassDescriptorAwareSerializer serializer, SerializationStrategy serializationStrategy, ObjectInstantiatorFactory objectInstantiatorFactory,
 			File debugCacheDirectory);
 
 }

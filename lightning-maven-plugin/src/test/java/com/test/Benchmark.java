@@ -88,8 +88,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Lightning Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Lightning Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -148,8 +147,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Lightning Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Lightning Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -196,8 +194,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Java Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Java Serialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -255,8 +252,7 @@ public class Benchmark {
 		}
 
 		double avg = time / (double) BENCHMARK_ROUNDS;
-		System.out.println("Java Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS
-				+ ", size: " + size + " bytes");
+		System.out.println("Java Deserialization Avg: " + String.format("%5.2f", avg) + " ns, runs: " + BENCHMARK_ROUNDS + ", size: " + size + " bytes");
 
 		System.runFinalization();
 		System.gc();
@@ -348,8 +344,8 @@ public class Benchmark {
 
 		@Override
 		public String toString() {
-			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther="
-					+ someOther + ", enumValue=" + enumValue + "]";
+			return "Foo [hash=@" + hashCode() + ", first=" + first + ", second=" + second + ", value=" + value + ", someOther=" + someOther + ", enumValue="
+					+ enumValue + "]";
 		}
 
 		@Override
@@ -412,13 +408,11 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext)
-				throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext)
-				throws IOException {
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 			return null;
 		}
 	}
@@ -431,13 +425,11 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext)
-				throws IOException {
+		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext)
-				throws IOException {
+		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 			return value;
 		}
 

@@ -27,10 +27,12 @@ public class BufferOutputStream extends OutputStream {
 		this.byteBuffer = byteBuffer;
 	}
 
+	@Override
 	public synchronized void write(int b) throws IOException {
 		byteBuffer.put((byte) b);
 	}
 
+	@Override
 	public synchronized void write(byte[] bytes, int off, int len) throws IOException {
 		byteBuffer.put(bytes, off, len);
 	}

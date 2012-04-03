@@ -54,17 +54,14 @@ public class PercSerializationInstantiator implements ObjectInstantiator {
 			// Get the special Perc method to call
 			Class<?> percMethodClass = Class.forName("COM.newmonics.PercClassLoader.Method");
 
-			newInstanceMethod = ObjectInputStream.class.getDeclaredMethod("noArgConstruct",
-					new Class[] { Class.class, Object.class, percMethodClass });
+			newInstanceMethod = ObjectInputStream.class.getDeclaredMethod("noArgConstruct", new Class[] { Class.class, Object.class, percMethodClass });
 			newInstanceMethod.setAccessible(true);
 
 			// Create invoke params
 			Class<?> percClassClass = Class.forName("COM.newmonics.PercClassLoader.PercClass");
-			Method getPercClassMethod = percClassClass.getDeclaredMethod("getPercClass",
-					new Class[] { Class.class });
+			Method getPercClassMethod = percClassClass.getDeclaredMethod("getPercClass", new Class[] { Class.class });
 			Object someObject = getPercClassMethod.invoke(null, new Object[] { unserializableType });
-			Method findMethodMethod = someObject.getClass().getDeclaredMethod("findMethod",
-					new Class[] { String.class });
+			Method findMethodMethod = someObject.getClass().getDeclaredMethod("findMethod", new Class[] { String.class });
 			Object percMethod = findMethodMethod.invoke(someObject, new Object[] { "<init>()V" });
 
 			typeArgs = new Object[] { unserializableType, type, percMethod };
@@ -96,5 +93,4 @@ public class PercSerializationInstantiator implements ObjectInstantiator {
 			throw new ObjenesisException(e);
 		}
 	}
-
 }

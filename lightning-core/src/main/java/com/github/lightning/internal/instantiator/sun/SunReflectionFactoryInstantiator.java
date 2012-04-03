@@ -49,8 +49,7 @@ public class SunReflectionFactoryInstantiator implements ObjectInstantiator {
 		catch (NoSuchMethodException e) {
 			throw new Error("Cannot find constructor for java.lang.Object!");
 		}
-		mungedConstructor = reflectionFactory.newConstructorForSerialization(type,
-				javaLangObjectConstructor);
+		mungedConstructor = reflectionFactory.newConstructorForSerialization(type, javaLangObjectConstructor);
 		mungedConstructor.setAccessible(true);
 	}
 

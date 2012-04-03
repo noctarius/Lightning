@@ -66,8 +66,7 @@ public class ObjenesisBase implements ObjectInstantiatorFactory {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + " using " + strategy.getClass().getName()
-				+ (cache == null ? " without" : " with") + " caching";
+		return getClass().getName() + " using " + strategy.getClass().getName() + (cache == null ? " without" : " with") + " caching";
 	}
 
 	/**
@@ -99,7 +98,7 @@ public class ObjenesisBase implements ObjectInstantiatorFactory {
 		if (cache == null) {
 			return strategy.newInstantiatorOf(clazz);
 		}
-		ObjectInstantiator instantiator = (ObjectInstantiator) cache.get(clazz.getName());
+		ObjectInstantiator instantiator = cache.get(clazz.getName());
 		if (instantiator == null) {
 			instantiator = strategy.newInstantiatorOf(clazz);
 			cache.put(clazz.getName(), instantiator);

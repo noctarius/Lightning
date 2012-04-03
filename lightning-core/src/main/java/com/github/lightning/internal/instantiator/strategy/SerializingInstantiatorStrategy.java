@@ -70,5 +70,4 @@ public class SerializingInstantiatorStrategy extends BaseInstantiatorStrategy {
 
 		return new ObjectStreamClassInstantiator(type);
 	}
-
 }

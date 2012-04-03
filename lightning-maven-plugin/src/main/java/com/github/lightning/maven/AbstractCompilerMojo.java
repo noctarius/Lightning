@@ -130,7 +130,8 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 	/**
 	 * The -encoding argument for the Java compiler.
 	 * 
-	 * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
+	 * @parameter expression="${encoding}"
+	 *            default-value="${project.build.sourceEncoding}"
 	 */
 	protected String encoding;
 
@@ -146,7 +147,8 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 	 * The compiler id of the compiler to use. See this
 	 * <a href="non-javac-compilers.html">guide</a> for more information.
 	 * 
-	 * @parameter expression="${maven.compiler.compilerId}" default-value="javac"
+	 * @parameter expression="${maven.compiler.compilerId}"
+	 *            default-value="javac"
 	 */
 	private String compilerId;
 
@@ -331,6 +333,7 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 
 	protected abstract File getGeneratedSourcesDirectory();
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void execute() throws MojoExecutionException, CompilationFailureException {
 		// ----------------------------------------------------------------------
@@ -402,8 +405,8 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 		if (debug && StringUtils.isNotEmpty(debuglevel)) {
 			String[] split = StringUtils.split(debuglevel, ",");
 			for (int i = 0; i < split.length; i++) {
-				if (!(split[i].equalsIgnoreCase("none") || split[i].equalsIgnoreCase("lines")
-						|| split[i].equalsIgnoreCase("vars") || split[i].equalsIgnoreCase("source"))) {
+				if (!(split[i].equalsIgnoreCase("none") || split[i].equalsIgnoreCase("lines") || split[i].equalsIgnoreCase("vars") || split[i]
+						.equalsIgnoreCase("source"))) {
 					throw new IllegalArgumentException("The specified debug level: '" + split[i] + "' is unsupported. "
 							+ "Legal values are 'none', 'lines', 'vars', and 'source'.");
 				}
@@ -437,8 +440,8 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 			LinkedHashMap<String, String> cplrArgsCopy = new LinkedHashMap<String, String>();
 			if (effectiveCompilerArguments != null) {
 				for (Map.Entry<String, String> me : effectiveCompilerArguments.entrySet()) {
-					String key = (String) me.getKey();
-					String value = (String) me.getValue();
+					String key = me.getKey();
+					String value = me.getValue();
 					if (!key.startsWith("-")) {
 						key = "-" + key;
 					}
@@ -497,14 +500,12 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 
 			canUpdateTarget = compiler.canUpdateTarget(compilerConfiguration);
 
-			if (compiler.getCompilerOutputStyle().equals(CompilerOutputStyle.ONE_OUTPUT_FILE_FOR_ALL_INPUT_FILES)
-					&& !canUpdateTarget) {
+			if (compiler.getCompilerOutputStyle().equals(CompilerOutputStyle.ONE_OUTPUT_FILE_FOR_ALL_INPUT_FILES) && !canUpdateTarget) {
 				getLog().info("RESCANNING!");
 				// TODO: This second scan for source files is sub-optimal
 				String inputFileEnding = compiler.getInputFileEnding(compilerConfiguration);
 
-				Set<File> sources = computeStaleSources(compilerConfiguration, compiler,
-						getSourceInclusionScanner(inputFileEnding));
+				Set<File> sources = computeStaleSources(compilerConfiguration, compiler, getSourceInclusionScanner(inputFileEnding));
 
 				compilerConfiguration.setSourceFiles(sources);
 			}
@@ -569,9 +570,7 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 		// ----------------------------------------------------------------------
 
 		if (StringUtils.isEmpty(compilerConfiguration.getSourceEncoding())) {
-			getLog().warn(
-					"File encoding has not been set, using platform encoding " + ReaderFactory.FILE_ENCODING
-							+ ", i.e. build is platform dependent!");
+			getLog().warn("File encoding has not been set, using platform encoding " + ReaderFactory.FILE_ENCODING + ", i.e. build is platform dependent!");
 		}
 
 		List<CompilerError> messages;
@@ -663,8 +662,8 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Set<File> computeStaleSources(CompilerConfiguration compilerConfiguration, Compiler compiler,
-			SourceInclusionScanner scanner) throws MojoExecutionException, CompilerException {
+	private Set<File> computeStaleSources(CompilerConfiguration compilerConfiguration, Compiler compiler, SourceInclusionScanner scanner)
+			throws MojoExecutionException, CompilerException {
 		CompilerOutputStyle outputStyle = compiler.getCompilerOutputStyle();
 
 		SourceMapping mapping;
@@ -672,14 +671,12 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 		File outputDirectory;
 
 		if (outputStyle == CompilerOutputStyle.ONE_OUTPUT_FILE_PER_INPUT_FILE) {
-			mapping = new SuffixMapping(compiler.getInputFileEnding(compilerConfiguration),
-					compiler.getOutputFileEnding(compilerConfiguration));
+			mapping = new SuffixMapping(compiler.getInputFileEnding(compilerConfiguration), compiler.getOutputFileEnding(compilerConfiguration));
 
 			outputDirectory = getOutputDirectory();
 		}
 		else if (outputStyle == CompilerOutputStyle.ONE_OUTPUT_FILE_FOR_ALL_INPUT_FILES) {
-			mapping = new SingleTargetSourceMapping(compiler.getInputFileEnding(compilerConfiguration),
-					compiler.getOutputFile(compilerConfiguration));
+			mapping = new SingleTargetSourceMapping(compiler.getInputFileEnding(compilerConfiguration), compiler.getOutputFile(compilerConfiguration));
 
 			outputDirectory = buildDirectory;
 		}
@@ -702,8 +699,7 @@ public abstract class AbstractCompilerMojo extends AbstractMojo {
 				staleSources.addAll(scanner.getIncludedSources(rootFile, outputDirectory));
 			}
 			catch (InclusionScanException e) {
-				throw new MojoExecutionException("Error scanning source root: \'" + sourceRoot + "\' "
-						+ "for stale files to recompile.", e);
+				throw new MojoExecutionException("Error scanning source root: \'" + sourceRoot + "\' " + "for stale files to recompile.", e);
 			}
 		}
 

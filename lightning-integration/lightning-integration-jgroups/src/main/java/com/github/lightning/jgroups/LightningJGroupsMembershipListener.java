@@ -39,8 +39,7 @@ public class LightningJGroupsMembershipListener extends ReceiverAdapter {
 	private final Serializer serializer;
 	private final JChannel channel;
 
-	public LightningJGroupsMembershipListener(JChannel channel, Serializer serializer,
-			ExecutorService executorService) {
+	public LightningJGroupsMembershipListener(JChannel channel, Serializer serializer, ExecutorService executorService) {
 
 		this.channel = channel;
 		this.serializer = serializer;
@@ -102,8 +101,7 @@ public class LightningJGroupsMembershipListener extends ReceiverAdapter {
 								channel.send(receiver, byteBuffer);
 							}
 							catch (Exception e) {
-								throw new LightningClusterException(
-										"Could not send ClassDefinitionContainer to address " + receiver, e);
+								throw new LightningClusterException("Could not send ClassDefinitionContainer to address " + receiver, e);
 							}
 						}
 					}
@@ -145,8 +143,7 @@ public class LightningJGroupsMembershipListener extends ReceiverAdapter {
 								channel.send(receiver, byteBuffer);
 							}
 							catch (Exception e) {
-								throw new LightningClusterException(
-										"Could not send ClassDefinitionContainer to address " + receiver, e);
+								throw new LightningClusterException("Could not send ClassDefinitionContainer to address " + receiver, e);
 							}
 						}
 					}

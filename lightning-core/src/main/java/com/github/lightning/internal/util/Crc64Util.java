@@ -61,9 +61,7 @@ public final class Crc64Util {
 	public static String toString(long checksum) {
 		String crc64String = Long.toHexString(checksum).toUpperCase();
 		StringBuffer crc64 = new StringBuffer("0000000000000000");
-		crc64.replace(crc64.length() - crc64String.length(),
-				crc64.length(),
-				crc64String);
+		crc64.replace(crc64.length() - crc64String.length(), crc64.length(), crc64String);
 
 		return crc64.toString();
 	}
@@ -86,5 +84,4 @@ public final class Crc64Util {
 
 		return crc64Number;
 	}
-
 }

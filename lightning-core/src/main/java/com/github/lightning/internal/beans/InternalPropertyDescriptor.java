@@ -129,7 +129,8 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String toString() {
-		return "InternalPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature=" + internalSignature + ", declaringCanonicalClassname="
-				+ declaringCanonicalClassname + ", propertyAccessor=" + propertyAccessor + ", marshaller=" + marshaller + "]";
+		return "InternalPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature=" + internalSignature
+				+ ", declaringCanonicalClassname=" + declaringCanonicalClassname + ", propertyAccessor=" + propertyAccessor + ", marshaller=" + marshaller
+				+ "]";
 	}
 }

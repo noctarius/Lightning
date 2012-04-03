@@ -40,8 +40,7 @@ public class ObjectStreamClassInstantiator implements ObjectInstantiator {
 	private static void initialize() {
 		if (newInstanceMethod == null) {
 			try {
-				newInstanceMethod = ObjectStreamClass.class.getDeclaredMethod("newInstance",
-						new Class[] {});
+				newInstanceMethod = ObjectStreamClass.class.getDeclaredMethod("newInstance", new Class[] {});
 				newInstanceMethod.setAccessible(true);
 			}
 			catch (RuntimeException e) {
@@ -62,14 +61,11 @@ public class ObjectStreamClassInstantiator implements ObjectInstantiator {
 
 	@Override
 	public Object newInstance() {
-
 		try {
 			return newInstanceMethod.invoke(objStreamClass, new Object[] {});
 		}
 		catch (Exception e) {
 			throw new ObjenesisException(e);
 		}
-
 	}
-
 }

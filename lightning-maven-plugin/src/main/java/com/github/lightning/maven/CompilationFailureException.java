@@ -66,7 +66,7 @@ public class CompilationFailureException extends MojoFailureException {
 		if (messages.size() == 1) {
 			sb.append(LS);
 
-			CompilerError compilerError = (CompilerError) messages.get(0);
+			CompilerError compilerError = messages.get(0);
 
 			sb.append(compilerError).append(LS);
 		}

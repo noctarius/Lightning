@@ -38,20 +38,18 @@ public class GenericTypedTestCase {
 
 	@Test
 	public void testSimpleObject() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger())
-				.debugCacheDirectory(new File("target"))
+		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).debugCacheDirectory(new File("target"))
 				.serializerDefinitions(new SerializerDefinition()).build();
 
 		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger())
-				.serializerDefinitions(new SerializerDefinition()).build();
+		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new SerializerDefinition()).build();
 
 		remoteSerializer.setClassDefinitionContainer(container);
 
 		Foo foo = new Foo();
 		foo.setId(10000);
-		//foo.setName("SomeName");
+		// foo.setName("SomeName");
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
@@ -70,20 +68,18 @@ public class GenericTypedTestCase {
 
 	@Test
 	public void testSomeMoreComplexObjectWithOneDefinition() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger())
-				.debugCacheDirectory(new File("target"))
+		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).debugCacheDirectory(new File("target"))
 				.serializerDefinitions(new SerializerDefinition()).build();
 
 		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger())
-				.serializerDefinitions(new SerializerDefinition()).build();
+		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new SerializerDefinition()).build();
 
 		remoteSerializer.setClassDefinitionContainer(container);
 
 		Foo foo = new Foo();
 		foo.setId(10000);
-		//foo.setName("SomeName");
+		// foo.setName("SomeName");
 
 		Complex complex = new Complex();
 		complex.setFoo(foo);
@@ -106,20 +102,18 @@ public class GenericTypedTestCase {
 
 	@Test
 	public void testSomeMoreComplexObjectWithTwoDefinition() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger())
-				.debugCacheDirectory(new File("target"))
+		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).debugCacheDirectory(new File("target"))
 				.serializerDefinitions(new ParentSerializerDefinition()).build();
 
 		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger())
-				.serializerDefinitions(new ParentSerializerDefinition()).build();
+		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new ParentSerializerDefinition()).build();
 
 		remoteSerializer.setClassDefinitionContainer(container);
 
 		Foo foo = new Foo();
 		foo.setId(10000);
-		//foo.setName("SomeName");
+		// foo.setName("SomeName");
 
 		Complex complex = new Complex();
 		complex.setFoo(foo);
@@ -196,7 +190,7 @@ public class GenericTypedTestCase {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + id;
-			//result = prime * result + ((name == null) ? 0 : name.hashCode());
+			// result = prime * result + ((name == null) ? 0 : name.hashCode());
 			return result;
 		}
 

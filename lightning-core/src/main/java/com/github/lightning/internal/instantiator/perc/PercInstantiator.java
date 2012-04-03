@@ -42,8 +42,7 @@ public class PercInstantiator implements ObjectInstantiator {
 		typeArgs[0] = type;
 
 		try {
-			newInstanceMethod = ObjectInputStream.class.getDeclaredMethod("newInstance",
-					new Class[] { Class.class, Boolean.TYPE });
+			newInstanceMethod = ObjectInputStream.class.getDeclaredMethod("newInstance", new Class[] { Class.class, Boolean.TYPE });
 			newInstanceMethod.setAccessible(true);
 		}
 		catch (RuntimeException e) {
@@ -63,5 +62,4 @@ public class PercInstantiator implements ObjectInstantiator {
 			throw new ObjenesisException(e);
 		}
 	}
-
 }

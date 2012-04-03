@@ -61,8 +61,7 @@ public class SerializerDefinitionAnalyser {
 	public void analyse(SerializerDefinition serializerDefinition) {
 		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
 		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
-		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy,
-				propertyDescriptorFactory);
+		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy, propertyDescriptorFactory);
 
 		serializerDefinition.configure(definitionBuildingContext, null);
 		serializerDefinition.acceptVisitor(definitionVisitor);
@@ -81,8 +80,8 @@ public class SerializerDefinitionAnalyser {
 			if (classDescriptor instanceof InternalClassDescriptor && classDescriptor.getMarshaller() == null) {
 				try {
 					SourceMarshallerGenerator generator = new SourceMarshallerGenerator(charset, logger);
-					File sourceFile = generator.generateMarshaller(classDescriptor.getType(),
-							classDescriptor.getPropertyDescriptors(), serializationStrategy, outputFolder);
+					File sourceFile = generator.generateMarshaller(classDescriptor.getType(), classDescriptor.getPropertyDescriptors(), serializationStrategy,
+							outputFolder);
 
 					files.add(sourceFile);
 				}
@@ -154,8 +153,8 @@ public class SerializerDefinitionAnalyser {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
 
 			if (logger.isTraceEnabled()) {
-				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature()
-						+ ") on type " + propertyDescriptor.getDeclaringClass().getCanonicalName());
+				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
+						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);
@@ -166,8 +165,8 @@ public class SerializerDefinitionAnalyser {
 			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
 
 			if (logger.isTraceEnabled()) {
-				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature()
-						+ ") on type " + propertyDescriptor.getDeclaringClass().getCanonicalName());
+				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
+						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);

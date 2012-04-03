@@ -40,8 +40,7 @@ public class JRockitLegacyInstantiator implements ObjectInstantiator {
 			Class<?> memSystem;
 			try {
 				memSystem = Class.forName("jrockit.vm.MemSystem");
-				safeAllocObjectMethod = memSystem.getDeclaredMethod("safeAllocObject",
-						new Class[] { Class.class });
+				safeAllocObjectMethod = memSystem.getDeclaredMethod("safeAllocObject", new Class[] { Class.class });
 				safeAllocObjectMethod.setAccessible(true);
 			}
 			catch (RuntimeException e) {

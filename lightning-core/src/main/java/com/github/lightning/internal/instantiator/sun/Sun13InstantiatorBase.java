@@ -35,8 +35,7 @@ public abstract class Sun13InstantiatorBase implements ObjectInstantiator {
 	private static void initialize() {
 		if (allocateNewObjectMethod == null) {
 			try {
-				allocateNewObjectMethod = ObjectInputStream.class.getDeclaredMethod(
-						"allocateNewObject", new Class[] { Class.class, Class.class });
+				allocateNewObjectMethod = ObjectInputStream.class.getDeclaredMethod("allocateNewObject", new Class[] { Class.class, Class.class });
 				allocateNewObjectMethod.setAccessible(true);
 			}
 			catch (RuntimeException e) {

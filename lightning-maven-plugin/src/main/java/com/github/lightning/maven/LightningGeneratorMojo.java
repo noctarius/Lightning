@@ -97,16 +97,16 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 	 * @parameter default-value="speed"
 	 */
 	private String strategy;
-	
+
 	@Override
 	public void execute() throws MojoExecutionException, CompilationFailureException {
 		if (encoding == null) {
 			encoding = "UTF-8";
 		}
 
-		SerializationStrategy serializationStrategy = "size".equalsIgnoreCase(strategy) ?
-				SerializationStrategy.SizeOptimized : SerializationStrategy.SpeedOptimized;
-		
+		SerializationStrategy serializationStrategy = "size".equalsIgnoreCase(strategy) ? SerializationStrategy.SizeOptimized
+				: SerializationStrategy.SpeedOptimized;
+
 		MavenLoggerAdapter logger = new MavenLoggerAdapter(LightningGeneratorMojo.class.getCanonicalName());
 		getLog().info("Searching in path " + targetBuildDirectory.getAbsolutePath());
 		List<File> files = SupportUtil.recursiveGetAllJavaSources(targetBuildDirectory, new ArrayList<File>(), fileFilter);
@@ -123,8 +123,7 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 				}
 			}
 		}
-		ClassLoader classLoader = new URLClassLoader(urlClasspathElements.toArray(new URL[urlClasspathElements.size()]),
-				getClass().getClassLoader());
+		ClassLoader classLoader = new URLClassLoader(urlClasspathElements.toArray(new URL[urlClasspathElements.size()]), getClass().getClassLoader());
 
 		for (File file : files) {
 			try {
@@ -209,6 +208,7 @@ public class LightningGeneratorMojo extends AbstractCompilerMojo {
 
 	private final FileFilter fileFilter = new FileFilter() {
 
+		@Override
 		public boolean accept(File file) {
 			return file.isDirectory() || file.getName().endsWith(".class");
 		}

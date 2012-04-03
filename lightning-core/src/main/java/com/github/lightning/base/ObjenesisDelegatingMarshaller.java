@@ -28,9 +28,7 @@ class ObjenesisDelegatingMarshaller implements Marshaller {
 	private final ObjectInstantiatorFactory objectInstantiatorFactory;
 	private final AbstractObjectMarshaller delegatedMarshaller;
 
-	ObjenesisDelegatingMarshaller(AbstractObjectMarshaller delegatedMarshaller,
-			ObjectInstantiatorFactory objectInstantiatorFactory) {
-
+	ObjenesisDelegatingMarshaller(AbstractObjectMarshaller delegatedMarshaller, ObjectInstantiatorFactory objectInstantiatorFactory) {
 		this.delegatedMarshaller = delegatedMarshaller;
 		this.objectInstantiatorFactory = objectInstantiatorFactory;
 	}
@@ -41,15 +39,13 @@ class ObjenesisDelegatingMarshaller implements Marshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		delegatedMarshaller.marshall(value, type, dataOutput, serializationContext);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext)
-			throws IOException {
+	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		V value = (V) objectInstantiatorFactory.newInstance(type);
 		return delegatedMarshaller.unmarshall(value, type, dataInput, serializationContext);
 	}

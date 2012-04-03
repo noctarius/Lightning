@@ -26,7 +26,7 @@ public interface ClassDefinitionContainer {
 	ClassDefinition getClassDefinitionByCanonicalName(String canonicalName);
 
 	ClassDefinition getClassDefinitionById(long id);
-	
+
 	ClassDefinition getClassDefinitionByType(Class<?> type);
 
 }

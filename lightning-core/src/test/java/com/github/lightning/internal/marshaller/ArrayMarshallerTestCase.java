@@ -336,9 +336,7 @@ public class ArrayMarshallerTestCase {
 
 	@Test
 	public void testDeepObjectArrayMarshalling() throws Exception {
-		Serializer serializer = Lightning.newBuilder()
-				.debugCacheDirectory(new File("target"))
-				.serializerDefinitions(new AbstractSerializerDefinition() {
+		Serializer serializer = Lightning.newBuilder().debugCacheDirectory(new File("target")).serializerDefinitions(new AbstractSerializerDefinition() {
 
 			@Override
 			protected void configure() {

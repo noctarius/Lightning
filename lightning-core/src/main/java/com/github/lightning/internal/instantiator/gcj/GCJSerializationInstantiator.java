@@ -46,5 +46,4 @@ public class GCJSerializationInstantiator extends GCJInstantiatorBase {
 			throw new ObjenesisException(e);
 		}
 	}
-
 }

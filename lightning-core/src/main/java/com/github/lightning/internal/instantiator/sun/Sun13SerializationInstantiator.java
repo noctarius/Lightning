@@ -47,5 +47,4 @@ public class Sun13SerializationInstantiator extends Sun13InstantiatorBase {
 			throw new ObjenesisException(e);
 		}
 	}
-
 }

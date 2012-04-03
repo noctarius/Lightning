@@ -54,8 +54,8 @@ public class SourceMarshallerGenerator {
 		marshallerTemplate = engine.getTemplate("marshaller.vm", "UTF-8");
 	}
 
-	public File generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors,
-			SerializationStrategy serializationStrategy, File outputFolder) throws IOException {
+	public File generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors, SerializationStrategy serializationStrategy, File outputFolder)
+			throws IOException {
 
 		// Copy properties and sort them by name
 		List<PropertyDescriptor> propertyDescriptorsCopy = new ArrayList<PropertyDescriptor>(propertyDescriptors);
@@ -95,48 +95,47 @@ public class SourceMarshallerGenerator {
 	public static class Support {
 
 		public String toFinalFieldName(String prefix, PropertyDescriptor propertyDescriptor) {
-			return new StringBuilder(prefix.toUpperCase()).append("_").append(propertyDescriptor.getPropertyName()
-					.toUpperCase()).append("_LIGHTNING").toString();
+			return new StringBuilder(prefix.toUpperCase()).append("_").append(propertyDescriptor.getPropertyName().toUpperCase()).append("_LIGHTNING")
+					.toString();
 		}
 
 		public String generateWriter(PropertyDescriptor propertyDescriptor, String instanceName) {
 			StringBuilder sb = new StringBuilder(propertyDescriptor.getPropertyName()).append("PropertyAccessor.write");
 			Class<?> type = propertyDescriptor.getType();
 			if (type == boolean.class) {
-				sb.append("Boolean(").append(instanceName).append(", ((Boolean) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").booleanValue())");
+				sb.append("Boolean(").append(instanceName).append(", ((Boolean) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").booleanValue())");
 			}
 			else if (type == byte.class) {
-				sb.append("Byte(").append(instanceName).append(", ((Byte) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").byteValue())");
+				sb.append("Byte(").append(instanceName).append(", ((Byte) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").byteValue())");
 			}
 			else if (type == char.class) {
-				sb.append("Char(").append(instanceName).append(", ((Character) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").charValue())");
+				sb.append("Char(").append(instanceName).append(", ((Character) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").charValue())");
 			}
 			else if (type == short.class) {
-				sb.append("Short(").append(instanceName).append(", ((Short) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").shortValue())");
+				sb.append("Short(").append(instanceName).append(", ((Short) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").shortValue())");
 			}
 			else if (type == int.class) {
-				sb.append("Int(").append(instanceName).append(", ((Integer) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").intValue())");
+				sb.append("Int(").append(instanceName).append(", ((Integer) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").intValue())");
 			}
 			else if (type == long.class) {
-				sb.append("Long(").append(instanceName).append(", ((Long) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").longValue())");
+				sb.append("Long(").append(instanceName).append(", ((Long) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").longValue())");
 			}
 			else if (type == float.class) {
-				sb.append("Float(").append(instanceName).append(", ((Float) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").floatValue())");
+				sb.append("Float(").append(instanceName).append(", ((Float) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").floatValue())");
 			}
 			else if (type == double.class) {
-				sb.append("Double(").append(instanceName).append(", ((Double) ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(").doubleValue())");
+				sb.append("Double(").append(instanceName).append(", ((Double) ").append(propertyDescriptor.getPropertyName()).append("Value")
+						.append(").doubleValue())");
 			}
 			else {
-				sb.append("Object(").append(instanceName).append(", ").append(propertyDescriptor.getPropertyName())
-						.append("Value").append(")");
+				sb.append("Object(").append(instanceName).append(", ").append(propertyDescriptor.getPropertyName()).append("Value").append(")");
 			}
 
 			return sb.append(";").toString();
@@ -146,36 +145,28 @@ public class SourceMarshallerGenerator {
 			StringBuilder sb = new StringBuilder();
 			Class<?> type = propertyDescriptor.getType();
 			if (type == boolean.class) {
-				sb.append("Boolean.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readBoolean(");
+				sb.append("Boolean.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readBoolean(");
 			}
 			else if (type == byte.class) {
-				sb.append("Byte.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readByte(");
+				sb.append("Byte.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readByte(");
 			}
 			else if (type == char.class) {
-				sb.append("Character.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readChar(");
+				sb.append("Character.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readChar(");
 			}
 			else if (type == short.class) {
-				sb.append("Short.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readShort(");
+				sb.append("Short.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readShort(");
 			}
 			else if (type == int.class) {
-				sb.append("Integer.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readInt(");
+				sb.append("Integer.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readInt(");
 			}
 			else if (type == long.class) {
-				sb.append("Long.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readLong(");
+				sb.append("Long.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readLong(");
 			}
 			else if (type == float.class) {
-				sb.append("Float.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readFloat(");
+				sb.append("Float.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readFloat(");
 			}
 			else if (type == double.class) {
-				sb.append("Double.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor")
-						.append(".readDouble(");
+				sb.append("Double.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readDouble(");
 			}
 			else {
 				sb.append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readObject(");

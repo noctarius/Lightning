@@ -15,7 +15,7 @@
  */
 package com.github.lightning.jgroups;
 
-
+@SuppressWarnings("serial")
 public class LightningClusterException extends RuntimeException {
 
 	public LightningClusterException() {

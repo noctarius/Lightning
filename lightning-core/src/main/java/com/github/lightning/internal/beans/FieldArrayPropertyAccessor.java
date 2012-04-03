@@ -49,6 +49,7 @@ public abstract class FieldArrayPropertyAccessor extends FieldValuePropertyAcces
 		return field.getType();
 	}
 
+	@Override
 	protected Field getField() {
 		return field;
 	}

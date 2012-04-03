@@ -44,6 +44,7 @@ public class WriterOutputStream extends OutputStream {
 	}
 
 	/* ------------------------------------------------------------ */
+	@Override
 	public void close() throws IOException {
 		_writer.close();
 		_writer = null;
@@ -51,11 +52,13 @@ public class WriterOutputStream extends OutputStream {
 	}
 
 	/* ------------------------------------------------------------ */
+	@Override
 	public void flush() throws IOException {
 		_writer.flush();
 	}
 
 	/* ------------------------------------------------------------ */
+	@Override
 	public void write(byte[] b) throws IOException {
 		if (_encoding == null)
 			_writer.write(new String(b));
@@ -64,6 +67,7 @@ public class WriterOutputStream extends OutputStream {
 	}
 
 	/* ------------------------------------------------------------ */
+	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		if (_encoding == null)
 			_writer.write(new String(b, off, len));
@@ -72,9 +76,9 @@ public class WriterOutputStream extends OutputStream {
 	}
 
 	/* ------------------------------------------------------------ */
+	@Override
 	public synchronized void write(int b) throws IOException {
 		_buf[0] = (byte) b;
 		write(_buf);
 	}
-
 }

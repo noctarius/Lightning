@@ -91,6 +91,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 	private final Marshaller serializableMarshaller = new SerializableMarshaller();
 	private final Marshaller streamedMarshaller = new StreamedMarshaller();
 
+	@Override
 	public Marshaller getMarshaller(Class<?> type, MarshallerContext marshallerContext) {
 		if (Streamed.class.isAssignableFrom(type)) {
 			return streamedMarshaller;

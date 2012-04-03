@@ -23,10 +23,6 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
-import com.github.lightning.Lightning;
-import com.github.lightning.Serializer;
-import com.github.lightning.base.AbstractSerializerDefinition;
-
 public class MavenGeneratorTestCase {
 
 	@Test
@@ -35,8 +31,7 @@ public class MavenGeneratorTestCase {
 		assertTrue(recursiveSearchClassFile("FooLightningGeneratedMarshaller.class", target));
 
 		File testfile = new File(getClass().getClassLoader().getResource("generated.java.out").toURI());
-		File generatedFile = new File(
-				"target/generated-sources/lightning/com/github/lightning/maven/integration/FooLightningGeneratedMarshaller.java");
+		File generatedFile = new File("target/generated-sources/lightning/com/github/lightning/maven/integration/FooLightningGeneratedMarshaller.java");
 		String expected = SupportUtil.readAllText(testfile, Charset.forName("UTF-8"));
 		String result = SupportUtil.readAllText(generatedFile, Charset.forName("UTF-8"));
 		assertEquals(expected, result);

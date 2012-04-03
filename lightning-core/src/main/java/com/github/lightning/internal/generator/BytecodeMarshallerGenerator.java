@@ -45,6 +45,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 
 	private final GeneratorClassLoader classloader = CreateClassLoader.createClassLoader(getClass().getClassLoader());
 
+	@Override
 	public Marshaller generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors, Map<Class<?>, Marshaller> marshallers,
 			ClassDescriptorAwareSerializer serializer, SerializationStrategy serializationStrategy, ObjectInstantiatorFactory objectInstantiatorFactory,
 			File debugCacheDirectory) {
@@ -228,6 +229,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 
 	private void createMarshallMethod(ClassWriter cw, String className, Class<?> type, SerializationStrategy serializationStrategy,
 			List<PropertyDescriptor> propertyDescriptors) {
+
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "marshall", MARSHALLER_MARSHALL_SIGNATURE, null, MARSHALLER_EXCEPTIONS);
 
 		// If element type is not reference capable or SerializationStrategy is
@@ -411,7 +413,6 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 	}
 
 	private void createUnmarshallMethod(ClassWriter cw, String className, Class<?> type, List<PropertyDescriptor> propertyDescriptors) {
-
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "unmarshall", MARSHALLER_UNMARSHALL_SIGNATURE, null, MARSHALLER_EXCEPTIONS);
 
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {

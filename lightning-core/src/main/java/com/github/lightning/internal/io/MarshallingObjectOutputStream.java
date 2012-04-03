@@ -31,5 +31,4 @@ public class MarshallingObjectOutputStream extends DataOutputStream implements O
 		// TODO Auto-generated method stub
 
 	}
-
 }

@@ -49,9 +49,8 @@ public class LightningFactoryBean implements FactoryBean, InitializingBean {
 			return singletonSerializer;
 		}
 
-		return Lightning.newBuilder().classComparisonStrategy(classComparisonStrategy)
-				.debugCacheDirectory(debugCacheDirectory).describesAttributs(attributesAnnotation)
-				.logger(logger).serializationStrategy(serializationStrategy)
+		return Lightning.newBuilder().classComparisonStrategy(classComparisonStrategy).debugCacheDirectory(debugCacheDirectory)
+				.describesAttributs(attributesAnnotation).logger(logger).serializationStrategy(serializationStrategy)
 				.serializerDefinitions(serializerDefinitions).build();
 	}
 
@@ -69,9 +68,8 @@ public class LightningFactoryBean implements FactoryBean, InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		if (isSingleton()) {
 			synchronized (this) {
-				singletonSerializer = Lightning.newBuilder().classComparisonStrategy(classComparisonStrategy)
-						.debugCacheDirectory(debugCacheDirectory).describesAttributs(attributesAnnotation)
-						.logger(logger).serializationStrategy(serializationStrategy)
+				singletonSerializer = Lightning.newBuilder().classComparisonStrategy(classComparisonStrategy).debugCacheDirectory(debugCacheDirectory)
+						.describesAttributs(attributesAnnotation).logger(logger).serializationStrategy(serializationStrategy)
 						.serializerDefinitions(serializerDefinitions).build();
 			}
 		}

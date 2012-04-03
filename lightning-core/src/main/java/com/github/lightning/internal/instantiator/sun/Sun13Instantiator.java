@@ -49,5 +49,4 @@ public class Sun13Instantiator extends Sun13InstantiatorBase {
 			throw new ObjenesisException(e);
 		}
 	}
-
 }

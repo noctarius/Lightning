@@ -38,13 +38,12 @@ public class ObjenesisStd extends ObjenesisBase {
 	 * Instance using the
 	 * {@link com.github.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
 	 * with or without
-	 * caching
-	 * {@link com.github.lightning.instantiator.ObjectInstantiator}s
+	 * caching {@link com.github.lightning.instantiator.ObjectInstantiator}s
 	 * 
 	 * @param useCache
 	 *            If
-	 *            {@link com.github.lightning.instantiator.ObjectInstantiator}
-	 *            s should be cached
+	 *            {@link com.github.lightning.instantiator.ObjectInstantiator} s
+	 *            should be cached
 	 */
 	public ObjenesisStd(boolean useCache) {
 		super(new StdInstantiatorStrategy(), useCache);

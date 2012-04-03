@@ -224,8 +224,7 @@ public final class BeanUtil {
 	}
 
 	private static String extractPropertyName(String methodName) {
-		if (methodName.toUpperCase().startsWith("GET") || methodName.toUpperCase().startsWith("IS")
-				|| methodName.toUpperCase().startsWith("SET")) {
+		if (methodName.toUpperCase().startsWith("GET") || methodName.toUpperCase().startsWith("IS") || methodName.toUpperCase().startsWith("SET")) {
 
 			char[] characters = methodName.toCharArray();
 			for (int i = 1; i < characters.length; i++) {
@@ -236,5 +235,4 @@ public final class BeanUtil {
 		}
 		return StringUtil.toLowerCamelCase(methodName);
 	}
-
 }

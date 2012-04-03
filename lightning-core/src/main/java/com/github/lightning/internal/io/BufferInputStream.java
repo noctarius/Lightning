@@ -27,6 +27,7 @@ public class BufferInputStream extends InputStream {
 		this.byteBuffer = byteBuffer;
 	}
 
+	@Override
 	public synchronized int read() throws IOException {
 		if (!byteBuffer.hasRemaining()) {
 			return -1;
@@ -34,6 +35,7 @@ public class BufferInputStream extends InputStream {
 		return byteBuffer.get();
 	}
 
+	@Override
 	public synchronized int read(byte[] bytes, int off, int len) throws IOException {
 		len = Math.min(len, byteBuffer.remaining());
 		byteBuffer.get(bytes, off, len);

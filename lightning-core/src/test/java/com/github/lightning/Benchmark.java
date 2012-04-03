@@ -30,7 +30,6 @@ import java.io.Serializable;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.lightning.base.AbstractObjectMarshaller;

@@ -39,8 +39,7 @@ public class JRockit131Instantiator implements ObjectInstantiator {
 			Class<?> cl;
 			try {
 				cl = Class.forName("COM.jrockit.reflect.MemberAccess");
-				newConstructorForSerializationMethod = cl.getDeclaredMethod(
-						"newConstructorForSerialization", new Class[] { Constructor.class, Class.class });
+				newConstructorForSerializationMethod = cl.getDeclaredMethod("newConstructorForSerialization", new Class[] { Constructor.class, Class.class });
 				newConstructorForSerializationMethod.setAccessible(true);
 			}
 			catch (RuntimeException e) {
@@ -70,8 +69,7 @@ public class JRockit131Instantiator implements ObjectInstantiator {
 			}
 
 			try {
-				mungedConstructor = (Constructor<?>) newConstructorForSerializationMethod.invoke(null,
-						new Object[] { javaLangObjectConstructor, type });
+				mungedConstructor = (Constructor<?>) newConstructorForSerializationMethod.invoke(null, new Object[] { javaLangObjectConstructor, type });
 			}
 			catch (Exception e) {
 				throw new ObjenesisException(e);
