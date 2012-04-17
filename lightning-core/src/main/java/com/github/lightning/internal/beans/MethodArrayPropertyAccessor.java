@@ -65,7 +65,7 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public boolean readBoolean(Object instance, int index) {
-		return readObject(instance, index);
+		return (Boolean) readObject(instance, index);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public byte readByte(Object instance, int index) {
-		return readObject(instance, index);
+		return (Byte) readObject(instance, index);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public char readChar(Object instance, int index) {
-		return readObject(instance, index);
+		return (Character) readObject(instance, index);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public short readShort(Object instance, int index) {
-		return readObject(instance, index);
+		return (Short) readObject(instance, index);
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public int readInt(Object instance, int index) {
-		return readObject(instance, index);
+		return (Integer) readObject(instance, index);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public long readLong(Object instance, int index) {
-		return readObject(instance, index);
+		return (Long) readObject(instance, index);
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public float readFloat(Object instance, int index) {
-		return readObject(instance, index);
+		return (Float) readObject(instance, index);
 	}
 
 	@Override
@@ -135,6 +135,6 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	@Override
 	public double readDouble(Object instance, int index) {
-		return readObject(instance, index);
+		return (Double) readObject(instance, index);
 	}
 }
