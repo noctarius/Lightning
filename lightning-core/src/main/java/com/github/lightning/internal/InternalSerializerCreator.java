@@ -17,6 +17,7 @@ package com.github.lightning.internal;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
 import com.github.lightning.internal.instantiator.ObjenesisSerializer;
 import com.github.lightning.internal.util.ClassUtil;
+import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.Attribute;
@@ -161,11 +163,12 @@ public final class InternalSerializerCreator {
 		}
 
 		@Override
-		public void visitClassDefine(Class<?> type, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(type);
+		public void visitClassDefine(Type type, Marshaller marshaller) {
+			Class<?> rawType = TypeUtil.getBaseType(type);
+			InternalClassDescriptor classDescriptor = findClassDescriptor(rawType);
 			classDescriptor.setMarshaller(marshaller);
 
-			marshallers.put(type, marshaller);
+			marshallers.put(rawType, marshaller);
 		}
 
 		@Override

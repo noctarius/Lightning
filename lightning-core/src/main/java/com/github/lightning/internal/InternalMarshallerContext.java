@@ -15,6 +15,8 @@
  */
 package com.github.lightning.internal;
 
+import java.lang.reflect.Type;
+
 import com.carrotsearch.hppc.ObjectObjectMap;
 import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 import com.github.lightning.Marshaller;
@@ -23,7 +25,7 @@ import com.github.lightning.MarshallerContext;
 public class InternalMarshallerContext implements MarshallerContext {
 
 	private final MarshallerContext parentMarshallerContext;
-	private final ObjectObjectMap<Class<?>, Marshaller> marshallers = new ObjectObjectOpenHashMap<Class<?>, Marshaller>();
+	private final ObjectObjectMap<Type, Marshaller> marshallers = new ObjectObjectOpenHashMap<Type, Marshaller>();
 
 	public InternalMarshallerContext() {
 		this(null);
@@ -34,7 +36,7 @@ public class InternalMarshallerContext implements MarshallerContext {
 	}
 
 	@Override
-	public Marshaller getMarshaller(Class<?> type) {
+	public Marshaller getMarshaller(Type type) {
 		Marshaller marshaller = marshallers.get(type);
 		if (marshaller != null) {
 			return marshaller;
@@ -48,11 +50,11 @@ public class InternalMarshallerContext implements MarshallerContext {
 	}
 
 	@Override
-	public void bindMarshaller(Class<?> type, Marshaller marshaller) {
+	public void bindMarshaller(Type type, Marshaller marshaller) {
 		marshallers.put(type, marshaller);
 	}
 
-	public ObjectObjectMap<Class<?>, Marshaller> getInternalMap() {
+	public ObjectObjectMap<Type, Marshaller> getInternalMap() {
 		return marshallers;
 	}
 }

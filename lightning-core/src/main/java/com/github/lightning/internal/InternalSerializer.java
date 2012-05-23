@@ -36,7 +36,7 @@ import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.SerializationStrategy;
-import com.github.lightning.exceptions.ClassDefinitionNotConsistentException;
+import com.github.lightning.exceptions.ClassDefinitionInconsistentException;
 import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.generator.BytecodeMarshallerGenerator;
@@ -179,21 +179,21 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 		for (ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions()) {
 			ClassDefinition oldClassDefinition = oldClassDefinitionContainer.getClassDefinitionByCanonicalName(classDefinition.getCanonicalName());
 			if (oldClassDefinition == null) {
-				throw new ClassDefinitionNotConsistentException("No ClassDefinition for type " + classDefinition.getCanonicalName() + " was found");
+				throw new ClassDefinitionInconsistentException("No ClassDefinition for type " + classDefinition.getCanonicalName() + " was found");
 			}
 
 			if (classComparisonStrategy == ClassComparisonStrategy.SerialVersionUID) {
 				long serialVersionUID = classDefinition.getSerialVersionUID();
 				long oldSerialVersionUID = oldClassDefinition.getSerialVersionUID();
 				if (serialVersionUID != oldSerialVersionUID) {
-					throw new ClassDefinitionNotConsistentException("SerialVersionUID of type " + classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionInconsistentException("SerialVersionUID of type " + classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 			else {
 				byte[] checksum = classDefinition.getChecksum();
 				byte[] oldChecksum = oldClassDefinition.getChecksum();
 				if (!Arrays.equals(checksum, oldChecksum)) {
-					throw new ClassDefinitionNotConsistentException("Signature checksum of type " + classDefinition.getCanonicalName() + " is not constistent");
+					throw new ClassDefinitionInconsistentException("Signature checksum of type " + classDefinition.getCanonicalName() + " is not constistent");
 				}
 			}
 		}

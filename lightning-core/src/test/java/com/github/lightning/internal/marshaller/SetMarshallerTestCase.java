@@ -98,7 +98,6 @@ public class SetMarshallerTestCase {
 	}
 
 	@Test
-	@Ignore
 	public void testComplexGenericTypeList() throws Exception {
 		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).debugCacheDirectory(new File("target"))
 				.serializerDefinitions(new AbstractSerializerDefinition() {

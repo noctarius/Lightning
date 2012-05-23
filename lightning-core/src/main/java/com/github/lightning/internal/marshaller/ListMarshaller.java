@@ -18,21 +18,21 @@ package com.github.lightning.internal.marshaller;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.lightning.Marshaller;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.metadata.ClassDefinition;
 
 public class ListMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
 
-	private final Class<?> listType;
+	private final Type listType;
 
 	private Marshaller listTypeMarshaller;
 
@@ -40,7 +40,7 @@ public class ListMarshaller extends AbstractMarshaller implements TypeBindableMa
 		this(null);
 	}
 
-	private ListMarshaller(Class<?> listType) {
+	private ListMarshaller(Type listType) {
 		this.listType = listType;
 	}
 
@@ -66,6 +66,10 @@ public class ListMarshaller extends AbstractMarshaller implements TypeBindableMa
 					}
 
 					ClassDefinition classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getClass());
+
+					if (classDefinition == null) {
+						throw new SerializerExecutionException("No ClassDefinition found for type " + entry.getClass());
+					}
 
 					dataOutput.writeLong(classDefinition.getId());
 					marshaller.marshall(entry, entry.getClass(), dataOutput, serializationContext);
@@ -110,18 +114,17 @@ public class ListMarshaller extends AbstractMarshaller implements TypeBindableMa
 	}
 
 	@Override
-	public Marshaller bindType(Field property) {
-		Type genericType = property.getGenericType();
-		if (genericType instanceof ParameterizedType) {
-			ParameterizedType type = (ParameterizedType) genericType;
-			Type[] types = type.getActualTypeArguments();
-			if (types.length == 1) {
-				Class<?> listType = (Class<?>) types[0];
-				return new ListMarshaller(listType);
-			}
+	public Marshaller bindType(Type... bindingTypes) {
+		if (bindingTypes == null) {
+			return new ListMarshaller();
 		}
 
-		return new ListMarshaller();
+		if (bindingTypes.length != 1) {
+			throw new SerializerExecutionException("List type binding has no single generic: " + Arrays.toString(bindingTypes));
+		}
+
+		Type listType = bindingTypes[0];
+		return new ListMarshaller(listType);
 	}
 
 	private void ensureMarshallerInitialized(SerializationContext serializationContext) {

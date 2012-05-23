@@ -16,6 +16,7 @@
 package com.github.lightning.generator;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import com.github.lightning.Marshaller;
 import com.github.lightning.configuration.SerializerDefinition;
@@ -27,7 +28,7 @@ public interface DefinitionVisitor {
 
 	void visitAttributeAnnotation(Class<? extends Annotation> attributeAnnotation);
 
-	void visitClassDefine(Class<?> type, Marshaller marshaller);
+	void visitClassDefine(Type type, Marshaller marshaller);
 
 	void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller);
 

@@ -18,9 +18,8 @@ package com.github.lightning.internal.marshaller;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,12 +28,13 @@ import com.github.lightning.Marshaller;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.metadata.ClassDefinition;
 
 public class MapMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
 
-	private final Class<?> mapKeyType;
-	private final Class<?> mapValueType;
+	private final Type mapKeyType;
+	private final Type mapValueType;
 
 	private Marshaller mapKeyTypeMarshaller;
 	private Marshaller mapValueTypeMarshaller;
@@ -43,7 +43,7 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 		this(null, null);
 	}
 
-	private MapMarshaller(Class<?> mapKeyType, Class<?> mapValueType) {
+	private MapMarshaller(Type mapKeyType, Type mapValueType) {
 		this.mapKeyType = mapKeyType;
 		this.mapValueType = mapValueType;
 	}
@@ -139,19 +139,18 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 	}
 
 	@Override
-	public Marshaller bindType(Field property) {
-		Type genericType = property.getGenericType();
-		if (genericType instanceof ParameterizedType) {
-			ParameterizedType type = (ParameterizedType) genericType;
-			Type[] types = type.getActualTypeArguments();
-			if (types.length == 2) {
-				Class<?> mapKeyType = (Class<?>) types[0];
-				Class<?> mapValueType = (Class<?>) types[1];
-				return new MapMarshaller(mapKeyType, mapValueType);
-			}
+	public Marshaller bindType(Type... bindingTypes) {
+		if (bindingTypes == null) {
+			return new MapMarshaller();
 		}
 
-		return new MapMarshaller();
+		if (bindingTypes.length != 2) {
+			throw new SerializerExecutionException("Map type binding has no double generic: " + Arrays.toString(bindingTypes));
+		}
+
+		Class<?> mapKeyType = (Class<?>) bindingTypes[0];
+		Class<?> mapValueType = (Class<?>) bindingTypes[1];
+		return new MapMarshaller(mapKeyType, mapValueType);
 	}
 
 	private void ensureMarshallersInitialized(SerializationContext serializationContext) {

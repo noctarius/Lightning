@@ -73,7 +73,7 @@ public interface GeneratorConstants {
 	static String ARRAY_LENGTH_SIGNATURE = Type.getMethodDescriptor(Type.INT_TYPE, new Type[0]);
 
 	static String MARSHALLERSTRATEGY_GET_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class), new Type[] {
-			Type.getType(Class.class), Type.getType(MarshallerContext.class) });
+			Type.getType(java.lang.reflect.Type.class), Type.getType(MarshallerContext.class) });
 
 	static String SUPER_CLASS_INTERNAL_TYPE = Type.getType(AbstractGeneratedMarshaller.class).getInternalName();
 	static String MARSHALLER_CLASS_INTERNAL_TYPE = Type.getType(Marshaller.class).getInternalName();

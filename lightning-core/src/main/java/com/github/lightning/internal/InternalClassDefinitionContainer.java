@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.carrotsearch.hppc.LongObjectMap;
@@ -81,6 +82,16 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 
 	@Override
 	public ClassDefinition getClassDefinitionByType(Class<?> type) {
+		if (List.class.isAssignableFrom(type)) {
+			type = List.class;
+		}
+		else if (Set.class.isAssignableFrom(type)) {
+			type = Set.class;
+		}
+		else if (Map.class.isAssignableFrom(type)) {
+			type = Map.class;
+		}
+
 		for (ClassDefinition classDefinition : classDefinitions) {
 			if (classDefinition.getType() == type) {
 				return classDefinition;

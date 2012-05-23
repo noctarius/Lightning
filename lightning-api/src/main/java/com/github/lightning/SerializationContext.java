@@ -15,6 +15,8 @@
  */
 package com.github.lightning;
 
+import java.lang.reflect.Type;
+
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 
@@ -26,7 +28,7 @@ public interface SerializationContext {
 
 	ObjectInstantiatorFactory getObjectInstantiatorFactory();
 
-	Marshaller findMarshaller(Class<?> type);
+	Marshaller findMarshaller(Type type);
 
 	long findReferenceIdByObject(Object instance);
 

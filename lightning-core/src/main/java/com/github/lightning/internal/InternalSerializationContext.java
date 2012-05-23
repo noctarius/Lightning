@@ -15,6 +15,7 @@
  */
 package com.github.lightning.internal;
 
+import java.lang.reflect.Type;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,7 +27,9 @@ import com.github.lightning.MarshallerContext;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.SerializationStrategy;
+import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
+import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class InternalSerializationContext implements SerializationContext {
@@ -112,8 +115,16 @@ public class InternalSerializationContext implements SerializationContext {
 	}
 
 	@Override
-	public Marshaller findMarshaller(Class<?> type) {
-		return marshallerStrategy.getMarshaller(type, marshallerContext);
+	public Marshaller findMarshaller(Type type) {
+		Class<?> rawType = TypeUtil.getBaseType(type);
+		Marshaller marshaller = marshallerStrategy.getMarshaller(rawType, marshallerContext);
+
+		if (marshaller instanceof TypeBindableMarshaller) {
+			Type[] typeArguments = TypeUtil.getTypeArgument(type);
+			marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
+		}
+
+		return marshaller;
 	}
 
 	public Map<Object, Long> getReferencesMarshall() {

@@ -17,6 +17,7 @@ package com.github.lightning.internal;
 
 import java.io.Externalizable;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +52,7 @@ import com.github.lightning.internal.marshaller.ShortArrayMarshaller;
 import com.github.lightning.internal.marshaller.ShortMarshaller;
 import com.github.lightning.internal.marshaller.StreamedMarshaller;
 import com.github.lightning.internal.marshaller.StringMarshaller;
+import com.github.lightning.internal.util.TypeUtil;
 
 public class InternalMarshallerStrategy implements MarshallerStrategy {
 
@@ -92,12 +94,13 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 	private final Marshaller streamedMarshaller = new StreamedMarshaller();
 
 	@Override
-	public Marshaller getMarshaller(Class<?> type, MarshallerContext marshallerContext) {
-		if (Streamed.class.isAssignableFrom(type)) {
+	public Marshaller getMarshaller(Type type, MarshallerContext marshallerContext) {
+		Class<?> rawType = TypeUtil.getBaseType(type);
+		if (Streamed.class.isAssignableFrom(rawType)) {
 			return streamedMarshaller;
 		}
 
-		if (Externalizable.class.isAssignableFrom(type)) {
+		if (Externalizable.class.isAssignableFrom(rawType)) {
 			return externalizableMarshaller;
 		}
 
@@ -109,12 +112,12 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 		}
 
 		for (Marshaller temp : baseMarshaller) {
-			if (temp.acceptType(type)) {
+			if (temp.acceptType(rawType)) {
 				return temp;
 			}
 		}
 
-		if (Serializable.class.isAssignableFrom(type) && !type.isArray()) {
+		if (Serializable.class.isAssignableFrom(rawType) && !rawType.isArray()) {
 			return serializableMarshaller;
 		}
 

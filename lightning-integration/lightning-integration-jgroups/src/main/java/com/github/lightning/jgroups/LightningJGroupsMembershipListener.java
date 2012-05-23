@@ -28,7 +28,7 @@ import org.jgroups.View;
 import org.jgroups.util.Util;
 
 import com.github.lightning.Serializer;
-import com.github.lightning.exceptions.ClassDefinitionNotConsistentException;
+import com.github.lightning.exceptions.ClassDefinitionInconsistentException;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 
 public class LightningJGroupsMembershipListener extends ReceiverAdapter {
@@ -70,7 +70,7 @@ public class LightningJGroupsMembershipListener extends ReceiverAdapter {
 			try {
 				serializer.setClassDefinitionContainer(container);
 			}
-			catch (ClassDefinitionNotConsistentException e) {
+			catch (ClassDefinitionInconsistentException e) {
 				channel.disconnect();
 				throw new LightningClusterException("Class checksums are not consistent, channel disconnected", e);
 			}

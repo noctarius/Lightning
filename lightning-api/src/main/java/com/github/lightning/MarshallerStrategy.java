@@ -15,8 +15,10 @@
  */
 package com.github.lightning;
 
+import java.lang.reflect.Type;
+
 public interface MarshallerStrategy {
 
-	Marshaller getMarshaller(Class<?> type, MarshallerContext marshallerContext);
+	Marshaller getMarshaller(Type type, MarshallerContext marshallerContext);
 
 }

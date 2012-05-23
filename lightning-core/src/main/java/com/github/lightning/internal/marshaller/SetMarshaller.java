@@ -18,9 +18,8 @@ package com.github.lightning.internal.marshaller;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,11 +27,12 @@ import com.github.lightning.Marshaller;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.metadata.ClassDefinition;
 
 public class SetMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
 
-	private final Class<?> setType;
+	private final Type setType;
 
 	private Marshaller setTypeMarshaller;
 
@@ -40,7 +40,7 @@ public class SetMarshaller extends AbstractMarshaller implements TypeBindableMar
 		this(null);
 	}
 
-	private SetMarshaller(Class<?> setType) {
+	private SetMarshaller(Type setType) {
 		this.setType = setType;
 	}
 
@@ -110,18 +110,17 @@ public class SetMarshaller extends AbstractMarshaller implements TypeBindableMar
 	}
 
 	@Override
-	public Marshaller bindType(Field property) {
-		Type genericType = property.getGenericType();
-		if (genericType instanceof ParameterizedType) {
-			ParameterizedType type = (ParameterizedType) genericType;
-			Type[] types = type.getActualTypeArguments();
-			if (types.length == 1) {
-				Class<?> setType = (Class<?>) types[0];
-				return new SetMarshaller(setType);
-			}
+	public Marshaller bindType(Type... bindingTypes) {
+		if (bindingTypes == null) {
+			return new SetMarshaller();
 		}
 
-		return new SetMarshaller();
+		if (bindingTypes.length != 1) {
+			throw new SerializerExecutionException("Set type binding has no single generic: " + Arrays.toString(bindingTypes));
+		}
+
+		Type setType = bindingTypes[0];
+		return new SetMarshaller(setType);
 	}
 
 	private void ensureMarshallerInitialized(SerializationContext serializationContext) {

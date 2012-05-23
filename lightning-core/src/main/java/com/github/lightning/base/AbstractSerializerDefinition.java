@@ -17,6 +17,7 @@ package com.github.lightning.base;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import com.github.lightning.generator.DefinitionVisitor;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.InternalMarshallerContext;
 import com.github.lightning.internal.util.BeanUtil;
+import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.PropertyDescriptor;
 
@@ -80,9 +82,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		// Visit all direct marshallers
-		Iterator<ObjectObjectCursor<Class<?>, Marshaller>> iterator = marshallerContext.getInternalMap().iterator();
+		Iterator<ObjectObjectCursor<Type, Marshaller>> iterator = marshallerContext.getInternalMap().iterator();
 		while (iterator.hasNext()) {
-			ObjectObjectCursor<Class<?>, Marshaller> entry = iterator.next();
+			ObjectObjectCursor<Type, Marshaller> entry = iterator.next();
 			visitor.visitClassDefine(entry.key, entry.value);
 		}
 
@@ -235,7 +237,8 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			@Override
 			public void byMarshaller(Marshaller marshaller) {
 				if (marshaller instanceof TypeBindableMarshaller) {
-					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
+					Type[] typeArguments = TypeUtil.getTypeArgument(property.getGenericType());
+					marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
 				}
 
 				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, classBinder.getType()), marshaller);
@@ -287,7 +290,8 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 				}
 
 				if (marshaller instanceof TypeBindableMarshaller) {
-					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
+					Type[] typeArguments = TypeUtil.getTypeArgument(property.getGenericType());
+					marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
 				}
 
 				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, classBinder.getType());
