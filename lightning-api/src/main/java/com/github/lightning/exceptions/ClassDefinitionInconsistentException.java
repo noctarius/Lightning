@@ -16,21 +16,21 @@
 package com.github.lightning.exceptions;
 
 @SuppressWarnings("serial")
-public class ClassDefinitionNotConsistentException extends RuntimeException {
+public class ClassDefinitionInconsistentException extends RuntimeException {
 
-	public ClassDefinitionNotConsistentException() {
+	public ClassDefinitionInconsistentException() {
 		super();
 	}
 
-	public ClassDefinitionNotConsistentException(String message, Throwable cause) {
+	public ClassDefinitionInconsistentException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public ClassDefinitionNotConsistentException(String message) {
+	public ClassDefinitionInconsistentException(String message) {
 		super(message);
 	}
 
-	public ClassDefinitionNotConsistentException(Throwable cause) {
+	public ClassDefinitionInconsistentException(Throwable cause) {
 		super(cause);
 	}
 }
