@@ -182,18 +182,21 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 				throw new ClassDefinitionInconsistentException("No ClassDefinition for type " + classDefinition.getCanonicalName() + " was found");
 			}
 
-			if (classComparisonStrategy == ClassComparisonStrategy.SerialVersionUID) {
-				long serialVersionUID = classDefinition.getSerialVersionUID();
-				long oldSerialVersionUID = oldClassDefinition.getSerialVersionUID();
-				if (serialVersionUID != oldSerialVersionUID) {
-					throw new ClassDefinitionInconsistentException("SerialVersionUID of type " + classDefinition.getCanonicalName() + " is not constistent");
+			if (classComparisonStrategy != ClassComparisonStrategy.SkipComparison) {
+				if (classComparisonStrategy == ClassComparisonStrategy.SerialVersionUID) {
+					long serialVersionUID = classDefinition.getSerialVersionUID();
+					long oldSerialVersionUID = oldClassDefinition.getSerialVersionUID();
+					if (serialVersionUID != oldSerialVersionUID) {
+						throw new ClassDefinitionInconsistentException("SerialVersionUID of type " + classDefinition.getCanonicalName() + " is not constistent");
+					}
 				}
-			}
-			else {
-				byte[] checksum = classDefinition.getChecksum();
-				byte[] oldChecksum = oldClassDefinition.getChecksum();
-				if (!Arrays.equals(checksum, oldChecksum)) {
-					throw new ClassDefinitionInconsistentException("Signature checksum of type " + classDefinition.getCanonicalName() + " is not constistent");
+				else {
+					byte[] checksum = classDefinition.getChecksum();
+					byte[] oldChecksum = oldClassDefinition.getChecksum();
+					if (!Arrays.equals(checksum, oldChecksum)) {
+						throw new ClassDefinitionInconsistentException("Signature checksum of type " + classDefinition.getCanonicalName()
+								+ " is not constistent");
+					}
 				}
 			}
 		}

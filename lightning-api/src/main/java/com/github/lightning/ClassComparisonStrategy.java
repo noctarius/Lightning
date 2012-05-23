@@ -32,6 +32,13 @@ public enum ClassComparisonStrategy {
 	/**
 	 * Lightning checksum calculation
 	 */
-	LightningChecksum
+	LightningChecksum,
+
+	/**
+	 * Instructs Lightning to skip all kinds of comparison between the different
+	 * ClassDefinitionContainers. This is not recommended but is required for
+	 * possible schema evolution features.
+	 */
+	SkipComparison
 
 }
