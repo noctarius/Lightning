@@ -23,8 +23,8 @@ import com.github.lightning.metadata.PropertyDescriptor;
 
 public interface PropertyDescriptorFactory {
 
-	PropertyDescriptor byMethod(Method method, Marshaller marshaller);
+	PropertyDescriptor byMethod(Method method, Marshaller marshaller, Class<?> declaringClass);
 
-	PropertyDescriptor byField(Field field, Marshaller marshaller);
+	PropertyDescriptor byField(Field field, Marshaller marshaller, Class<?> declaringClass);
 
 }

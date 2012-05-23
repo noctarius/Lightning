@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.lightning.base.AbstractObjectMarshaller;
@@ -38,6 +39,7 @@ import com.github.lightning.io.SerializerInputStream;
 import com.github.lightning.io.SerializerOutputStream;
 import com.github.lightning.metadata.Attribute;
 
+@Ignore
 public class Benchmark {
 
 	private static final int WARMUP_ROUNDS = 100000;

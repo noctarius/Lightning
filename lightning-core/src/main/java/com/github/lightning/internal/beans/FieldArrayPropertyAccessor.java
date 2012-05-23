@@ -23,10 +23,12 @@ import com.github.lightning.metadata.ArrayPropertyAccessor;
 public abstract class FieldArrayPropertyAccessor extends FieldValuePropertyAccessor implements ArrayPropertyAccessor {
 
 	private final Field field;
-
-	protected FieldArrayPropertyAccessor(Field field) {
-		super(field);
+	private final Class<?> declaringClass;
+	
+	protected FieldArrayPropertyAccessor(Field field, Class<?> declaringClass) {
+		super(field, declaringClass);
 		this.field = field;
+		this.declaringClass = declaringClass;
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public abstract class FieldArrayPropertyAccessor extends FieldValuePropertyAcces
 
 	@Override
 	public Class<?> getDeclaringClass() {
-		return field.getDeclaringClass();
+		return declaringClass;
 	}
 
 	@Override

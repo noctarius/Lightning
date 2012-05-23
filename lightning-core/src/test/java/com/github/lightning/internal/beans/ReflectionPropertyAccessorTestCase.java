@@ -32,7 +32,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = BooleanArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, BooleanArrayTest.class);
 
 		BooleanArrayTest test = new BooleanArrayTest();
 		for (int i = 0; i < 10; i++) {
@@ -56,7 +56,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = ByteArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, ByteArrayTest.class);
 
 		ByteArrayTest test = new ByteArrayTest();
 		for (int i = 0; i < 10; i++) {
@@ -80,7 +80,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = ShortArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, ShortArrayTest.class);
 
 		ShortArrayTest test = new ShortArrayTest();
 		for (int i = 0; i < 10; i++) {
@@ -104,7 +104,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = IntArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, IntArrayTest.class);
 
 		IntArrayTest test = new IntArrayTest();
 		for (int i = 0; i < 10; i++) {
@@ -128,7 +128,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = LongArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, LongArrayTest.class);
 
 		LongArrayTest test = new LongArrayTest();
 		for (int i = 0; i < 10; i++) {
@@ -152,7 +152,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = FloatArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, FloatArrayTest.class);
 
 		FloatArrayTest test = new FloatArrayTest();
 		for (int i = 0; i < 10; i++) {
@@ -176,7 +176,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = DoubleArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, DoubleArrayTest.class);
 
 		DoubleArrayTest test = new DoubleArrayTest();
 		for (int i = 0; i < 10; i++) {
@@ -200,7 +200,7 @@ public class ReflectionPropertyAccessorTestCase {
 		}
 
 		Field field = ObjectArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field);
+		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new ReflectionPropertyAccessorFactory().fieldAccess(field, ObjectArrayTest.class);
 
 		ObjectArrayTest test = new ObjectArrayTest();
 		for (int i = 0; i < 10; i++) {

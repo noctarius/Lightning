@@ -26,26 +26,26 @@ import com.github.lightning.metadata.PropertyAccessor;
 public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactory {
 
 	@Override
-	public PropertyAccessor fieldAccess(Field field) {
+	public PropertyAccessor fieldAccess(Field field, Class<?> declaringClass) {
 		if (field.getType().isArray()) {
-			return buildForArrayField(field);
+			return buildForArrayField(field, declaringClass);
 		}
 
-		return buildForValueField(field);
+		return buildForValueField(field, declaringClass);
 	}
 
 	@Override
-	public PropertyAccessor methodAccess(Method method) {
+	public PropertyAccessor methodAccess(Method method, Class<?> declaringClass) {
 		if (method.getReturnType().isArray()) {
 			return buildForArrayMethod(method);
 		}
 
-		return buildForValueMethod(method);
+		return buildForValueMethod(method, declaringClass);
 	}
 
-	private PropertyAccessor buildForValueField(final Field field) {
+	private PropertyAccessor buildForValueField(final Field field, final Class<?> declaringClass) {
 		field.setAccessible(true);
-		return new FieldValuePropertyAccessor(field) {
+		return new FieldValuePropertyAccessor(field, declaringClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -70,9 +70,9 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForArrayField(final Field field) {
+	private PropertyAccessor buildForArrayField(final Field field, final Class<?> declaringClass) {
 		field.setAccessible(true);
-		return new FieldArrayPropertyAccessor(field) {
+		return new FieldArrayPropertyAccessor(field, declaringClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -278,14 +278,14 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForValueMethod(Method method) {
+	private PropertyAccessor buildForValueMethod(Method method, Class<?> declaringClass) {
 		Method getter = BeanUtil.findGetterMethod(method);
 		Method setter = BeanUtil.findSetterMethod(method);
 
 		getter.setAccessible(true);
 		setter.setAccessible(true);
 
-		return new MethodValuePropertyAccessor(setter, getter) {
+		return new MethodValuePropertyAccessor(setter, getter, declaringClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {

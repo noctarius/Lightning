@@ -41,29 +41,29 @@ public class PropertyAccessorStrategy {
 		sunUnsafePropertyAccessorFactory = factory;
 	}
 
-	PropertyAccessor byField(Field field) {
+	PropertyAccessor byField(Field field, Class<?> declaringClass) {
 		PropertyAccessor propertyAccessor = null;
 		if (sunUnsafePropertyAccessorFactory != null) {
-			propertyAccessor = sunUnsafePropertyAccessorFactory.fieldAccess(field);
+			propertyAccessor = sunUnsafePropertyAccessorFactory.fieldAccess(field, declaringClass);
 		}
 
 		if (propertyAccessor == null) {
-			propertyAccessor = reflectASMPropertyAccessorFactory.fieldAccess(field);
+			propertyAccessor = reflectASMPropertyAccessorFactory.fieldAccess(field, declaringClass);
 		}
 
 		if (propertyAccessor != null) {
 			return propertyAccessor;
 		}
 
-		return reflectionPropertyAccessorFactory.fieldAccess(field);
+		return reflectionPropertyAccessorFactory.fieldAccess(field, declaringClass);
 	}
 
-	PropertyAccessor byMethod(Method method) {
-		PropertyAccessor propertyAccessor = reflectASMPropertyAccessorFactory.methodAccess(method);
+	PropertyAccessor byMethod(Method method, Class<?> declaringClass) {
+		PropertyAccessor propertyAccessor = reflectASMPropertyAccessorFactory.methodAccess(method, declaringClass);
 		if (propertyAccessor != null) {
 			return propertyAccessor;
 		}
 
-		return reflectionPropertyAccessorFactory.methodAccess(method);
+		return reflectionPropertyAccessorFactory.methodAccess(method, declaringClass);
 	}
 }

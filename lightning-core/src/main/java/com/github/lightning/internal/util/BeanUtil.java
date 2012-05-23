@@ -33,7 +33,20 @@ public final class BeanUtil {
 	private BeanUtil() {
 	}
 
-	public static Set<Field> findPropertyFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
+	public static Set<Field> findPropertiesByClass(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
+		Set<Field> properties = new HashSet<Field>();
+		properties.addAll(findPropertiesByInstanceFields(type, attributeAnnotation));
+		properties.addAll(findPropertiesByMethods(type, type, attributeAnnotation));
+		properties.addAll(findPropertiesByInterfaces(type, attributeAnnotation));
+
+		if (type.getSuperclass() != null && type.getSuperclass() != Object.class) {
+			properties.addAll(findPropertiesByClass(type.getSuperclass(), attributeAnnotation));
+		}
+
+		return properties;
+	}
+
+	public static Set<Field> findPropertiesByInstanceFields(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
 		Set<Field> attributes = new HashSet<Field>();
 		for (Field field : type.getDeclaredFields()) {
 			if (field.isAnnotationPresent(attributeAnnotation)) {
@@ -68,18 +81,18 @@ public final class BeanUtil {
 		return attributes;
 	}
 
-	public static Set<Field> searchPropertiesByInterfaces(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
+	public static Set<Field> findPropertiesByInterfaces(Class<?> type, Class<? extends Annotation> attributeAnnotation) {
 		Set<Field> attributes = new HashSet<Field>();
 
 		for (Class<?> interfaze : type.getInterfaces()) {
 			// Add all annotated methods in interface
-			attributes.addAll(searchInterfaceProperties(type, interfaze, attributeAnnotation));
+			attributes.addAll(findInterfaceProperties0(type, interfaze, attributeAnnotation));
 		}
 
 		return attributes;
 	}
 
-	public static Set<Field> searchInterfaceProperties(Class<?> type, Class<?> interfaze, Class<? extends Annotation> attributeAnnotation) {
+	private static Set<Field> findInterfaceProperties0(Class<?> type, Class<?> interfaze, Class<? extends Annotation> attributeAnnotation) {
 		Set<Field> attributes = new HashSet<Field>();
 
 		// Add all annotated methods in interface
@@ -87,7 +100,7 @@ public final class BeanUtil {
 
 		// Look up super-interface
 		if (interfaze.getSuperclass() != null) {
-			attributes.addAll(searchInterfaceProperties(type, interfaze.getSuperclass(), attributeAnnotation));
+			attributes.addAll(findInterfaceProperties0(type, interfaze.getSuperclass(), attributeAnnotation));
 		}
 
 		return attributes;
@@ -98,6 +111,9 @@ public final class BeanUtil {
 			return type.getDeclaredField(propertyName);
 		}
 		catch (NoSuchFieldException e) {
+			if (type.getSuperclass() != null && type.getSuperclass() != Object.class) {
+				return getFieldByPropertyName(propertyName, type.getSuperclass());
+			}
 			return null;
 		}
 	}

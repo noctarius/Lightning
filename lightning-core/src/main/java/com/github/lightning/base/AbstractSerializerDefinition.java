@@ -238,7 +238,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
 				}
 
-				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller), marshaller);
+				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, classBinder.getType()), marshaller);
 			}
 		};
 	}
@@ -271,9 +271,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		public void acceptVisitor(DefinitionVisitor visitor) {
 			Class<? extends Annotation> attributeAnnotation = findAttributeAnnotation(AbstractSerializerDefinition.this);
 			Class<T> type = classBinder.getType();
-			Set<Field> properties = BeanUtil.findPropertyFields(type, attributeAnnotation);
-			properties.addAll(BeanUtil.findPropertiesByMethods(type, type, attributeAnnotation));
-			properties.addAll(BeanUtil.searchPropertiesByInterfaces(type, attributeAnnotation));
+			Set<Field> properties = BeanUtil.findPropertiesByClass(type, attributeAnnotation);
 
 			for (Field property : properties) {
 				if (isExcluded(property.getName()))
@@ -292,7 +290,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 					marshaller = ((TypeBindableMarshaller) marshaller).bindType(property);
 				}
 
-				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller);
+				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, classBinder.getType());
 
 				visitor.visitAnnotatedAttribute(propertyDescriptor, marshaller);
 

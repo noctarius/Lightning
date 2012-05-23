@@ -66,7 +66,6 @@ public class PropertyFinderTestCase {
 	}
 
 	@Test
-	@Ignore
 	public void testInheritancePropertyFind() throws Exception {
 		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
 
@@ -131,7 +130,6 @@ public class PropertyFinderTestCase {
 	}
 
 	@Test
-	@Ignore
 	public void testComposedInheritancePropertyFind() throws Exception {
 		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
 

@@ -31,13 +31,13 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 	private final Map<Class<?>, FieldAccess> fieldAccessCache = new HashMap<Class<?>, FieldAccess>();
 
 	@Override
-	public PropertyAccessor fieldAccess(Field field) {
+	public PropertyAccessor fieldAccess(Field field, Class<?> declaringClass) {
 		if (field.getType().isArray()) {
 			return null;
 		}
 
 		try {
-			return buildForField(field);
+			return buildForField(field, declaringClass);
 		}
 		catch (IllegalArgumentException e) {
 			// If field is not public
@@ -46,13 +46,13 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 	}
 
 	@Override
-	public PropertyAccessor methodAccess(Method method) {
+	public PropertyAccessor methodAccess(Method method, Class<?> declaringClass) {
 		if (method.getReturnType().isArray()) {
 			return null;
 		}
 
 		try {
-			return buildForMethod(method);
+			return buildForMethod(method, declaringClass);
 		}
 		catch (IllegalArgumentException e) {
 			return null;
@@ -87,10 +87,10 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 		return methodAccess;
 	}
 
-	private PropertyAccessor buildForField(Field field) {
+	private PropertyAccessor buildForField(Field field, Class<?> declaringClass) {
 		final FieldAccess fieldAccess = getFieldAccess(field);
 		final int fieldIndex = fieldAccess.getIndex(field.getName());
-		return new FieldValuePropertyAccessor(field) {
+		return new FieldValuePropertyAccessor(field, declaringClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -105,7 +105,7 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForMethod(Method method) {
+	private PropertyAccessor buildForMethod(Method method, Class<?> declaringClass) {
 		final MethodAccess methodAccess = getMethodAccess(method);
 
 		Method getter = BeanUtil.findGetterMethod(method);
@@ -114,7 +114,7 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 		final int getterMethodIndex = methodAccess.getIndex(getter.getName(), method.getParameterTypes());
 		final int setterMethodIndex = methodAccess.getIndex(setter.getName(), method.getParameterTypes());
 
-		return new MethodValuePropertyAccessor(setter, getter) {
+		return new MethodValuePropertyAccessor(setter, getter, declaringClass) {
 
 			@Override
 			public void writeShort(Object instance, short value) {
