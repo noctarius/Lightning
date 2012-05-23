@@ -22,8 +22,8 @@ import com.github.lightning.metadata.PropertyAccessor;
 
 public interface PropertyAccessorFactory {
 
-	PropertyAccessor fieldAccess(Field field, Class<?> declaringClass);
+	PropertyAccessor fieldAccess(Field field, Class<?> definedClass);
 
-	PropertyAccessor methodAccess(Method method, Class<?> declaringClass);
+	PropertyAccessor methodAccess(Method method, Class<?> definedClass);
 
 }

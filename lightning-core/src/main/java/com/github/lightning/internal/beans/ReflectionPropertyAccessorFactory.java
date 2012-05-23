@@ -26,26 +26,26 @@ import com.github.lightning.metadata.PropertyAccessor;
 public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactory {
 
 	@Override
-	public PropertyAccessor fieldAccess(Field field, Class<?> declaringClass) {
+	public PropertyAccessor fieldAccess(Field field, Class<?> definedClass) {
 		if (field.getType().isArray()) {
-			return buildForArrayField(field, declaringClass);
+			return buildForArrayField(field, definedClass);
 		}
 
-		return buildForValueField(field, declaringClass);
+		return buildForValueField(field, definedClass);
 	}
 
 	@Override
-	public PropertyAccessor methodAccess(Method method, Class<?> declaringClass) {
+	public PropertyAccessor methodAccess(Method method, Class<?> definedClass) {
 		if (method.getReturnType().isArray()) {
-			return buildForArrayMethod(method);
+			return buildForArrayMethod(method, definedClass);
 		}
 
-		return buildForValueMethod(method, declaringClass);
+		return buildForValueMethod(method, definedClass);
 	}
 
-	private PropertyAccessor buildForValueField(final Field field, final Class<?> declaringClass) {
+	private PropertyAccessor buildForValueField(final Field field, final Class<?> definedClass) {
 		field.setAccessible(true);
-		return new FieldValuePropertyAccessor(field, declaringClass) {
+		return new FieldValuePropertyAccessor(field, definedClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -70,9 +70,9 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForArrayField(final Field field, final Class<?> declaringClass) {
+	private PropertyAccessor buildForArrayField(final Field field, final Class<?> definedClass) {
 		field.setAccessible(true);
-		return new FieldArrayPropertyAccessor(field, declaringClass) {
+		return new FieldArrayPropertyAccessor(field, definedClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -278,14 +278,14 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForValueMethod(Method method, Class<?> declaringClass) {
+	private PropertyAccessor buildForValueMethod(Method method, Class<?> definedClass) {
 		Method getter = BeanUtil.findGetterMethod(method);
 		Method setter = BeanUtil.findSetterMethod(method);
 
 		getter.setAccessible(true);
 		setter.setAccessible(true);
 
-		return new MethodValuePropertyAccessor(setter, getter, declaringClass) {
+		return new MethodValuePropertyAccessor(setter, getter, definedClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -310,7 +310,7 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForArrayMethod(Method method) {
+	private PropertyAccessor buildForArrayMethod(Method method, Class<?> definedClass) {
 		final Method getter = BeanUtil.findGetterMethod(method);
 		final Method setter = BeanUtil.findSetterMethod(method);
 		final Method arrayGetter = BeanUtil.findArrayGetterMethod(method);
@@ -319,7 +319,7 @@ public class ReflectionPropertyAccessorFactory implements PropertyAccessorFactor
 		getter.setAccessible(true);
 		setter.setAccessible(true);
 
-		return new MethodArrayPropertyAccessor(setter, getter) {
+		return new MethodArrayPropertyAccessor(setter, getter, definedClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {

@@ -18,6 +18,8 @@ package com.github.lightning.metadata;
 public interface PropertyAccessor {
 
 	Class<?> getDeclaringClass();
+	
+	Class<?> getDefinedClass();
 
 	AccessorType getAccessorType();
 

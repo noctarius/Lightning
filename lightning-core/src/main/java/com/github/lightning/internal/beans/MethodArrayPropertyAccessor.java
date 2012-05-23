@@ -24,15 +24,22 @@ public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyA
 
 	private final Method setter;
 	private final Method getter;
+	private final Class<?> definedClass;
 
-	protected MethodArrayPropertyAccessor(Method setter, Method getter) {
+	protected MethodArrayPropertyAccessor(Method setter, Method getter, Class<?> definedClass) {
 		this.setter = setter;
 		this.getter = getter;
+		this.definedClass = definedClass;
 	}
 
 	@Override
 	public boolean isArrayType() {
 		return true;
+	}
+
+	@Override
+	public Class<?> getDefinedClass() {
+		return definedClass;
 	}
 
 	@Override

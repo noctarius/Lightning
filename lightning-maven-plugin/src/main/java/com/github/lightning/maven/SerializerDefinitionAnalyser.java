@@ -18,6 +18,7 @@ package com.github.lightning.maven;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import com.github.lightning.internal.InternalDefinitionBuildingContext;
 import com.github.lightning.internal.InternalMarshallerStrategy;
 import com.github.lightning.internal.beans.InternalPropertyDescriptorFactory;
 import com.github.lightning.internal.util.ClassUtil;
+import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.ClassDefinition;
@@ -141,20 +143,21 @@ public class SerializerDefinitionAnalyser {
 		}
 
 		@Override
-		public void visitClassDefine(Class<?> type, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(type);
+		public void visitClassDefine(Type type, Marshaller marshaller) {
+			Class<?> rawType = TypeUtil.getBaseType(type);
+			InternalClassDescriptor classDescriptor = findClassDescriptor(rawType);
 			classDescriptor.setMarshaller(marshaller);
 
-			marshallers.put(type, marshaller);
+			marshallers.put(rawType, marshaller);
 		}
 
 		@Override
 		public void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
+			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDefinedClass());
 
 			if (logger.isTraceEnabled()) {
 				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
-						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
+						+ propertyDescriptor.getDefinedClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);
@@ -162,11 +165,11 @@ public class SerializerDefinitionAnalyser {
 
 		@Override
 		public void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
+			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDefinedClass());
 
 			if (logger.isTraceEnabled()) {
 				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
-						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
+						+ propertyDescriptor.getDefinedClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);

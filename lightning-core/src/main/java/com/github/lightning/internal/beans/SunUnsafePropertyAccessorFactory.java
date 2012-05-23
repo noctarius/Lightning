@@ -30,21 +30,21 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 	}
 
 	@Override
-	public PropertyAccessor fieldAccess(Field field, Class<?> declaringClass) {
+	public PropertyAccessor fieldAccess(Field field, Class<?> definedClass) {
 		if (field.getType().isArray()) {
-			return buildForArrayField(field, declaringClass);
+			return buildForArrayField(field, definedClass);
 		}
 
-		return buildForValueField(field, declaringClass);
+		return buildForValueField(field, definedClass);
 	}
 
 	@Override
-	public PropertyAccessor methodAccess(Method method, Class<?> declaringClass) {
+	public PropertyAccessor methodAccess(Method method, Class<?> definedClass) {
 		throw new UnsupportedOperationException("Method access is not supported by Unsafe style");
 	}
 
-	private PropertyAccessor buildForValueField(final Field field, final Class<?> declaringClass) {
-		return new FieldValuePropertyAccessor(field, declaringClass) {
+	private PropertyAccessor buildForValueField(final Field field, final Class<?> definedClass) {
+		return new FieldValuePropertyAccessor(field, definedClass) {
 
 			private final long offset;
 
@@ -145,8 +145,8 @@ final class SunUnsafePropertyAccessorFactory implements PropertyAccessorFactory 
 		};
 	}
 
-	private PropertyAccessor buildForArrayField(final Field field, final Class<?> declaringClass) {
-		return new FieldArrayPropertyAccessor(field, declaringClass) {
+	private PropertyAccessor buildForArrayField(final Field field, final Class<?> definedClass) {
+		return new FieldArrayPropertyAccessor(field, definedClass) {
 
 			private final long offset;
 			private final int arrayBaseOffset;

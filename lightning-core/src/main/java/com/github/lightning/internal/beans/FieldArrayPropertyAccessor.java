@@ -23,12 +23,12 @@ import com.github.lightning.metadata.ArrayPropertyAccessor;
 public abstract class FieldArrayPropertyAccessor extends FieldValuePropertyAccessor implements ArrayPropertyAccessor {
 
 	private final Field field;
-	private final Class<?> declaringClass;
+	private final Class<?> definedClass;
 	
-	protected FieldArrayPropertyAccessor(Field field, Class<?> declaringClass) {
-		super(field, declaringClass);
+	protected FieldArrayPropertyAccessor(Field field, Class<?> definedClass) {
+		super(field, definedClass);
 		this.field = field;
-		this.declaringClass = declaringClass;
+		this.definedClass = definedClass;
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public abstract class FieldArrayPropertyAccessor extends FieldValuePropertyAcces
 	}
 
 	@Override
-	public Class<?> getDeclaringClass() {
-		return declaringClass;
+	public Class<?> getDefinedClass() {
+		return definedClass;
 	}
 
 	@Override

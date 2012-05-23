@@ -31,13 +31,13 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 	private final Map<Class<?>, FieldAccess> fieldAccessCache = new HashMap<Class<?>, FieldAccess>();
 
 	@Override
-	public PropertyAccessor fieldAccess(Field field, Class<?> declaringClass) {
+	public PropertyAccessor fieldAccess(Field field, Class<?> definedClass) {
 		if (field.getType().isArray()) {
 			return null;
 		}
 
 		try {
-			return buildForField(field, declaringClass);
+			return buildForField(field, definedClass);
 		}
 		catch (IllegalArgumentException e) {
 			// If field is not public
@@ -46,13 +46,13 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 	}
 
 	@Override
-	public PropertyAccessor methodAccess(Method method, Class<?> declaringClass) {
+	public PropertyAccessor methodAccess(Method method, Class<?> definedClass) {
 		if (method.getReturnType().isArray()) {
 			return null;
 		}
 
 		try {
-			return buildForMethod(method, declaringClass);
+			return buildForMethod(method, definedClass);
 		}
 		catch (IllegalArgumentException e) {
 			return null;
@@ -74,23 +74,23 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 	}
 
 	private MethodAccess getMethodAccess(Method method) {
-		Class<?> declaringClass = method.getDeclaringClass();
+		Class<?> definedClass = method.getDeclaringClass();
 
-		MethodAccess methodAccess = methodAccessCache.get(declaringClass);
+		MethodAccess methodAccess = methodAccessCache.get(definedClass);
 		if (methodAccess != null) {
 			return methodAccess;
 		}
 
-		methodAccess = MethodAccess.get(declaringClass);
-		methodAccessCache.put(declaringClass, methodAccess);
+		methodAccess = MethodAccess.get(definedClass);
+		methodAccessCache.put(definedClass, methodAccess);
 
 		return methodAccess;
 	}
 
-	private PropertyAccessor buildForField(Field field, Class<?> declaringClass) {
+	private PropertyAccessor buildForField(Field field, Class<?> definedClass) {
 		final FieldAccess fieldAccess = getFieldAccess(field);
 		final int fieldIndex = fieldAccess.getIndex(field.getName());
-		return new FieldValuePropertyAccessor(field, declaringClass) {
+		return new FieldValuePropertyAccessor(field, definedClass) {
 
 			@Override
 			public <T> void writeObject(Object instance, T value) {
@@ -105,7 +105,7 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 		};
 	}
 
-	private PropertyAccessor buildForMethod(Method method, Class<?> declaringClass) {
+	private PropertyAccessor buildForMethod(Method method, Class<?> definedClass) {
 		final MethodAccess methodAccess = getMethodAccess(method);
 
 		Method getter = BeanUtil.findGetterMethod(method);
@@ -114,7 +114,7 @@ public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactor
 		final int getterMethodIndex = methodAccess.getIndex(getter.getName(), method.getParameterTypes());
 		final int setterMethodIndex = methodAccess.getIndex(setter.getName(), method.getParameterTypes());
 
-		return new MethodValuePropertyAccessor(setter, getter, declaringClass) {
+		return new MethodValuePropertyAccessor(setter, getter, definedClass) {
 
 			@Override
 			public void writeShort(Object instance, short value) {

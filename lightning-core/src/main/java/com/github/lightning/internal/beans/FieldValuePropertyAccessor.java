@@ -22,16 +22,21 @@ import com.github.lightning.metadata.AccessorType;
 public abstract class FieldValuePropertyAccessor extends AbstractValuePropertyAccessor {
 
 	private final Field field;
-	private final Class<?> declaringClass;
+	private final Class<?> definedClass;
 
-	protected FieldValuePropertyAccessor(Field field, Class<?> declaringClass) {
+	protected FieldValuePropertyAccessor(Field field, Class<?> definedClass) {
 		this.field = field;
-		this.declaringClass = declaringClass;
+		this.definedClass = definedClass;
+	}
+
+	@Override
+	public Class<?> getDefinedClass() {
+		return definedClass;
 	}
 
 	@Override
 	public Class<?> getDeclaringClass() {
-		return declaringClass;
+		return field.getDeclaringClass();
 	}
 
 	@Override

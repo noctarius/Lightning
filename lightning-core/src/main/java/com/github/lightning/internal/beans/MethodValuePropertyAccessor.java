@@ -23,17 +23,22 @@ public abstract class MethodValuePropertyAccessor extends AbstractValuePropertyA
 
 	private final Method setter;
 	private final Method getter;
-	private final Class<?> declaringClass;
+	private final Class<?> definedClass;
 
-	protected MethodValuePropertyAccessor(Method setter, Method getter, Class<?> declaringClass) {
+	protected MethodValuePropertyAccessor(Method setter, Method getter, Class<?> definedClass) {
 		this.setter = setter;
 		this.getter = getter;
-		this.declaringClass = declaringClass;
+		this.definedClass = definedClass;
+	}
+
+	@Override
+	public Class<?> getDefinedClass() {
+		return definedClass;
 	}
 
 	@Override
 	public Class<?> getDeclaringClass() {
-		return declaringClass;
+		return getter.getDeclaringClass();
 	}
 
 	@Override

@@ -41,6 +41,11 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
+	public Class<?> getDefinedClass() {
+		return propertyAccessor.getDefinedClass();
+	}
+
+	@Override
 	public Class<?> getDeclaringClass() {
 		return propertyAccessor.getDeclaringClass();
 	}

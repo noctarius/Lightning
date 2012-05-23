@@ -34,15 +34,15 @@ public class InternalPropertyDescriptorFactory implements PropertyDescriptorFact
 	}
 
 	@Override
-	public PropertyDescriptor byMethod(Method method, Marshaller marshaller, Class<?> declaringClass) {
-		PropertyAccessor propertyAccessor = propertyAccessorStrategy.byMethod(method, declaringClass);
+	public PropertyDescriptor byMethod(Method method, Marshaller marshaller, Class<?> definedClass) {
+		PropertyAccessor propertyAccessor = propertyAccessorStrategy.byMethod(method, definedClass);
 		String propertyName = BeanUtil.buildPropertyName(method);
 		return new InternalPropertyDescriptor(propertyName, marshaller, propertyAccessor);
 	}
 
 	@Override
-	public PropertyDescriptor byField(Field field, Marshaller marshaller, Class<?> declaringClass) {
-		PropertyAccessor propertyAccessor = propertyAccessorStrategy.byField(field, declaringClass);
+	public PropertyDescriptor byField(Field field, Marshaller marshaller, Class<?> definedClass) {
+		PropertyAccessor propertyAccessor = propertyAccessorStrategy.byField(field, definedClass);
 		return new InternalPropertyDescriptor(field.getName(), marshaller, propertyAccessor);
 	}
 }

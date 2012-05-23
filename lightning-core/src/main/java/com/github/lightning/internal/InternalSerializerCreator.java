@@ -173,11 +173,11 @@ public final class InternalSerializerCreator {
 
 		@Override
 		public void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
+			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDefinedClass());
 
 			if (logger.isTraceEnabled()) {
 				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
-						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
+						+ propertyDescriptor.getDefinedClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);
@@ -185,11 +185,11 @@ public final class InternalSerializerCreator {
 
 		@Override
 		public void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDeclaringClass());
+			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDefinedClass());
 
 			if (logger.isTraceEnabled()) {
 				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
-						+ propertyDescriptor.getDeclaringClass().getCanonicalName());
+						+ propertyDescriptor.getDefinedClass().getCanonicalName());
 			}
 
 			classDescriptor.push(propertyDescriptor);

@@ -19,8 +19,10 @@ import com.github.lightning.Marshaller;
 
 public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
 
-	Class<?> getDeclaringClass();
+	Class<?> getDefinedClass();
 
+	Class<?> getDeclaringClass();
+	
 	PropertyAccessor getPropertyAccessor();
 
 	String getName();
