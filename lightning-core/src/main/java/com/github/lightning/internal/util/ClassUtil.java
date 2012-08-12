@@ -367,7 +367,11 @@ public final class ClassUtil {
 		}
 	}
 
-	private static class SerialVersionClassVisitor implements ClassVisitor {
+	private static class SerialVersionClassVisitor extends ClassVisitor {
+
+		public SerialVersionClassVisitor() {
+			super(Opcodes.ASM4);
+		}
 
 		private List<String> interfaces = new ArrayList<String>();
 		private boolean staticInitializerFound = false;
