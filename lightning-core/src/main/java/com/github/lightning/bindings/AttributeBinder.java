@@ -17,10 +17,10 @@ package com.github.lightning.bindings;
 
 import com.github.lightning.Marshaller;
 
-public interface PropertyBinder<V> {
+public interface AttributeBinder<V> {
 
-	void byMarshaller(Class<? extends Marshaller> marshaller);
+	AttributeBinder<V> using(Class<? extends Marshaller> marshaller);
 
-	void byMarshaller(Marshaller marshaller);
+	AttributeBinder<V> using(Marshaller marshaller);
 
 }

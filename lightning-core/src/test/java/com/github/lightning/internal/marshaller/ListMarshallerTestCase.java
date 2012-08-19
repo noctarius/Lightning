@@ -43,7 +43,7 @@ public class ListMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(NoGenericTypeList.class).attributes();
+						serialize(NoGenericTypeList.class).attributes();
 					}
 				}).build();
 
@@ -73,7 +73,7 @@ public class ListMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(SimpleGenericTypeList.class).attributes();
+						serialize(SimpleGenericTypeList.class).attributes();
 					}
 				}).build();
 
@@ -103,7 +103,7 @@ public class ListMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(ComplexGenericTypeList.class).attributes();
+						serialize(ComplexGenericTypeList.class).attributes();
 					}
 				}).build();
 

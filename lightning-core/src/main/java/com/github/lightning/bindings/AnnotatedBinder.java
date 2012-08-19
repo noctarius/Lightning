@@ -19,4 +19,6 @@ public interface AnnotatedBinder {
 
 	AnnotatedBinder exclude(String property);
 
+	AnnotatedBinder excludes(String... properties);
+
 }

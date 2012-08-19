@@ -44,7 +44,7 @@ public class SetMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(NoGenericTypeSet.class).attributes();
+						serialize(NoGenericTypeSet.class).attributes();
 					}
 				}).build();
 
@@ -74,7 +74,7 @@ public class SetMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(SimpleGenericTypeSet.class).attributes();
+						serialize(SimpleGenericTypeSet.class).attributes();
 					}
 				}).build();
 
@@ -104,7 +104,7 @@ public class SetMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(ComplexGenericTypeSet.class).attributes();
+						serialize(ComplexGenericTypeSet.class).attributes();
 					}
 				}).build();
 

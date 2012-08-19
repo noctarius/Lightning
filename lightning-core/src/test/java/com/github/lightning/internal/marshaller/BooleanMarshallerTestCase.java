@@ -39,7 +39,7 @@ public class BooleanMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(PrimitiveHolder.class).attributes();
+						serialize(PrimitiveHolder.class).attributes();
 					}
 				}).build();
 
@@ -77,7 +77,7 @@ public class BooleanMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(WrapperHolder.class).attributes();
+						serialize(WrapperHolder.class).attributes();
 					}
 				}).build();
 

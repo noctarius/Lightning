@@ -41,7 +41,7 @@ public class BigDecimalMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(BigDecimalHolder.class).attributes();
+						serialize(BigDecimalHolder.class).attributes();
 					}
 				}).build();
 

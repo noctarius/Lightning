@@ -41,7 +41,7 @@ public class BigIntegerMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(BigIntegerHolder.class).attributes();
+						serialize(BigIntegerHolder.class).attributes();
 					}
 				}).build();
 

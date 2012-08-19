@@ -138,8 +138,8 @@ public class GenericTypedTestCase {
 
 		@Override
 		protected void configure() {
-			bind(Foo.class).attributes();
-			bind(Complex.class).attributes();
+			serialize(Foo.class).attributes();
+			serialize(Complex.class).attributes();
 		}
 	}
 
@@ -147,7 +147,7 @@ public class GenericTypedTestCase {
 
 		@Override
 		protected void configure() {
-			bind(Foo.class).attributes();
+			serialize(Foo.class).attributes();
 
 			install(new ChildSerializerDefinition());
 		}
@@ -157,7 +157,7 @@ public class GenericTypedTestCase {
 
 		@Override
 		protected void configure() {
-			bind(Complex.class).attributes();
+			serialize(Complex.class).attributes();
 		}
 	}
 

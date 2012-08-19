@@ -46,7 +46,7 @@ public class MapMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(NoGenericTypeMap.class).attributes();
+						serialize(NoGenericTypeMap.class).attributes();
 					}
 				}).build();
 
@@ -76,7 +76,7 @@ public class MapMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(SimpleGenericTypeMap.class).attributes();
+						serialize(SimpleGenericTypeMap.class).attributes();
 					}
 				}).build();
 
@@ -105,7 +105,7 @@ public class MapMarshallerTestCase {
 
 					@Override
 					protected void configure() {
-						bind(ComplexGenericTypeSet.class).attributes();
+						serialize(ComplexGenericTypeSet.class).attributes();
 					}
 				}).build();
 

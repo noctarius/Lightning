@@ -280,7 +280,7 @@ public class Benchmark {
 
 		@Override
 		protected void configure() {
-			bind(Foo.class).attributes();
+			serialize(Foo.class).attributes();
 		}
 	}
 

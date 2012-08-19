@@ -128,8 +128,8 @@ public class ClassDefinitionContainerTestCase {
 
 		@Override
 		protected void configure() {
-			bind(Foo.class).attributes();
-			bind(Bar.class).attributes();
+			serialize(Foo.class).attributes();
+			serialize(Bar.class).attributes();
 		}
 	}
 

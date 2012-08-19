@@ -15,13 +15,13 @@
  */
 package com.github.lightning;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.lightning.base.AbstractSerializerDefinition;
@@ -34,12 +34,13 @@ import com.github.lightning.metadata.ClassDescriptor;
 public class PropertyFinderTestCase {
 
 	@Test
-	public void testStandardPropertyFind() throws Exception {
+	public void testCustomDefinedPropertyFind1() throws Exception {
 		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
 
 			@Override
 			protected void configure() {
-				bind(Standard.class).attributes();
+				serialize(Standard.class).attributes(attribute("value1"));
+				serialize(Standard.class).attributes(attribute("value2"));
 			}
 		});
 
@@ -66,12 +67,146 @@ public class PropertyFinderTestCase {
 	}
 
 	@Test
+	public void testCustomDefinedPropertyFind2() throws Exception {
+		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
+
+			@Override
+			protected void configure() {
+				serialize(Standard.class).attributes(attribute("value1"), attribute("value2"));
+			}
+		});
+
+		ClassDescriptorAwareSerializer awareSerializer = (ClassDescriptorAwareSerializer) serializer;
+		ClassDescriptor classDescriptor = awareSerializer.findClassDescriptor(Standard.class);
+
+		assertNotNull(classDescriptor);
+		assertEquals(2, classDescriptor.getPropertyDescriptors().size());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
+
+		Standard standard = new Standard();
+		standard.setValue1("Foo");
+		standard.setValue2(321);
+		out.writeObject(standard);
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		SerializerInputStream in = new SerializerInputStream(bais, serializer);
+
+		Standard result = in.readObject();
+
+		assertEquals(standard, result);
+	}
+
+	@Test
+	public void testStandardPropertyFind() throws Exception {
+		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
+
+			@Override
+			protected void configure() {
+				serialize(Standard.class).attributes();
+			}
+		});
+
+		ClassDescriptorAwareSerializer awareSerializer = (ClassDescriptorAwareSerializer) serializer;
+		ClassDescriptor classDescriptor = awareSerializer.findClassDescriptor(Standard.class);
+
+		assertNotNull(classDescriptor);
+		assertEquals(2, classDescriptor.getPropertyDescriptors().size());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
+
+		Standard standard = new Standard();
+		standard.setValue1("Foo");
+		standard.setValue2(321);
+		out.writeObject(standard);
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		SerializerInputStream in = new SerializerInputStream(bais, serializer);
+
+		Standard result = in.readObject();
+
+		assertEquals(standard, result);
+	}
+
+	@Test
+	public void testStandardPropertyFindUsingExclude() throws Exception {
+		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
+
+			@Override
+			protected void configure() {
+				serialize(Standard.class).attributes().exclude("value1");
+			}
+		});
+
+		ClassDescriptorAwareSerializer awareSerializer = (ClassDescriptorAwareSerializer) serializer;
+		ClassDescriptor classDescriptor = awareSerializer.findClassDescriptor(Standard.class);
+
+		assertNotNull(classDescriptor);
+		assertEquals(1, classDescriptor.getPropertyDescriptors().size());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
+
+		Standard standard = new Standard();
+		standard.setValue1("Foo");
+		standard.setValue2(321);
+		out.writeObject(standard);
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		SerializerInputStream in = new SerializerInputStream(bais, serializer);
+
+		Standard result = in.readObject();
+
+		assertNull("value1 must not be set", result.getValue1());
+		assertEquals(standard.getValue2(), result.getValue2());
+	}
+
+	@Test
+	public void testStandardPropertyFindUsingExcludes() throws Exception {
+		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
+
+			@Override
+			protected void configure() {
+				serialize(Inherted.class).attributes().excludes("value1", "value2");
+			}
+		});
+
+		ClassDescriptorAwareSerializer awareSerializer = (ClassDescriptorAwareSerializer) serializer;
+		ClassDescriptor classDescriptor = awareSerializer.findClassDescriptor(Inherted.class);
+
+		assertNotNull(classDescriptor);
+		assertEquals(2, classDescriptor.getPropertyDescriptors().size());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SerializerOutputStream out = new SerializerOutputStream(baos, serializer);
+
+		Inherted inherted = new Inherted();
+		inherted.setValue1("Foo");
+		inherted.setValue2(321);
+		inherted.setValue3("Bar");
+		inherted.setValue4(123L);
+		out.writeObject(inherted);
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		SerializerInputStream in = new SerializerInputStream(bais, serializer);
+
+		Inherted result = in.readObject();
+
+		assertNull("value1 must not be set", result.getValue1());
+		assertEquals(result.getValue2(), 0);
+		assertEquals(inherted.getValue3(), result.getValue3());
+		assertEquals(inherted.getValue4(), result.getValue4());
+	}
+
+	@Test
 	public void testInheritancePropertyFind() throws Exception {
 		Serializer serializer = Lightning.createSerializer(new AbstractSerializerDefinition() {
 
 			@Override
 			protected void configure() {
-				bind(Inherted.class).attributes();
+				serialize(Inherted.class).attributes();
 			}
 		});
 
@@ -105,7 +240,7 @@ public class PropertyFinderTestCase {
 
 			@Override
 			protected void configure() {
-				bind(Composed.class).attributes();
+				serialize(Composed.class).attributes();
 			}
 		});
 
@@ -135,7 +270,7 @@ public class PropertyFinderTestCase {
 
 			@Override
 			protected void configure() {
-				bind(ComposedInherted.class).attributes();
+				serialize(ComposedInherted.class).attributes();
 			}
 		});
 

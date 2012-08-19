@@ -15,14 +15,18 @@
  */
 package com.github.lightning.metadata;
 
+import java.lang.annotation.Annotation;
+
 import com.github.lightning.Marshaller;
 
 public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
 
+	Annotation[] getAnnotations();
+
 	Class<?> getDefinedClass();
 
 	Class<?> getDeclaringClass();
-	
+
 	PropertyAccessor getPropertyAccessor();
 
 	String getName();

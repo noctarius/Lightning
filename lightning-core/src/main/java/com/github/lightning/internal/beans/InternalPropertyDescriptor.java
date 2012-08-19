@@ -15,6 +15,9 @@
  */
 package com.github.lightning.internal.beans;
 
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+
 import com.github.lightning.Marshaller;
 import com.github.lightning.internal.util.BeanUtil;
 import com.github.lightning.internal.util.StringUtil;
@@ -29,15 +32,17 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	private final String declaringCanonicalClassname;
 
 	private final PropertyAccessor propertyAccessor;
+	private final Annotation[] annotations;
 	private final Marshaller marshaller;
 
-	InternalPropertyDescriptor(String propertyName, Marshaller marshaller, PropertyAccessor propertyAccessor) {
+	InternalPropertyDescriptor(String propertyName, Marshaller marshaller, Annotation[] annotations, PropertyAccessor propertyAccessor) {
 		this.name = StringUtil.toUpperCamelCase(propertyName);
 		this.propertyName = propertyName;
 		this.propertyAccessor = propertyAccessor;
 		this.marshaller = marshaller;
 		this.declaringCanonicalClassname = propertyAccessor.getType().getCanonicalName();
 		this.internalSignature = BeanUtil.buildInternalSignature(propertyName, propertyAccessor);
+		this.annotations = Arrays.copyOf(annotations, annotations.length);
 	}
 
 	@Override
@@ -53,6 +58,11 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public PropertyAccessor getPropertyAccessor() {
 		return propertyAccessor;
+	}
+
+	@Override
+	public Annotation[] getAnnotations() {
+		return Arrays.copyOf(annotations, annotations.length);
 	}
 
 	@Override

@@ -32,16 +32,16 @@ import com.github.lightning.Marshaller;
 import com.github.lightning.MarshallerContext;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.bindings.AnnotatedBinder;
+import com.github.lightning.bindings.AttributeBinder;
 import com.github.lightning.bindings.ClassBinder;
-import com.github.lightning.bindings.MarshallerBinder;
-import com.github.lightning.bindings.PropertyBinder;
 import com.github.lightning.configuration.SerializerDefinition;
+import com.github.lightning.configuration.TypeIntrospector;
 import com.github.lightning.exceptions.SerializerDefinitionException;
 import com.github.lightning.generator.DefinitionBuildingContext;
 import com.github.lightning.generator.DefinitionVisitor;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.InternalMarshallerContext;
-import com.github.lightning.internal.util.BeanUtil;
+import com.github.lightning.internal.beans.introspection.AnnotatedTypeIntrospector;
 import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.PropertyDescriptor;
@@ -119,7 +119,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 	protected abstract void configure();
 
-	protected <T> ClassBinder<T> bind(final Class<T> clazz) {
+	protected <T> ClassBinder<T> serialize(final Class<T> clazz) {
 		return buildClassBinder(clazz);
 	}
 
@@ -130,37 +130,34 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 	}
 
-	protected <T> MarshallerBinder define(final Class<T> clazz) {
-		return buildMarshallerBinder(clazz);
-	}
-
 	protected void describesAttributes(Class<? extends Annotation> attributeAnnotation) {
 		this.attributeAnnotation = attributeAnnotation;
 	}
 
-	private <T> MarshallerBinder buildMarshallerBinder(final Class<T> clazz) {
-		return new MarshallerBinder() {
+	protected <V> AttributeBinder<V> attribute(final String attribute) {
+		return new DefinedAttributeBinder<V>() {
 
 			@Override
-			public void byMarshaller(Class<? extends Marshaller> marshaller) {
+			protected void setDeclaringClass(Class<?> declaringClass) {
+				super.setDeclaringClass(declaringClass);
 				try {
-					byMarshaller(marshaller.newInstance());
+					Field reflectiveField = declaringClass.getDeclaredField(attribute);
+					reflectiveField.setAccessible(true);
+					property = reflectiveField;
 				}
 				catch (Exception e) {
-					throw new SerializerDefinitionException("Marshaller class " + marshaller.getCanonicalName()
-							+ " could not be instantiated. Is there a standard (public) constructor?", e);
+					throw new SerializerDefinitionException("Property " + property + " could not be found for type " + declaringClass.getCanonicalName(), e);
 				}
 			}
+		};
+	}
 
-			@Override
-			public void byMarshaller(Marshaller marshaller) {
-				if (marshaller instanceof AbstractObjectMarshaller) {
-					marshallerContext
-							.bindMarshaller(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objectInstantiatorFactory));
-				}
-				else {
-					marshallerContext.bindMarshaller(clazz, marshaller);
-				}
+	protected <V> AttributeBinder<V> attribute(final Field attribute) {
+		return new DefinedAttributeBinder<V>() {
+
+			{
+				property = attribute;
+				declaringClass = attribute.getDeclaringClass();
 			}
 		};
 	}
@@ -174,30 +171,56 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 			}
 
 			@Override
-			public AnnotatedBinder with(Class<? extends Annotation> annotation) {
+			public AnnotatedBinder attributes(Class<? extends Annotation> annotation) {
 				return buildAnnotatedBinder(this, annotation);
-			}
-
-			@Override
-			public <V> PropertyBinder<V> property(String property) {
-				try {
-					Field reflectiveField = clazz.getDeclaredField(property);
-					reflectiveField.setAccessible(true);
-					return buildPropertyBinder(this, reflectiveField);
-				}
-				catch (Exception e) {
-					throw new SerializerDefinitionException("Property " + property + " could not be found for type " + clazz.getCanonicalName(), e);
-				}
-			}
-
-			@Override
-			public <V> PropertyBinder<V> property(Field property) {
-				return buildPropertyBinder(this, property);
 			}
 
 			@Override
 			public Class<T> getType() {
 				return clazz;
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public void using(Class<?> clazz) {
+				if (Marshaller.class.isAssignableFrom(clazz)) {
+					try {
+						using(((Class<Marshaller>) clazz).newInstance());
+					}
+					catch (Exception e) {
+						throw new SerializerDefinitionException("Marshaller class " + clazz.getCanonicalName()
+								+ " could not be instantiated. Is there a standard (public) constructor?", e);
+					}
+				}
+
+			}
+
+			@Override
+			public void using(Marshaller marshaller) {
+				if (marshaller instanceof AbstractObjectMarshaller) {
+					marshallerContext
+							.bindMarshaller(clazz, new ObjenesisDelegatingMarshaller((AbstractObjectMarshaller) marshaller, objectInstantiatorFactory));
+				}
+				else {
+					marshallerContext.bindMarshaller(clazz, marshaller);
+				}
+			}
+
+			@Override
+			public void using(TypeIntrospector typeIntrospector) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void attributes(AttributeBinder<?>... attributes) {
+				for (AttributeBinder<?> attribute : attributes) {
+					if (attribute instanceof DefinedAttributeBinder) {
+						DefinedAttributeBinder<?> binder = (DefinedAttributeBinder<?>) attribute;
+						binder.setDeclaringClass(getType());
+						binder.build();
+					}
+				}
 			}
 		};
 	}
@@ -217,31 +240,13 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 				binder.addExclude(property);
 				return this;
 			}
-		};
-	}
-
-	private <T, V> PropertyBinder<V> buildPropertyBinder(final ClassBinder<T> classBinder, final Field property) {
-		return new PropertyBinder<V>() {
 
 			@Override
-			public void byMarshaller(Class<? extends Marshaller> marshaller) {
-				try {
-					byMarshaller(marshaller.newInstance());
+			public AnnotatedBinder excludes(String... properties) {
+				for (String property : properties) {
+					binder.addExclude(property);
 				}
-				catch (Exception e) {
-					throw new SerializerDefinitionException("Marshaller class " + marshaller.getCanonicalName()
-							+ " could not be instantiated. Is there a standard (public) constructor?", e);
-				}
-			}
-
-			@Override
-			public void byMarshaller(Marshaller marshaller) {
-				if (marshaller instanceof TypeBindableMarshaller) {
-					Type[] typeArguments = TypeUtil.getTypeArgument(property.getGenericType());
-					marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
-				}
-
-				propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, classBinder.getType()), marshaller);
+				return this;
 			}
 		};
 	}
@@ -260,10 +265,12 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 	private class AnnotationBinderDefinition<T> {
 
+		private final AnnotatedTypeIntrospector typeIntrospector;
 		private final ClassBinder<T> classBinder;
 		private final List<String> excludes = new ArrayList<String>();
 
 		private AnnotationBinderDefinition(ClassBinder<T> classBinder) {
+			this.typeIntrospector = new AnnotatedTypeIntrospector(findAttributeAnnotation(AbstractSerializerDefinition.this), excludes);
 			this.classBinder = classBinder;
 		}
 
@@ -272,30 +279,13 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		}
 
 		public void acceptVisitor(DefinitionVisitor visitor) {
-			Class<? extends Annotation> attributeAnnotation = findAttributeAnnotation(AbstractSerializerDefinition.this);
-			Class<T> type = classBinder.getType();
-			Set<Field> properties = BeanUtil.findPropertiesByClass(type, attributeAnnotation);
+			MarshallerContext marshallers = combineMarshallers(AbstractSerializerDefinition.this);
+			List<PropertyDescriptor> propertyDescriptors = typeIntrospector.introspect(classBinder.getType(),
+					definitionBuildingContext.getMarshallerStrategy(), marshallers, definitionBuildingContext.getPropertyDescriptorFactory());
 
-			for (Field property : properties) {
-				if (isExcluded(property.getName()))
-					continue;
-
-				Class<?> fieldType = property.getType();
-
-				MarshallerContext marshallers = combineMarshallers(AbstractSerializerDefinition.this);
-				Marshaller marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType, marshallers);
-
-				if (marshaller == null && fieldType.isArray()) {
-					marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(fieldType.getComponentType(), marshallers);
-				}
-
-				if (marshaller instanceof TypeBindableMarshaller) {
-					Type[] typeArguments = TypeUtil.getTypeArgument(property.getGenericType());
-					marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
-				}
-
-				PropertyDescriptor propertyDescriptor = definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, classBinder.getType());
-
+			for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+				Class<?> fieldType = propertyDescriptor.getType();
+				Marshaller marshaller = propertyDescriptor.getMarshaller();
 				visitor.visitAnnotatedAttribute(propertyDescriptor, marshaller);
 
 				if (fieldType.isPrimitive() || fieldType.isArray() && fieldType.getComponentType().isPrimitive()) {
@@ -318,9 +308,45 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		private MarshallerContext combineMarshallers(AbstractSerializerDefinition abstractSerializerDefinition) {
 			return new InternalMarshallerContext(abstractSerializerDefinition.marshallerContext);
 		}
+	}
 
-		private boolean isExcluded(String propertyName) {
-			return excludes.contains(propertyName);
+	private abstract class DefinedAttributeBinder<V> implements AttributeBinder<V> {
+
+		protected Marshaller marshaller;
+		protected Field property;
+		protected Class<?> declaringClass;
+
+		protected void setDeclaringClass(Class<?> declaringClass) {
+			this.declaringClass = declaringClass;
+		}
+
+		@Override
+		public AttributeBinder<V> using(Class<? extends Marshaller> marshaller) {
+			try {
+				using(marshaller.newInstance());
+				return this;
+			}
+			catch (Exception e) {
+				throw new SerializerDefinitionException("Marshaller class " + marshaller.getCanonicalName()
+						+ " could not be instantiated. Is there a standard (public) constructor?", e);
+			}
+		}
+
+		@Override
+		public AttributeBinder<V> using(Marshaller marshaller) {
+			if (marshaller instanceof TypeBindableMarshaller) {
+				Type[] typeArguments = TypeUtil.getTypeArgument(property.getGenericType());
+				this.marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
+			}
+
+			return this;
+		}
+
+		private void build() {
+			if (marshaller == null) {
+				marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(property.getType(), marshallerContext);
+			}
+			propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, declaringClass), marshaller);
 		}
 	}
 }

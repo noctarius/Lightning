@@ -19,8 +19,8 @@ import com.github.lightning.Marshaller;
 
 public interface MarshallerBinder {
 
-	void byMarshaller(Class<? extends Marshaller> marshaller);
+	void using(Class<? extends Marshaller> marshaller);
 
-	void byMarshaller(Marshaller marshaller);
+	void using(Marshaller marshaller);
 
 }

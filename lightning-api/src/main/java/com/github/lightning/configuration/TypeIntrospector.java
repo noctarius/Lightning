@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning.bindings;
+package com.github.lightning.configuration;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.List;
 
-import com.github.lightning.Marshaller;
-import com.github.lightning.configuration.TypeIntrospector;
+import com.github.lightning.MarshallerContext;
+import com.github.lightning.MarshallerStrategy;
+import com.github.lightning.generator.PropertyDescriptorFactory;
+import com.github.lightning.metadata.PropertyDescriptor;
 
-public interface ClassBinder<T> {
+public interface TypeIntrospector {
 
-	AnnotatedBinder attributes();
-
-	AnnotatedBinder attributes(Class<? extends Annotation> annotation);
-
-	void attributes(AttributeBinder<?>... attributes);
-
-	void using(Class<?> clazz);
-
-	void using(Marshaller marshaller);
-
-	void using(TypeIntrospector typeIntrospector);
-
-	Class<T> getType();
+	List<PropertyDescriptor> introspect(Type type, MarshallerStrategy marshallerStrategy, MarshallerContext marshallerContext,
+			PropertyDescriptorFactory propertyDescriptorFactory);
 
 }

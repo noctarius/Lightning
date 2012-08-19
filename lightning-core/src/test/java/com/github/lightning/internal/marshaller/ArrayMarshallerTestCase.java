@@ -43,7 +43,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(BooleanArray.class).attributes();
+				serialize(BooleanArray.class).attributes();
 			}
 		}).build();
 
@@ -76,7 +76,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(ByteArray.class).attributes();
+				serialize(ByteArray.class).attributes();
 			}
 		});
 
@@ -109,7 +109,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(CharArray.class).attributes();
+				serialize(CharArray.class).attributes();
 			}
 		});
 
@@ -142,7 +142,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(ShortArray.class).attributes();
+				serialize(ShortArray.class).attributes();
 			}
 		});
 
@@ -175,7 +175,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(IntArray.class).attributes();
+				serialize(IntArray.class).attributes();
 			}
 		});
 
@@ -208,7 +208,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(LongArray.class).attributes();
+				serialize(LongArray.class).attributes();
 			}
 		});
 
@@ -241,7 +241,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(FloatArray.class).attributes();
+				serialize(FloatArray.class).attributes();
 			}
 		});
 
@@ -274,7 +274,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(DoubleArray.class).attributes();
+				serialize(DoubleArray.class).attributes();
 			}
 		});
 
@@ -307,7 +307,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(ObjectArray.class).attributes();
+				serialize(ObjectArray.class).attributes();
 			}
 		});
 
@@ -340,7 +340,7 @@ public class ArrayMarshallerTestCase {
 
 			@Override
 			protected void configure() {
-				bind(DeepObjectArray.class).attributes();
+				serialize(DeepObjectArray.class).attributes();
 			}
 		}).build();
 

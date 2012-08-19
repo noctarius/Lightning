@@ -22,30 +22,35 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 
 import com.github.lightning.base.AbstractObjectMarshaller;
 import com.github.lightning.base.AbstractSerializerDefinition;
+import com.github.lightning.configuration.TypeIntrospector;
+import com.github.lightning.generator.PropertyDescriptorFactory;
 import com.github.lightning.io.SerializerInputStream;
 import com.github.lightning.io.SerializerOutputStream;
 import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.PropertyDescriptor;
 import com.github.lightningtesting.utils.DebugLogger;
 
 public class WhatShouldItLookLike {
 
 	public static void main(String[] args) {
-		Serializer serializer2 = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new BookingEngineSerializerFactory()).build();
+		Serializer serializer2 = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new ExampleSerializerDefinition()).build();
 
 		ClassDefinitionContainer container2 = serializer2.getClassDefinitionContainer();
 
-		Serializer remoteSerializer2 = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new BookingEngineSerializerFactory()).build();
+		Serializer remoteSerializer2 = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new ExampleSerializerDefinition()).build();
 
 		remoteSerializer2.setClassDefinitionContainer(container2);
 
-		Serializer serializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
+		Serializer serializer = Lightning.createSerializer(new ExampleSerializerDefinition());
 		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		Serializer remoteSerializer = Lightning.createSerializer(new BookingEngineSerializerFactory());
+		Serializer remoteSerializer = Lightning.createSerializer(new ExampleSerializerDefinition());
 		remoteSerializer.setClassDefinitionContainer(container);
 
 		Foo foo = new Foo();
@@ -68,30 +73,61 @@ public class WhatShouldItLookLike {
 		System.out.println(value);
 	}
 
-	public static class BookingEngineSerializerFactory extends AbstractSerializerDefinition {
+	public static class ExampleSerializerDefinition extends AbstractSerializerDefinition {
 
 		@Override
 		protected void configure() {
-			// define(Bar.class).byMarshaller(new BarMarshaller());
+			// Define serializable class using custom implementation of
+			// Marshaller
+			serialize(Bar.class).using(new BarMarshaller());
+			serialize(Bar.class).using(BarMarshaller.class);
 
-			// bind(Foo.class).with(Attribute.class).exclude("value");
-			// bind(Foo.class).property("value").byMarshaller(SomeSpecialIntegerMarshaller.class);
-			// bind(Foo.class).property("enumValue").byMarshaller(BarMarshaller.class);
+			// Define serializable class using annotated members / methods (by
+			// usage of Lightning's @com.github.lightning.metadata.Attribute
+			// annotation)
+			serialize(Foo.class).attributes();
+			serialize(Foo.class).attributes().exclude("value");
+			serialize(Foo.class).attributes().exclude("value1").exclude("value2");
+			serialize(Foo.class).attributes().excludes("value1", "value2");
 
-			install(new SomeChildSerializerFactory());
+			// Define serializable class using annotated members / methods (by
+			// usage of custom annotation)
+			serialize(Foo.class).attributes(Attribute.class);
+			serialize(Foo.class).attributes(Attribute.class).exclude("value");
+			serialize(Foo.class).attributes(Attribute.class).exclude("value1").exclude("value2");
+			serialize(Foo.class).attributes(Attribute.class).excludes("value1", "value2");
+
+			// Define serializable class using custom definition of attributes
+			serialize(Foo.class).attributes(attribute("value"), attribute("value").using(SomeSpecialIntegerMarshaller.class),
+					attribute("value").using(new SomeSpecialIntegerMarshaller()));
+
+			// Define serializable class using a different implementation of
+			// PropertyFinderStrategy
+			serialize(Foo.class).using(new FooTypeIntrospector());
+			serialize(Foo.class).using(FooTypeIntrospector.class);
+
+			// Install child definition
+			install(new SomeChildSerializerDefinition());
 		}
 	}
 
-	public static class SomeChildSerializerFactory extends AbstractSerializerDefinition {
+	public static class SomeChildSerializerDefinition extends AbstractSerializerDefinition {
 
 		@Override
 		public void configure() {
 			describesAttributes(Attribute.class);
 
-			bind(Foo.class).attributes();// .exclude("enumValue"); // like
-											// .with(Attribute.class)
-			// bind(Foo.class).property("enumValue").byMarshaller(new
-			// BarMarshaller());
+			serialize(Foo.class).attributes();
+		}
+	}
+
+	public static class FooTypeIntrospector implements TypeIntrospector {
+
+		@Override
+		public List<PropertyDescriptor> introspect(Type type, MarshallerStrategy marshallerStrategy, MarshallerContext marshallerContext,
+				PropertyDescriptorFactory propertyDescriptorFactory) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
