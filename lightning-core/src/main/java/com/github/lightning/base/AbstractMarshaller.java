@@ -21,11 +21,12 @@ import java.io.IOException;
 
 import com.github.lightning.Marshaller;
 import com.github.lightning.SerializationContext;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public abstract class AbstractMarshaller implements Marshaller {
 
 	@Override
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		return null;
 	}
 

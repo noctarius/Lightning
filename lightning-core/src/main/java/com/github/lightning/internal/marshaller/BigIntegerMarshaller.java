@@ -22,6 +22,7 @@ import java.math.BigInteger;
 
 import com.github.lightning.SerializationContext;
 import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class BigIntegerMarshaller extends AbstractMarshaller {
 
@@ -31,7 +32,9 @@ public class BigIntegerMarshaller extends AbstractMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		if (!writePossibleNull(value, dataOutput)) {
 			return;
 		}
@@ -43,7 +46,7 @@ public class BigIntegerMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}

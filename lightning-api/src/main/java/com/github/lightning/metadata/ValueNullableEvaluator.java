@@ -13,20 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lightning;
+package com.github.lightning.metadata;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+public interface ValueNullableEvaluator {
 
-import com.github.lightning.metadata.PropertyDescriptor;
-
-public interface Marshaller {
-
-	boolean acceptType(Class<?> type);
-
-	void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext) throws IOException;
-
-	<V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException;
+	boolean isValueNullable(PropertyDescriptor propertyDescriptor);
 
 }

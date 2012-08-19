@@ -22,6 +22,7 @@ import java.io.IOException;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.Streamed;
 import com.github.lightning.base.AbstractObjectMarshaller;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class StreamedMarshaller extends AbstractObjectMarshaller {
 
@@ -31,12 +32,14 @@ public class StreamedMarshaller extends AbstractObjectMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		((Streamed) value).writeTo(dataOutput);
 	}
 
 	@Override
-	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		((Streamed) value).readFrom(dataInput);
 		return value;
 	}

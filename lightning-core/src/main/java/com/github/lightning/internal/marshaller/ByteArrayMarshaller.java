@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import com.github.lightning.SerializationContext;
 import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class ByteArrayMarshaller extends AbstractMarshaller {
 
@@ -30,12 +31,14 @@ public class ByteArrayMarshaller extends AbstractMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		if (!writePossibleNull(value, dataOutput)) {
 			return;
 		}
 
-		if (byte[].class == type) {
+		if (byte[].class == propertyDescriptor.getType()) {
 			byte[] array = (byte[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -55,13 +58,13 @@ public class ByteArrayMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}
 
 		int size = dataInput.readInt();
-		if (byte[].class == type) {
+		if (byte[].class == propertyDescriptor.getType()) {
 			byte[] array = new byte[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readByte();

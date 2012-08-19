@@ -21,10 +21,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.lightning.base.DefaultValueNullableEvaluator;
 import com.github.lightning.configuration.SerializerDefinition;
 import com.github.lightning.internal.InternalSerializerCreator;
 import com.github.lightning.logging.Logger;
 import com.github.lightning.logging.LoggerAdapter;
+import com.github.lightning.metadata.ValueNullableEvaluator;
 
 public final class Lightning {
 
@@ -49,6 +51,7 @@ public final class Lightning {
 		private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 		private Class<? extends Annotation> attributeAnnotation = null;
 		private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
+		private ValueNullableEvaluator valueNullableEvaluator = new DefaultValueNullableEvaluator();
 		private File debugCacheDirectory = null;
 		private Logger logger = new LoggerAdapter();
 
@@ -86,6 +89,11 @@ public final class Lightning {
 			return this;
 		}
 
+		public Builder setValueNullableEvaluator(ValueNullableEvaluator valueNullableEvaluator) {
+			this.valueNullableEvaluator = valueNullableEvaluator;
+			return this;
+		}
+
 		public Builder logger(Logger logger) {
 			this.logger = logger;
 			return this;
@@ -94,7 +102,8 @@ public final class Lightning {
 		public Serializer build() {
 			return new InternalSerializerCreator().setLogger(logger).setSerializationStrategy(serializationStrategy)
 					.setClassComparisonStrategy(classComparisonStrategy).setAttributeAnnotation(attributeAnnotation)
-					.setDebugCacheDirectory(debugCacheDirectory).addSerializerDefinitions(serializerDefinitions).build();
+					.setDebugCacheDirectory(debugCacheDirectory).setValueNullableEvaluator(valueNullableEvaluator)
+					.addSerializerDefinitions(serializerDefinitions).build();
 		}
 	}
 

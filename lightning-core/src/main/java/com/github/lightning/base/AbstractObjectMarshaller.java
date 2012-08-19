@@ -19,15 +19,17 @@ import java.io.DataInput;
 import java.io.IOException;
 
 import com.github.lightning.SerializationContext;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public abstract class AbstractObjectMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		Object value = serializationContext.getObjectInstantiatorFactory().getInstantiatorOf(type);
-		return unmarshall((V) value, type, dataInput, serializationContext);
+	public final <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+		Object value = serializationContext.getObjectInstantiatorFactory().getInstantiatorOf(propertyDescriptor.getType());
+		return unmarshall((V) value, propertyDescriptor, dataInput, serializationContext);
 	}
 
-	public abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException;
+	public abstract <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext)
+			throws IOException;
 }

@@ -59,9 +59,9 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (serializationContext.getSerializationStrategy() == SerializationStrategy.SizeOptimized) {
-			if (ClassUtil.isReferenceCapable(type)) {
+			if (ClassUtil.isReferenceCapable(propertyDescriptor.getType())) {
 				long referenceId = dataInput.readLong();
 				V instance;
 				if (containsReferenceId(referenceId, serializationContext)) {
@@ -69,7 +69,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 				}
 				else {
 					// Instance not yet received, for first time deserialize it
-					instance = unmarshall((V) newInstance(), type, dataInput, serializationContext);
+					instance = unmarshall((V) newInstance(), propertyDescriptor, dataInput, serializationContext);
 					cacheObjectForUnmarshall(referenceId, instance, serializationContext);
 				}
 
@@ -78,14 +78,15 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		}
 
 		V value = null;
-		if (!type.isArray()) {
+		if (!propertyDescriptor.getType().isArray()) {
 			value = (V) newInstance();
 		}
 
-		return unmarshall(value, type, dataInput, serializationContext);
+		return unmarshall(value, propertyDescriptor, dataInput, serializationContext);
 	}
 
-	protected abstract <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException;
+	protected abstract <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext)
+			throws IOException;
 
 	protected boolean isAlreadyMarshalled(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		if (serializationContext.getSerializationStrategy() != SerializationStrategy.SizeOptimized) {
@@ -174,7 +175,9 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+		public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+				throws IOException {
+
 			Marshaller marshaller = this.marshaller;
 			if (marshaller == null) {
 				marshaller = getMarshaller();
@@ -184,11 +187,11 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
 			}
 
-			marshaller.marshall(value, type, dataOutput, serializationContext);
+			marshaller.marshall(value, propertyDescriptor, dataOutput, serializationContext);
 		}
 
 		@Override
-		public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+		public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 			Marshaller marshaller = this.marshaller;
 			if (marshaller == null) {
 				marshaller = getMarshaller();
@@ -198,7 +201,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
 			}
 
-			return marshaller.unmarshall(type, dataInput, serializationContext);
+			return marshaller.unmarshall(propertyDescriptor, dataInput, serializationContext);
 		}
 
 		private synchronized Marshaller getMarshaller() {

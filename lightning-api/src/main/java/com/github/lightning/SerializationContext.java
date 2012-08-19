@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.ValueNullableEvaluator;
 
 public interface SerializationContext {
 
@@ -29,6 +30,8 @@ public interface SerializationContext {
 	ObjectInstantiatorFactory getObjectInstantiatorFactory();
 
 	Marshaller findMarshaller(Type type);
+
+	ValueNullableEvaluator getValueNullableEvaluator();
 
 	long findReferenceIdByObject(Object instance);
 

@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
  * serialized by Lightning.<br>
  * 
  * <pre>
+ * 
  * public class MyEntity {
  * 
  * 	private long id;
@@ -73,5 +74,7 @@ public @interface Attribute {
 	 * @return the defined property name
 	 */
 	String property() default NULL;
+
+	boolean nullable() default false;
 
 }

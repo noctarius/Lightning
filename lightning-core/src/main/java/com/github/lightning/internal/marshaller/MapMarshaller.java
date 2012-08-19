@@ -29,7 +29,9 @@ import com.github.lightning.SerializationContext;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
 import com.github.lightning.exceptions.SerializerExecutionException;
+import com.github.lightning.internal.CheatPropertyDescriptor;
 import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class MapMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
 
@@ -54,7 +56,9 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		writePossibleNull(value, dataOutput);
 
 		Map<?, ?> map = (Map<?, ?>) value;
@@ -74,21 +78,23 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 
 			if (writePossibleNull(entry.getKey(), dataOutput)) {
 				ClassDefinition keyClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getKey().getClass());
+				PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Key", entry.getClass(), keyMarshaller);
 				dataOutput.writeLong(keyClassDefinition.getId());
-				keyMarshaller.marshall(entry.getKey(), entry.getKey().getClass(), dataOutput, serializationContext);
+				keyMarshaller.marshall(entry.getKey(), pd, dataOutput, serializationContext);
 			}
 
 			if (writePossibleNull(entry.getValue(), dataOutput)) {
 				ClassDefinition valueClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getValue().getClass());
+				PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Value", entry.getClass(), valueMarshaller);
 				dataOutput.writeLong(valueClassDefinition.getId());
-				valueMarshaller.marshall(entry.getValue(), entry.getValue().getClass(), dataOutput, serializationContext);
+				valueMarshaller.marshall(entry.getValue(), pd, dataOutput, serializationContext);
 			}
 		}
 	}
 
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}
@@ -111,7 +117,9 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 						keyMarshaller = serializationContext.findMarshaller(keyClassDefinition.getType());
 					}
 
-					key = keyMarshaller.unmarshall(keyClassDefinition.getType(), dataInput, serializationContext);
+					PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Key", keyClassDefinition.getType(),
+							keyMarshaller);
+					key = keyMarshaller.unmarshall(pd, dataInput, serializationContext);
 				}
 
 				Object value = null;
@@ -128,7 +136,9 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 						valueMarshaller = serializationContext.findMarshaller(valueClassDefinition.getType());
 					}
 
-					value = valueMarshaller.unmarshall(valueClassDefinition.getType(), dataInput, serializationContext);
+					PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Value", valueClassDefinition.getType(),
+							valueMarshaller);
+					value = valueMarshaller.unmarshall(pd, dataInput, serializationContext);
 				}
 
 				map.put(key, value);

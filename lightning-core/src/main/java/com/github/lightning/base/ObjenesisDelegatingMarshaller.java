@@ -22,6 +22,7 @@ import java.io.IOException;
 import com.github.lightning.Marshaller;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 class ObjenesisDelegatingMarshaller implements Marshaller {
 
@@ -39,15 +40,17 @@ class ObjenesisDelegatingMarshaller implements Marshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
-		delegatedMarshaller.marshall(value, type, dataOutput, serializationContext);
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
+		delegatedMarshaller.marshall(value, propertyDescriptor, dataOutput, serializationContext);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		V value = (V) objectInstantiatorFactory.newInstance(type);
-		return delegatedMarshaller.unmarshall(value, type, dataInput, serializationContext);
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+		V value = (V) objectInstantiatorFactory.newInstance(propertyDescriptor.getType());
+		return delegatedMarshaller.unmarshall(value, propertyDescriptor, dataInput, serializationContext);
 	}
 
 }

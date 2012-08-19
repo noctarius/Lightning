@@ -49,6 +49,8 @@ import com.github.lightning.logging.Logger;
 import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 import com.github.lightning.metadata.ClassDescriptor;
+import com.github.lightning.metadata.PropertyDescriptor;
+import com.github.lightning.metadata.ValueNullableEvaluator;
 
 class InternalSerializer implements ClassDescriptorAwareSerializer {
 
@@ -60,15 +62,18 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	private final SerializationStrategy serializationStrategy;
 	private final Map<Class<?>, Marshaller> definedMarshallers;
 	private final MarshallerStrategy marshallerStrategy;
+	private final ValueNullableEvaluator valueNullableEvaluator;
 
 	InternalSerializer(ClassDefinitionContainer classDefinitionContainer, SerializationStrategy serializationStrategy,
 			ClassComparisonStrategy classComparisonStrategy, Map<Class<?>, ClassDescriptor> classDescriptors, Map<Class<?>, Marshaller> marshallers,
-			ObjectInstantiatorFactory objectInstantiatorFactory, Logger logger, MarshallerStrategy marshallerStrategy, File debugCacheDirectory) {
+			ObjectInstantiatorFactory objectInstantiatorFactory, Logger logger, MarshallerStrategy marshallerStrategy, File debugCacheDirectory,
+			ValueNullableEvaluator valueNullableEvaluator) {
 
 		this.classDefinitionContainer.set(classDefinitionContainer);
 		this.classComparisonStrategy = classComparisonStrategy;
 		this.classDescriptors = Collections.unmodifiableMap(classDescriptors);
 		this.serializationStrategy = serializationStrategy;
+		this.valueNullableEvaluator = valueNullableEvaluator;
 
 		for (ClassDescriptor classDescriptor : classDescriptors.values()) {
 			if (classDescriptor instanceof InternalClassDescriptor && classDescriptor.getMarshaller() == null) {
@@ -104,12 +109,15 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	public <V> void serialize(V value, DataOutput dataOutput) {
 		try {
 			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(), serializationStrategy,
-					marshallerStrategy, objectInstantiatorFactory, definedMarshallers);
+					marshallerStrategy, objectInstantiatorFactory, valueNullableEvaluator, definedMarshallers);
 
 			Class<?> type = value.getClass();
 			ClassDescriptor classDescriptor = findClassDescriptor(type);
+			Marshaller marshaller = classDescriptor.getMarshaller();
+			PropertyDescriptor pd = new CheatPropertyDescriptor("serialize", classDescriptor.getType(), marshaller);
+
 			dataOutput.writeLong(classDescriptor.getClassDefinition().getId());
-			classDescriptor.getMarshaller().marshall(value, type, dataOutput, serializationContext);
+			marshaller.marshall(value, pd, dataOutput, serializationContext);
 		}
 		catch (IOException e) {
 			throw new SerializerExecutionException("Error while serializing value", e);
@@ -139,12 +147,15 @@ class InternalSerializer implements ClassDescriptorAwareSerializer {
 	public <V> V deserialize(DataInput dataInput) {
 		try {
 			SerializationContext serializationContext = new InternalSerializationContext(classDefinitionContainer.get(), serializationStrategy,
-					marshallerStrategy, objectInstantiatorFactory, definedMarshallers);
+					marshallerStrategy, objectInstantiatorFactory, valueNullableEvaluator, definedMarshallers);
 
 			long typeId = dataInput.readLong();
 			Class<?> clazz = classDefinitionContainer.get().getTypeById(typeId);
 			ClassDescriptor classDescriptor = findClassDescriptor(clazz);
-			return (V) classDescriptor.getMarshaller().unmarshall(clazz, dataInput, serializationContext);
+			Marshaller marshaller = classDescriptor.getMarshaller();
+			PropertyDescriptor pd = new CheatPropertyDescriptor("serialize", classDescriptor.getType(), marshaller);
+
+			return (V) marshaller.unmarshall(pd, dataInput, serializationContext);
 		}
 		catch (IOException e) {
 			throw new SerializerExecutionException("Error while deserializing value", e);

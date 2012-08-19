@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import com.github.lightning.SerializationContext;
 import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class IntegerArrayMarshaller extends AbstractMarshaller {
 
@@ -30,12 +31,14 @@ public class IntegerArrayMarshaller extends AbstractMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		if (!writePossibleNull(value, dataOutput)) {
 			return;
 		}
 
-		if (int[].class == type) {
+		if (int[].class == propertyDescriptor.getType()) {
 			int[] array = (int[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -55,13 +58,13 @@ public class IntegerArrayMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}
 
 		int size = dataInput.readInt();
-		if (int[].class == type) {
+		if (int[].class == propertyDescriptor.getType()) {
 			int[] array = new int[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readInt();

@@ -31,6 +31,7 @@ import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
 import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.metadata.ClassDefinitionContainer;
+import com.github.lightning.metadata.ValueNullableEvaluator;
 
 public class InternalSerializationContext implements SerializationContext {
 
@@ -42,16 +43,19 @@ public class InternalSerializationContext implements SerializationContext {
 	private final SerializationStrategy serializationStrategy;
 	private final MarshallerStrategy marshallerStrategy;
 	private final ObjectInstantiatorFactory objectInstantiatorFactory;
+	private final ValueNullableEvaluator valueNullableEvaluator;
 
 	private long nextReferenceIdMarshall = 10000;
 
 	public InternalSerializationContext(ClassDefinitionContainer classDefinitionContainer, SerializationStrategy serializationStrategy,
-			MarshallerStrategy marshallerStrategy, ObjectInstantiatorFactory objectInstantiatorFactory, Map<Class<?>, Marshaller> definedMarshallers) {
+			MarshallerStrategy marshallerStrategy, ObjectInstantiatorFactory objectInstantiatorFactory, ValueNullableEvaluator valueNullableEvaluator,
+			Map<Class<?>, Marshaller> definedMarshallers) {
 
 		this.classDefinitionContainer = classDefinitionContainer;
 		this.serializationStrategy = serializationStrategy;
 		this.marshallerStrategy = marshallerStrategy;
 		this.objectInstantiatorFactory = objectInstantiatorFactory;
+		this.valueNullableEvaluator = valueNullableEvaluator;
 
 		for (Entry<Class<?>, Marshaller> entry : definedMarshallers.entrySet()) {
 			this.marshallerContext.bindMarshaller(entry.getKey(), entry.getValue());
@@ -138,5 +142,10 @@ public class InternalSerializationContext implements SerializationContext {
 	public long getNextReferenceIdMarshall() {
 		long newId = nextReferenceIdMarshall++;
 		return newId;
+	}
+
+	@Override
+	public ValueNullableEvaluator getValueNullableEvaluator() {
+		return valueNullableEvaluator;
 	}
 }

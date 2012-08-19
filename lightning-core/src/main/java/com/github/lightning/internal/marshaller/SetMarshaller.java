@@ -28,7 +28,9 @@ import com.github.lightning.SerializationContext;
 import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
 import com.github.lightning.exceptions.SerializerExecutionException;
+import com.github.lightning.internal.CheatPropertyDescriptor;
 import com.github.lightning.metadata.ClassDefinition;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class SetMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
 
@@ -50,7 +52,9 @@ public class SetMarshaller extends AbstractMarshaller implements TypeBindableMar
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		if (writePossibleNull(value, dataOutput)) {
 			Set<?> set = (Set<?>) value;
 			dataOutput.writeInt(set.size());
@@ -66,9 +70,10 @@ public class SetMarshaller extends AbstractMarshaller implements TypeBindableMar
 					}
 
 					ClassDefinition classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getClass());
+					PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", entry.getClass(), marshaller);
 
 					dataOutput.writeLong(classDefinition.getId());
-					marshaller.marshall(entry, entry.getClass(), dataOutput, serializationContext);
+					marshaller.marshall(entry, pd, dataOutput, serializationContext);
 				}
 			}
 		}
@@ -76,7 +81,7 @@ public class SetMarshaller extends AbstractMarshaller implements TypeBindableMar
 
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}
@@ -101,7 +106,8 @@ public class SetMarshaller extends AbstractMarshaller implements TypeBindableMar
 						marshaller = serializationContext.findMarshaller(classDefinition.getType());
 					}
 
-					set.add(marshaller.unmarshall(classDefinition.getType(), dataInput, serializationContext));
+					PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", classDefinition.getType(), marshaller);
+					set.add(marshaller.unmarshall(pd, dataInput, serializationContext));
 				}
 			}
 		}

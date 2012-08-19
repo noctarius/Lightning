@@ -48,6 +48,7 @@ import com.github.lightning.metadata.Attribute;
 import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.ClassDescriptor;
 import com.github.lightning.metadata.PropertyDescriptor;
+import com.github.lightning.metadata.ValueNullableEvaluator;
 
 public final class InternalSerializerCreator {
 
@@ -56,6 +57,7 @@ public final class InternalSerializerCreator {
 	private final Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
 	private final ObjectInstantiatorFactory objectInstantiatorFactory = new ObjenesisSerializer(true);
 
+	private ValueNullableEvaluator valueNullableEvaluator;
 	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 	private Class<? extends Annotation> attributeAnnotation = Attribute.class;
 	private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
@@ -98,6 +100,11 @@ public final class InternalSerializerCreator {
 		return this;
 	}
 
+	public InternalSerializerCreator setValueNullableEvaluator(ValueNullableEvaluator valueNullableEvaluator) {
+		this.valueNullableEvaluator = valueNullableEvaluator;
+		return this;
+	}
+
 	public Serializer build() {
 		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
 		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
@@ -120,7 +127,7 @@ public final class InternalSerializerCreator {
 		}
 
 		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), serializationStrategy, classComparisonStrategy,
-				cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger, marshallerStrategy, debugCacheDirectory);
+				cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger, marshallerStrategy, debugCacheDirectory, valueNullableEvaluator);
 	}
 
 	private InternalClassDescriptor findClassDescriptor(Class<?> type) {

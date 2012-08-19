@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import com.github.lightning.SerializationContext;
 import com.github.lightning.base.AbstractMarshaller;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class BooleanArrayMarshaller extends AbstractMarshaller {
 
@@ -30,12 +31,14 @@ public class BooleanArrayMarshaller extends AbstractMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		if (!writePossibleNull(value, dataOutput)) {
 			return;
 		}
 
-		if (boolean[].class == type) {
+		if (boolean[].class == propertyDescriptor.getType()) {
 			boolean[] array = (boolean[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -55,13 +58,13 @@ public class BooleanArrayMarshaller extends AbstractMarshaller {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (isNull(dataInput)) {
 			return null;
 		}
 
 		int size = dataInput.readInt();
-		if (boolean[].class == type) {
+		if (boolean[].class == propertyDescriptor.getType()) {
 			boolean[] array = new boolean[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readBoolean();

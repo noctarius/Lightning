@@ -24,6 +24,7 @@ import java.io.ObjectOutput;
 
 import com.github.lightning.SerializationContext;
 import com.github.lightning.base.AbstractObjectMarshaller;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class ExternalizableMarshaller extends AbstractObjectMarshaller {
 
@@ -33,12 +34,14 @@ public class ExternalizableMarshaller extends AbstractObjectMarshaller {
 	}
 
 	@Override
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+			throws IOException {
+
 		((Externalizable) value).writeExternal((ObjectOutput) dataOutput);
 	}
 
 	@Override
-	public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		try {
 			((Externalizable) value).readExternal((ObjectInput) dataInput);
 			return value;
