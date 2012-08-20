@@ -29,6 +29,7 @@ import com.github.lightning.MarshallerContext;
 import com.github.lightning.MarshallerStrategy;
 import com.github.lightning.SerializationContext;
 import com.github.lightning.instantiator.ObjectInstantiatorFactory;
+import com.github.lightning.internal.CheatPropertyDescriptor;
 import com.github.lightning.internal.ClassDescriptorAwareSerializer;
 import com.github.lightning.metadata.ArrayPropertyAccessor;
 import com.github.lightning.metadata.PropertyAccessor;
@@ -37,16 +38,21 @@ import com.github.lightning.metadata.ValuePropertyAccessor;
 
 public interface GeneratorConstants {
 
-	static String MARSHALLER_MARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] { Type.getType(Object.class), Type.getType(Class.class),
-			Type.getType(DataOutput.class), Type.getType(SerializationContext.class) });
+	static String MARSHALLER_MARSHALL_SIGNATURE = Type.getMethodDescriptor(
+			Type.VOID_TYPE,
+			new Type[] { Type.getType(Object.class), Type.getType(PropertyDescriptor.class), Type.getType(DataOutput.class),
+					Type.getType(SerializationContext.class) });
 
 	static String MARSHALLER_BASE_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
-			new Type[] { Type.getType(Class.class), Type.getType(DataInput.class), Type.getType(SerializationContext.class) });
+			new Type[] { Type.getType(PropertyDescriptor.class), Type.getType(DataInput.class), Type.getType(SerializationContext.class) });
 
-	static String MARSHALLER_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(Type.getType(Object.class),
-			new Type[] { Type.getType(Object.class), Type.getType(Class.class), Type.getType(DataInput.class), Type.getType(SerializationContext.class) });
+	static String MARSHALLER_UNMARSHALL_SIGNATURE = Type.getMethodDescriptor(
+			Type.getType(Object.class),
+			new Type[] { Type.getType(Object.class), Type.getType(PropertyDescriptor.class), Type.getType(DataInput.class),
+					Type.getType(SerializationContext.class) });
 
-	static String MARSHALLER_FIND_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class), new Type[] { Type.getType(Class.class) });
+	static String MARSHALLER_FIND_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class),
+			new Type[] { Type.getType(PropertyDescriptor.class) });
 
 	static String MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE = Type.getMethodDescriptor(Type.getType(PropertyAccessor.class),
 			new Type[] { Type.getType(String.class) });
@@ -66,14 +72,19 @@ public interface GeneratorConstants {
 
 	static String PROPERTY_DESCRIPTOR_GET_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class), new Type[0]);
 
+	static String PROPERTY_DESCRIPTOR_GET_PROPERTYACCESSOR_SIGNATURE = Type.getMethodDescriptor(Type.getType(PropertyAccessor.class), new Type[0]);
+
 	static String OBJECT_GET_CLASS_SIGNATURE = Type.getMethodDescriptor(Type.getType(Class.class), new Type[0]);
 
 	static String CLASS_GET_COMPONENT_TYPE = Type.getMethodDescriptor(Type.getType(Class.class), new Type[0]);
 
 	static String ARRAY_LENGTH_SIGNATURE = Type.getMethodDescriptor(Type.INT_TYPE, new Type[0]);
 
-	static String MARSHALLERSTRATEGY_GET_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class), new Type[] {
-			Type.getType(java.lang.reflect.Type.class), Type.getType(MarshallerContext.class) });
+	static String MARSHALLERSTRATEGY_GET_MARSHALLER_SIGNATURE = Type.getMethodDescriptor(Type.getType(Marshaller.class),
+			new Type[] { Type.getType(java.lang.reflect.Type.class), Type.getType(MarshallerContext.class) });
+
+	static String CHEATINGPROPERTYDESCRIPTOR_CONSTRUCTOR = Type.getMethodDescriptor(Type.VOID_TYPE,
+			new Type[] { Type.getType(String.class), Type.getType(Class.class), Type.getType(Marshaller.class) });
 
 	static String SUPER_CLASS_INTERNAL_TYPE = Type.getType(AbstractGeneratedMarshaller.class).getInternalName();
 	static String MARSHALLER_CLASS_INTERNAL_TYPE = Type.getType(Marshaller.class).getInternalName();
@@ -83,6 +94,7 @@ public interface GeneratorConstants {
 	static String VALUEPROPERTYACCESSOR_CLASS_INTERNAL_TYPE = Type.getType(ValuePropertyAccessor.class).getInternalName();
 	static String ARRAYPROPERTYACCESSOR_CLASS_INTERNAL_TYPE = Type.getType(ArrayPropertyAccessor.class).getInternalName();
 	static String PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE = Type.getType(PropertyDescriptor.class).getInternalName();
+	static String CHEATINGPROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE = Type.getType(CheatPropertyDescriptor.class).getInternalName();
 	static String CLASS_CLASS_INTERNAL_TYPE = Type.getType(Class.class).getInternalName();
 	static String DATAOUTPUT_CLASS_INTERNAL_TYPE = Type.getType(DataOutput.class).getInternalName();
 	static String DATAINPUT_CLASS_INTERNAL_TYPE = Type.getType(DataInput.class).getInternalName();
@@ -91,6 +103,7 @@ public interface GeneratorConstants {
 	static String MARSHALLER_CLASS_DESCRIPTOR = Type.getType(Marshaller.class).getDescriptor();
 	static String PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR = Type.getType(PropertyDescriptor.class).getDescriptor();
 	static String PROPERTYACCESSOR_CLASS_DESCRIPTOR = Type.getType(PropertyAccessor.class).getDescriptor();
+	static String CHEATINGPROPERTYDESCRIPTOR_CLASS_DESCRIPTOR = Type.getType(CheatPropertyDescriptor.class).getDescriptor();
 
 	static String[] MARSHALLER_EXCEPTIONS = { IOEXCEPTION_CLASS_INTERNAL_TYPE };
 

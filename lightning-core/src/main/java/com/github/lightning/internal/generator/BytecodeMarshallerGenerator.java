@@ -106,6 +106,17 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			PropertyDescriptor propertyDescriptor = propertyDescriptors.get(i);
 			FieldVisitor fv = null;
 
+			// Write PropertyDescriptor field
+			fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR, null, null);
+			fv.visitEnd();
+
+			if (propertyDescriptor.getType().isArray() && !propertyDescriptor.getType().getComponentType().isPrimitive()) {
+				// Write ComponentType PropertyDescriptor field
+				fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName("component", propertyDescriptor), CHEATINGPROPERTYDESCRIPTOR_CLASS_DESCRIPTOR,
+						null, null);
+				fv.visitEnd();
+			}
+
 			// Write Marshaller field
 			fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName("marshaller", propertyDescriptor), MARSHALLER_CLASS_DESCRIPTOR, null, null);
 			fv.visitEnd();
@@ -143,6 +154,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			PropertyDescriptor propertyDescriptor = propertyDescriptors.get(i);
 			String fieldName = toFinalFieldName("marshaller", propertyDescriptor);
 			mv.visitVarInsn(ALOAD, 0);
+			mv.visitVarInsn(ALOAD, 0);
 
 			// Load property type
 			mv.visitVarInsn(ALOAD, 5);
@@ -150,19 +162,30 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			mv.visitMethodInsn(INVOKEINTERFACE, LIST_CLASS_INTERNAL_TYPE, "get", "(I)Ljava/lang/Object;");
 
 			// Store PropertyDescriptor
-			mv.visitVarInsn(ASTORE, 7);
-
-			// Define branch
-			Label labelNonNull = new Label();
+			mv.visitTypeInsn(CHECKCAST, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE);
+			mv.visitFieldInsn(PUTFIELD, className, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 
 			if (propertyDescriptor.getType().isArray() && !propertyDescriptor.getType().getComponentType().isPrimitive()) {
+				Label labelNonNull = new Label();
+
 				// Get type from PropertyAccessor
-				mv.visitVarInsn(ALOAD, 7);
+				mv.visitVarInsn(ALOAD, 0);
+				mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 				mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE, "getType", "()Ljava/lang/Class;");
 
 				// Get array component type
 				mv.visitMethodInsn(INVOKEVIRTUAL, CLASS_CLASS_INTERNAL_TYPE, "getComponentType", CLASS_GET_COMPONENT_TYPE);
 				mv.visitVarInsn(ASTORE, 9);
+
+				// Generate cheating PropertyDescriptor for component type
+				mv.visitVarInsn(ALOAD, 0);
+				mv.visitTypeInsn(NEW, CHEATINGPROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE);
+				mv.visitInsn(DUP);
+				mv.visitLdcInsn(propertyDescriptor.getPropertyName() + "Element");
+				mv.visitVarInsn(ALOAD, 9);
+				mv.visitInsn(ACONST_NULL);
+				mv.visitMethodInsn(INVOKESPECIAL, CHEATINGPROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE, "<init>", CHEATINGPROPERTYDESCRIPTOR_CONSTRUCTOR);
+				mv.visitFieldInsn(PUTFIELD, className, toFinalFieldName("component", propertyDescriptor), CHEATINGPROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 
 				// Search marshaller by using interal ones
 				mv.visitVarInsn(ALOAD, 6);
@@ -175,36 +198,24 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 				// Search marshaller for property type
 				mv.visitJumpInsn(IFNONNULL, labelNonNull);
 				mv.visitVarInsn(ALOAD, 0);
-				mv.visitVarInsn(ALOAD, 9);
+				mv.visitVarInsn(ALOAD, 0);
+				mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("component", propertyDescriptor), CHEATINGPROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 				mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "findMarshaller", MARSHALLER_FIND_MARSHALLER_SIGNATURE);
 				mv.visitVarInsn(ASTORE, 8);
 
 				// Save marshaller to field
 				mv.visitLabel(labelNonNull);
+				mv.visitVarInsn(ALOAD, 0);
 				mv.visitVarInsn(ALOAD, 8);
 				mv.visitFieldInsn(PUTFIELD, className, toFinalFieldName("marshaller", propertyDescriptor), MARSHALLER_CLASS_DESCRIPTOR);
 			}
 			else {
 				// Check if marshaller is defined
 				mv.visitVarInsn(ALOAD, 0);
-				mv.visitVarInsn(ALOAD, 7);
-				mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE, "getMarshaller", PROPERTY_DESCRIPTOR_GET_MARSHALLER_SIGNATURE);
-				mv.visitTypeInsn(CHECKCAST, MARSHALLER_CLASS_INTERNAL_TYPE);
-				mv.visitVarInsn(ASTORE, 8);
-				mv.visitVarInsn(ALOAD, 8);
-				mv.visitJumpInsn(IFNONNULL, labelNonNull);
-
 				mv.visitVarInsn(ALOAD, 0);
-				mv.visitVarInsn(ALOAD, 7);
-				mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE, "getType", "()Ljava/lang/Class;");
-
-				// Search marshaller for property type
+				mv.visitVarInsn(ALOAD, 0);
+				mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 				mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "findMarshaller", MARSHALLER_FIND_MARSHALLER_SIGNATURE);
-				mv.visitVarInsn(ASTORE, 8);
-
-				// Save marshaller to field
-				mv.visitLabel(labelNonNull);
-				mv.visitVarInsn(ALOAD, 8);
 				mv.visitFieldInsn(PUTFIELD, className, fieldName, MARSHALLER_CLASS_DESCRIPTOR);
 			}
 
@@ -212,18 +223,17 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitInsn(DUP);
 
-			// Push property name to method stack
-			mv.visitLdcInsn(propertyDescriptor.getPropertyName());
-
 			// Load property accessor
-			mv.visitMethodInsn(INVOKEVIRTUAL, SUPER_CLASS_INTERNAL_TYPE, "getPropertyAccessor", MARSHALLER_GET_PROPERTY_ACCESSOR_SIGNATURE);
+			mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
+			mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE, "getPropertyAccessor",
+					PROPERTY_DESCRIPTOR_GET_PROPERTYACCESSOR_SIGNATURE);
 
 			// Save PropertyAccessor to field
 			mv.visitFieldInsn(PUTFIELD, className, toFinalFieldName("accessor", propertyDescriptor), PROPERTYACCESSOR_CLASS_DESCRIPTOR);
 		}
 
 		mv.visitInsn(RETURN);
-		mv.visitMaxs(10, 10);
+		mv.visitMaxs(10, 11);
 		mv.visitEnd();
 	}
 
@@ -298,11 +308,6 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		// Read PropertyAccessor from field
 		mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("accessor", propertyDescriptor), PROPERTYACCESSOR_CLASS_DESCRIPTOR);
 
-		// Load property type
-		mv.visitInsn(DUP);
-		mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
-		mv.visitVarInsn(ASTORE, 5);
-
 		// Load value to method stack
 		mv.visitVarInsn(ALOAD, 1);
 
@@ -315,7 +320,8 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		}
 
 		// Load type to method stack
-		mv.visitVarInsn(ALOAD, 5);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 
 		// Load DataOutput to method stack
 		mv.visitVarInsn(ALOAD, 3);
@@ -391,8 +397,8 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		}
 
 		// Load type to method stack
-		mv.visitVarInsn(ALOAD, 5);
-		mv.visitMethodInsn(INVOKEVIRTUAL, CLASS_CLASS_INTERNAL_TYPE, "getComponentType", CLASS_GET_COMPONENT_TYPE);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("component", propertyDescriptor), CHEATINGPROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 
 		// Load DataOutput to method stack
 		mv.visitVarInsn(ALOAD, 3);
@@ -417,7 +423,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 			if (propertyDescriptor.getType().isArray() && !propertyDescriptor.getType().getComponentType().isPrimitive()) {
-				visitArrayPropertyAccessorWrite(mv, className, propertyDescriptor);
+				visitObjectArrayPropertyAccessorWrite(mv, className, propertyDescriptor);
 			}
 			else {
 				visitValuePropertyAccessorWrite(mv, className, propertyDescriptor);
@@ -453,11 +459,11 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		// Load property marshaller to method stack
 		mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("marshaller", propertyDescriptor), MARSHALLER_CLASS_DESCRIPTOR);
 
-		// Load PropertyAccessor to method stack
-		mv.visitVarInsn(ALOAD, 5);
+		// Load this to method stack
+		mv.visitVarInsn(ALOAD, 0);
 
-		// Load Type from PropertyAccessor to method stack
-		mv.visitMethodInsn(INVOKEINTERFACE, PROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
+		// Load PropertyDescriptor to method stack
+		mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 
 		// Load DataInput to method stack
 		mv.visitVarInsn(ALOAD, 3);
@@ -489,7 +495,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		visitPropertyAccessorValueWrite(propertyType, mv);
 	}
 
-	private void visitArrayPropertyAccessorWrite(MethodVisitor mv, String className, PropertyDescriptor propertyDescriptor) {
+	private void visitObjectArrayPropertyAccessorWrite(MethodVisitor mv, String className, PropertyDescriptor propertyDescriptor) {
 		Class<?> propertyType = propertyDescriptor.getType();
 		Class<?> componentType = propertyType.getComponentType();
 
@@ -506,13 +512,11 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		// Read PropertyAccessor from field
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("accessor", propertyDescriptor), PROPERTYACCESSOR_CLASS_DESCRIPTOR);
-		mv.visitTypeInsn(CHECKCAST, ARRAYPROPERTYACCESSOR_CLASS_INTERNAL_TYPE);
-		mv.visitInsn(DUP);
 		mv.visitVarInsn(ASTORE, 9);
 
 		// Get component type
-		mv.visitMethodInsn(INVOKEINTERFACE, ARRAYPROPERTYACCESSOR_CLASS_INTERNAL_TYPE, "getType", OBJECT_GET_CLASS_SIGNATURE);
-		mv.visitMethodInsn(INVOKEVIRTUAL, CLASS_CLASS_INTERNAL_TYPE, "getComponentType", CLASS_GET_COMPONENT_TYPE);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETFIELD, className, toFinalFieldName("component", propertyDescriptor), CHEATINGPROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 		mv.visitVarInsn(ASTORE, 8);
 
 		mv.visitVarInsn(ALOAD, 0);

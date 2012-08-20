@@ -36,25 +36,25 @@ import com.github.lightning.metadata.PropertyDescriptor;
 
 public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
-	private final Class<?> marshalledType;
+	private final Class<?> clazz;
 	private final Map<Class<?>, Marshaller> marshallers;
 	private final ClassDescriptor classDescriptor;
 	private final List<PropertyDescriptor> propertyDescriptors;
 	private final ObjectInstantiator objectInstantiator;
 
-	public AbstractGeneratedMarshaller(Class<?> marshalledType, Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
+	public AbstractGeneratedMarshaller(Class<?> clazz, Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
 			ObjectInstantiatorFactory objectInstantiatorFactory) {
 
-		this.marshalledType = marshalledType;
+		this.clazz = clazz;
 		this.marshallers = marshallers;
-		this.classDescriptor = serializer.findClassDescriptor(marshalledType);
+		this.classDescriptor = serializer.findClassDescriptor(clazz);
 		this.propertyDescriptors = Collections.unmodifiableList(classDescriptor.getPropertyDescriptors());
-		this.objectInstantiator = objectInstantiatorFactory.getInstantiatorOf(marshalledType);
+		this.objectInstantiator = objectInstantiatorFactory.getInstantiatorOf(clazz);
 	}
 
 	@Override
 	public boolean acceptType(Class<?> type) {
-		return marshalledType.isAssignableFrom(type);
+		return clazz.isAssignableFrom(type);
 	}
 
 	@Override
@@ -131,13 +131,17 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		return getPropertyDescriptor(propertyName).getPropertyAccessor();
 	}
 
-	protected Marshaller findMarshaller(Class<?> type) {
-		Marshaller marshaller = marshallers.get(type);
+	protected Marshaller findMarshaller(PropertyDescriptor propertyDescriptor) {
+		if (propertyDescriptor.getMarshaller() != null) {
+			return propertyDescriptor.getMarshaller();
+		}
+
+		Marshaller marshaller = marshallers.get(propertyDescriptor.getType());
 		if (marshaller != null) {
 			return marshaller;
 		}
 
-		return new DelegatingMarshaller(type);
+		return new DelegatingMarshaller(propertyDescriptor);
 	}
 
 	protected long findReferenceIdByObject(Object instance, SerializationContext serializationContext) {
@@ -162,16 +166,16 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 	private class DelegatingMarshaller implements Marshaller {
 
-		private final Class<?> type;
+		private final PropertyDescriptor marshalledProperty;
 		private Marshaller marshaller;
 
-		private DelegatingMarshaller(Class<?> type) {
-			this.type = type;
+		private DelegatingMarshaller(PropertyDescriptor marshalledProperty) {
+			this.marshalledProperty = marshalledProperty;
 		}
 
 		@Override
 		public boolean acceptType(Class<?> type) {
-			return this.type.isAssignableFrom(type);
+			return marshalledProperty.getType().isAssignableFrom(type);
 		}
 
 		@Override
@@ -184,7 +188,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 			}
 
 			if (marshaller == null) {
-				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
+				throw new SerializerDefinitionException("No marshaller for property " + marshalledProperty + " found");
 			}
 
 			marshaller.marshall(value, propertyDescriptor, dataOutput, serializationContext);
@@ -198,7 +202,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 			}
 
 			if (marshaller == null) {
-				throw new SerializerDefinitionException("No marshaller for type " + type + " found");
+				throw new SerializerDefinitionException("No marshaller for property " + marshalledProperty + " found");
 			}
 
 			return marshaller.unmarshall(propertyDescriptor, dataInput, serializationContext);
@@ -206,7 +210,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 		private synchronized Marshaller getMarshaller() {
 			if (marshaller == null) {
-				marshaller = findMarshaller(type);
+				marshaller = findMarshaller(marshalledProperty);
 			}
 			return marshaller;
 		}
