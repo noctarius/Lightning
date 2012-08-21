@@ -42,6 +42,7 @@ import com.github.lightning.io.SerializerOutputStream;
 import com.github.lightning.logging.LogLevel;
 import com.github.lightning.logging.LoggerAdapter;
 import com.github.lightning.metadata.Attribute;
+import com.github.lightning.metadata.PropertyDescriptor;
 
 public class Benchmark {
 
@@ -282,7 +283,7 @@ public class Benchmark {
 
 		@Override
 		protected void configure() {
-			bind(Foo.class).attributes();
+			serialize(Foo.class).attributes();
 		}
 	}
 
@@ -408,11 +409,13 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+		public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+				throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+		public <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext)
+				throws IOException {
 			return null;
 		}
 	}
@@ -425,11 +428,13 @@ public class Benchmark {
 		}
 
 		@Override
-		public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+		public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
+				throws IOException {
 		}
 
 		@Override
-		public <V> V unmarshall(V value, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+		public <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext)
+				throws IOException {
 			return value;
 		}
 
