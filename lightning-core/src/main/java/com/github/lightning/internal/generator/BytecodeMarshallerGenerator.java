@@ -233,7 +233,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		}
 
 		mv.visitInsn(RETURN);
-		mv.visitMaxs(10, 11);
+		mv.visitMaxs(-1, 12);
 		mv.visitEnd();
 	}
 

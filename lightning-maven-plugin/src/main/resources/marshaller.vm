@@ -32,6 +32,7 @@ import com.github.lightning.metadata.PropertyDescriptor;
 public final class ${className} extends AbstractGeneratedMarshaller {
 
 #foreach( $property in ${properties} )
+	private final PropertyDescriptor ${support.toFinalFieldName("descriptor", $property)};
 	private final Marshaller ${support.toFinalFieldName("marshaller", $property)};
 	private final ValuePropertyAccessor ${support.toFinalFieldName("accessor", $property)};
 #end
@@ -41,8 +42,10 @@ public final class ${className} extends AbstractGeneratedMarshaller {
 		List<PropertyDescriptor> propertyDescriptors) {
 		
 		super(marshalledType, marshallers, serializer, objectInstantiatorFactory);
+#set( $index = 0);
 #foreach( $property in ${properties} )
-
+		${support.toFinalFieldName("descriptor", $property)} = propertyDescriptors.get(${index})
+		
 		PropertyDescriptor ${property.propertyName} = findPropertyDescriptor("${property.propertyName}", propertyDescriptors);
 		Marshaller ${property.propertyName}Marshaller = ${property.propertyName}.getMarshaller();
 		if (${property.propertyName}Marshaller == null) {
@@ -51,10 +54,11 @@ public final class ${className} extends AbstractGeneratedMarshaller {
 		${support.toFinalFieldName("marshaller", $property)} = ${property.propertyName}Marshaller;
 
 		${support.toFinalFieldName("accessor", $property)} = (ValuePropertyAccessor) getPropertyAccessor("${property.propertyName}");
+#set( $index = $index + 1)
 #end	
 	}
 	
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
 		if (isAlreadyMarshalled(value, type, dataOutput, serializationContext)) {
 			return;
 		}
@@ -67,7 +71,7 @@ public final class ${className} extends AbstractGeneratedMarshaller {
 #end
 	}
 	
-	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(V instance, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 #foreach( $property in ${properties} )
 		ValuePropertyAccessor ${property.propertyName}PropertyAccessor = this.${support.toFinalFieldName("accessor", $property)};
 		Class<?> ${property.propertyName}PropertyType = ${property.propertyName}PropertyAccessor.getType();

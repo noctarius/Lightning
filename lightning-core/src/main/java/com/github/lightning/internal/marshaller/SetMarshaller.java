@@ -29,6 +29,7 @@ import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
 import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.internal.CheatPropertyDescriptor;
+import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.PropertyDescriptor;
 
@@ -58,19 +59,25 @@ public class SetMarshaller extends AbstractMarshaller implements TypeBindableMar
 		if (writePossibleNull(value, dataOutput)) {
 			Set<?> set = (Set<?>) value;
 			dataOutput.writeInt(set.size());
+
+			Marshaller marshaller = null;
+			ClassDefinition classDefinition = null;
+			PropertyDescriptor pd = null;
+			if (setType != null) {
+				ensureMarshallerInitialized(serializationContext);
+				marshaller = setTypeMarshaller;
+				Class<?> baseType = TypeUtil.getBaseType(setType);
+				classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(baseType);
+				pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", baseType, marshaller);
+			}
+
 			for (Object entry : set) {
 				if (writePossibleNull(entry, dataOutput)) {
-					Marshaller marshaller;
-					if (setType != null) {
-						ensureMarshallerInitialized(serializationContext);
-						marshaller = setTypeMarshaller;
-					}
-					else {
+					if (setType == null) {
 						marshaller = serializationContext.findMarshaller(entry.getClass());
+						classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getClass());
+						pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", entry.getClass(), marshaller);
 					}
-
-					ClassDefinition classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getClass());
-					PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", entry.getClass(), marshaller);
 
 					dataOutput.writeLong(classDefinition.getId());
 					marshaller.marshall(entry, pd, dataOutput, serializationContext);

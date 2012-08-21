@@ -29,6 +29,7 @@ import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
 import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.internal.CheatPropertyDescriptor;
+import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.PropertyDescriptor;
 
@@ -58,19 +59,25 @@ public class ListMarshaller extends AbstractMarshaller implements TypeBindableMa
 		if (writePossibleNull(value, dataOutput)) {
 			List<?> list = (List<?>) value;
 			dataOutput.writeInt(list.size());
+
+			Marshaller marshaller = null;
+			ClassDefinition classDefinition = null;
+			PropertyDescriptor pd = null;
+			if (listType != null) {
+				ensureMarshallerInitialized(serializationContext);
+				marshaller = listTypeMarshaller;
+				Class<?> baseType = TypeUtil.getBaseType(listType);
+				classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(baseType);
+				pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "List", baseType, marshaller);
+			}
+
 			for (Object entry : list) {
 				if (writePossibleNull(entry, dataOutput)) {
-					Marshaller marshaller;
-					if (listType != null) {
-						ensureMarshallerInitialized(serializationContext);
-						marshaller = listTypeMarshaller;
-					}
-					else {
+					if (listType == null) {
 						marshaller = serializationContext.findMarshaller(entry.getClass());
+						classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getClass());
+						pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "List", entry.getClass(), marshaller);
 					}
-
-					ClassDefinition classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getClass());
-					PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "List", entry.getClass(), marshaller);
 
 					if (classDefinition == null) {
 						throw new SerializerExecutionException("No ClassDefinition found for type " + entry.getClass());

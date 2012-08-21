@@ -21,4 +21,6 @@ public interface MarshallerStrategy {
 
 	Marshaller getMarshaller(Type type, MarshallerContext marshallerContext);
 
+	Marshaller getMarshaller(Type type, MarshallerContext marshallerContext, boolean baseMarshallersOnly);
+
 }

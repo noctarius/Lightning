@@ -30,6 +30,8 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	private final String propertyName;
 	private final String internalSignature;
 	private final String declaringCanonicalClassname;
+	private final Class<?> definedClass;
+	private final Class<?> declaringClass;
 
 	private final PropertyAccessor propertyAccessor;
 	private final Annotation[] annotations;
@@ -43,16 +45,18 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 		this.declaringCanonicalClassname = propertyAccessor.getType().getCanonicalName();
 		this.internalSignature = BeanUtil.buildInternalSignature(propertyName, propertyAccessor);
 		this.annotations = Arrays.copyOf(annotations, annotations.length);
+		this.definedClass = propertyAccessor.getDefinedClass();
+		this.declaringClass = propertyAccessor.getDeclaringClass();
 	}
 
 	@Override
 	public Class<?> getDefinedClass() {
-		return propertyAccessor.getDefinedClass();
+		return definedClass;
 	}
 
 	@Override
 	public Class<?> getDeclaringClass() {
-		return propertyAccessor.getDeclaringClass();
+		return declaringClass;
 	}
 
 	@Override
@@ -99,7 +103,10 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + Arrays.hashCode(annotations);
 		result = prime * result + ((declaringCanonicalClassname == null) ? 0 : declaringCanonicalClassname.hashCode());
+		result = prime * result + ((declaringClass == null) ? 0 : declaringClass.hashCode());
+		result = prime * result + ((definedClass == null) ? 0 : definedClass.hashCode());
 		result = prime * result + ((internalSignature == null) ? 0 : internalSignature.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
@@ -115,11 +122,25 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 		if (getClass() != obj.getClass())
 			return false;
 		InternalPropertyDescriptor other = (InternalPropertyDescriptor) obj;
+		if (!Arrays.equals(annotations, other.annotations))
+			return false;
 		if (declaringCanonicalClassname == null) {
 			if (other.declaringCanonicalClassname != null)
 				return false;
 		}
 		else if (!declaringCanonicalClassname.equals(other.declaringCanonicalClassname))
+			return false;
+		if (declaringClass == null) {
+			if (other.declaringClass != null)
+				return false;
+		}
+		else if (!declaringClass.equals(other.declaringClass))
+			return false;
+		if (definedClass == null) {
+			if (other.definedClass != null)
+				return false;
+		}
+		else if (!definedClass.equals(other.definedClass))
 			return false;
 		if (internalSignature == null) {
 			if (other.internalSignature != null)
@@ -145,7 +166,7 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public String toString() {
 		return "InternalPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature=" + internalSignature
-				+ ", declaringCanonicalClassname=" + declaringCanonicalClassname + ", propertyAccessor=" + propertyAccessor + ", marshaller=" + marshaller
-				+ "]";
+				+ ", declaringCanonicalClassname=" + declaringCanonicalClassname + ", definedClass=" + definedClass + ", declaringClass=" + declaringClass
+				+ ", propertyAccessor=" + propertyAccessor + ", annotations=" + Arrays.toString(annotations) + ", marshaller=" + marshaller + "]";
 	}
 }

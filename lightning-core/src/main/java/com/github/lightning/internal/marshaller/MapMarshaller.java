@@ -30,6 +30,7 @@ import com.github.lightning.TypeBindableMarshaller;
 import com.github.lightning.base.AbstractMarshaller;
 import com.github.lightning.exceptions.SerializerExecutionException;
 import com.github.lightning.internal.CheatPropertyDescriptor;
+import com.github.lightning.internal.util.TypeUtil;
 import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.PropertyDescriptor;
 
@@ -59,35 +60,51 @@ public class MapMarshaller extends AbstractMarshaller implements TypeBindableMar
 	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
 			throws IOException {
 
-		writePossibleNull(value, dataOutput);
+		if (writePossibleNull(value, dataOutput)) {
+			Map<?, ?> map = (Map<?, ?>) value;
+			dataOutput.writeInt(map.size());
 
-		Map<?, ?> map = (Map<?, ?>) value;
-		dataOutput.writeInt(map.size());
-		for (Entry<?, ?> entry : map.entrySet()) {
-			Marshaller keyMarshaller;
-			Marshaller valueMarshaller;
+			Marshaller keyMarshaller = null;
+			ClassDefinition keyClassDefinition = null;
+			PropertyDescriptor keyPd = null;
+			Marshaller valueMarshaller = null;
+			ClassDefinition valueClassDefinition = null;
+			PropertyDescriptor valuePd = null;
 			if (mapKeyType != null) {
 				ensureMarshallersInitialized(serializationContext);
 				keyMarshaller = mapKeyTypeMarshaller;
+				Class<?> baseType = TypeUtil.getBaseType(mapKeyType);
+				keyClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(baseType);
+				keyPd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Key", baseType, keyMarshaller);
+
 				valueMarshaller = mapValueTypeMarshaller;
-			}
-			else {
-				keyMarshaller = entry.getKey() != null ? serializationContext.findMarshaller(entry.getKey().getClass()) : null;
-				valueMarshaller = entry.getValue() != null ? serializationContext.findMarshaller(entry.getValue().getClass()) : null;
-			}
-
-			if (writePossibleNull(entry.getKey(), dataOutput)) {
-				ClassDefinition keyClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getKey().getClass());
-				PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Key", entry.getClass(), keyMarshaller);
-				dataOutput.writeLong(keyClassDefinition.getId());
-				keyMarshaller.marshall(entry.getKey(), pd, dataOutput, serializationContext);
+				baseType = TypeUtil.getBaseType(mapValueType);
+				valueClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(baseType);
+				valuePd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Value", baseType, valueMarshaller);
 			}
 
-			if (writePossibleNull(entry.getValue(), dataOutput)) {
-				ClassDefinition valueClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getValue().getClass());
-				PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Value", entry.getClass(), valueMarshaller);
-				dataOutput.writeLong(valueClassDefinition.getId());
-				valueMarshaller.marshall(entry.getValue(), pd, dataOutput, serializationContext);
+			for (Entry<?, ?> entry : map.entrySet()) {
+				if (mapKeyType == null) {
+					keyMarshaller = entry.getKey() != null ? serializationContext.findMarshaller(entry.getKey().getClass()) : null;
+					keyClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getKey().getClass());
+					keyPd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Key", entry.getKey().getClass(), keyMarshaller);
+
+					if (entry.getValue() != null) {
+						valueMarshaller = entry.getValue() != null ? serializationContext.findMarshaller(entry.getValue().getClass()) : null;
+						valueClassDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getValue().getClass());
+						valuePd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Value", entry.getValue().getClass(), valueMarshaller);
+					}
+				}
+
+				if (writePossibleNull(entry.getKey(), dataOutput)) {
+					dataOutput.writeLong(keyClassDefinition.getId());
+					keyMarshaller.marshall(entry.getKey(), keyPd, dataOutput, serializationContext);
+				}
+
+				if (writePossibleNull(entry.getValue(), dataOutput)) {
+					dataOutput.writeLong(valueClassDefinition.getId());
+					valueMarshaller.marshall(entry.getValue(), valuePd, dataOutput, serializationContext);
+				}
 			}
 		}
 	}

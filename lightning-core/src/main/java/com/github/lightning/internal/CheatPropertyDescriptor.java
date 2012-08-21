@@ -18,7 +18,6 @@ package com.github.lightning.internal;
 import java.lang.annotation.Annotation;
 
 import com.github.lightning.Marshaller;
-import com.github.lightning.internal.util.BeanUtil;
 import com.github.lightning.internal.util.StringUtil;
 import com.github.lightning.metadata.AccessorType;
 import com.github.lightning.metadata.PropertyAccessor;
@@ -66,8 +65,8 @@ public class CheatPropertyDescriptor implements PropertyDescriptor {
 			}
 		};
 
-		this.declaringCanonicalClassname = propertyAccessor.getType().getCanonicalName();
-		this.internalSignature = BeanUtil.buildInternalSignature(propertyName, propertyAccessor);
+		this.declaringCanonicalClassname = null;
+		this.internalSignature = null;
 	}
 
 	@Override

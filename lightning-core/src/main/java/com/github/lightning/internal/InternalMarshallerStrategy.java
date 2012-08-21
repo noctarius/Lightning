@@ -95,12 +95,17 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 
 	@Override
 	public Marshaller getMarshaller(Type type, MarshallerContext marshallerContext) {
+		return getMarshaller(type, marshallerContext, false);
+	}
+
+	@Override
+	public Marshaller getMarshaller(Type type, MarshallerContext marshallerContext, boolean baseMarshallersOnly) {
 		Class<?> rawType = TypeUtil.getBaseType(type);
 		if (Streamed.class.isAssignableFrom(rawType)) {
 			return streamedMarshaller;
 		}
 
-		if (Externalizable.class.isAssignableFrom(rawType)) {
+		if (!baseMarshallersOnly && Externalizable.class.isAssignableFrom(rawType)) {
 			return externalizableMarshaller;
 		}
 
@@ -117,7 +122,7 @@ public class InternalMarshallerStrategy implements MarshallerStrategy {
 			}
 		}
 
-		if (Serializable.class.isAssignableFrom(rawType) && !rawType.isArray()) {
+		if (!baseMarshallersOnly && Serializable.class.isAssignableFrom(rawType) && !rawType.isArray()) {
 			return serializableMarshaller;
 		}
 

@@ -121,7 +121,7 @@ public class InternalSerializationContext implements SerializationContext {
 	@Override
 	public Marshaller findMarshaller(Type type) {
 		Class<?> rawType = TypeUtil.getBaseType(type);
-		Marshaller marshaller = marshallerStrategy.getMarshaller(rawType, marshallerContext);
+		Marshaller marshaller = marshallerStrategy.getMarshaller(rawType, marshallerContext, false);
 
 		if (marshaller instanceof TypeBindableMarshaller) {
 			Type[] typeArguments = TypeUtil.getTypeArgument(type);

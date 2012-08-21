@@ -98,7 +98,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		// Visit all property definitions
 		for (Entry<PropertyDescriptor, Marshaller> entry : propertyMarshallers.entrySet()) {
 			visitor.visitPropertyDescriptor(entry.getKey(), entry.getValue());
-
+			
 			Class<?> type = entry.getKey().getType();
 			if (type.isPrimitive() || type.isArray() && type.getComponentType().isPrimitive()) {
 				continue;
@@ -344,7 +344,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 
 		private void build() {
 			if (marshaller == null) {
-				marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(property.getType(), marshallerContext);
+				marshaller = definitionBuildingContext.getMarshallerStrategy().getMarshaller(property.getType(), marshallerContext, true);
 			}
 			propertyMarshallers.put(definitionBuildingContext.getPropertyDescriptorFactory().byField(property, marshaller, declaringClass), marshaller);
 		}
