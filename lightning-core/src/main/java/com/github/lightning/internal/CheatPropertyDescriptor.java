@@ -18,7 +18,6 @@ package com.github.lightning.internal;
 import java.lang.annotation.Annotation;
 
 import com.github.lightning.Marshaller;
-import com.github.lightning.internal.util.StringUtil;
 import com.github.lightning.metadata.AccessorType;
 import com.github.lightning.metadata.PropertyAccessor;
 import com.github.lightning.metadata.PropertyDescriptor;
@@ -34,7 +33,7 @@ public class CheatPropertyDescriptor implements PropertyDescriptor {
 	private final Marshaller marshaller;
 
 	public CheatPropertyDescriptor(String propertyName, final Class<?> type, Marshaller marshaller) {
-		this.name = StringUtil.toUpperCamelCase(propertyName);
+		this.name = propertyName;
 		this.propertyName = propertyName;
 		this.marshaller = marshaller;
 		this.propertyAccessor = new PropertyAccessor() {

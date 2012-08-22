@@ -15,47 +15,46 @@
  */
 package com.github.lightning.internal;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.carrotsearch.hppc.LongObjectMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
-import com.github.lightning.Streamed;
 import com.github.lightning.internal.util.ClassUtil;
 import com.github.lightning.metadata.ClassDefinition;
 import com.github.lightning.metadata.ClassDefinitionContainer;
 
-class InternalClassDefinitionContainer implements ClassDefinitionContainer, Streamed, Externalizable {
+class InternalClassDefinitionContainer implements ClassDefinitionContainer, Serializable {
 
-	private final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
+	private static final long serialVersionUID = -8496850178968208567L;
+
+	private final ClassDefinition[] classDefinitions;
 	private final LongObjectMap<ClassDefinition> classDefinitionsMappings;
 
 	// Serialization
-	public InternalClassDefinitionContainer() {
-		classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>();
+	private InternalClassDefinitionContainer(ClassDefinition[] classDefinitions) {
+		this.classDefinitions = classDefinitions;
+		this.classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>();
 	}
 
 	InternalClassDefinitionContainer(Set<ClassDefinition> classDefinitions) {
-		this.classDefinitions.addAll(classDefinitions);
-		classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>(classDefinitions.size());
-		initMappings(classDefinitions);
+		this.classDefinitions = classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]);
+		this.classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>(classDefinitions.size());
+		initMappings(this.classDefinitions);
 	}
 
 	@Override
 	public Collection<ClassDefinition> getClassDefinitions() {
-		return Collections.unmodifiableCollection(classDefinitions);
+		return Arrays.asList(Arrays.copyOf(classDefinitions, classDefinitions.length));
 	}
 
 	@Override
@@ -100,68 +99,89 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Stre
 		return null;
 	}
 
-	@Override
-	public void writeTo(DataOutput dataOutput) throws IOException {
-		List<ClassDefinition> selectedClassDefinitions = new ArrayList<ClassDefinition>();
-		for (ClassDefinition classDefinition : classDefinitions) {
-			if (classDefinition.getId() < 1000) {
-				continue;
-			}
-
-			selectedClassDefinitions.add(classDefinition);
-		}
-
-		dataOutput.writeInt(selectedClassDefinitions.size());
-		for (ClassDefinition classDefinition : selectedClassDefinitions) {
-			final long id = classDefinition.getId();
-			final byte[] checksum = classDefinition.getChecksum();
-			final String canonicalName = classDefinition.getCanonicalName();
-			final long serialVersionUID = classDefinition.getSerialVersionUID();
-
-			dataOutput.writeLong(id);
-			dataOutput.writeUTF(canonicalName);
-			dataOutput.write(checksum);
-			dataOutput.writeLong(serialVersionUID);
-		}
-	}
-
-	@Override
-	public void readFrom(DataInput dataInput) throws IOException {
-		classDefinitions.addAll(Arrays.asList(ClassUtil.CLASS_DESCRIPTORS));
-
-		int size = dataInput.readInt();
-		for (int i = 0; i < size; i++) {
-			final long id = dataInput.readLong();
-			final String canonicalName = dataInput.readUTF();
-			final byte[] checksum = new byte[20];
-			dataInput.readFully(checksum);
-			final long serialVersionUID = dataInput.readLong();
-
-			try {
-				Class<?> type = ClassUtil.loadClass(canonicalName);
-				classDefinitions.add(new InternalClassDefinition(id, type, checksum, serialVersionUID));
-			}
-			catch (ClassNotFoundException e) {
-				throw new IOException("Class " + canonicalName + " could not be loaded", e);
-			}
-		}
-
-		initMappings(classDefinitions);
-	}
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		writeTo(out);
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		readFrom(in);
-	}
-
-	private void initMappings(Set<ClassDefinition> classDefinitions) {
+	private void initMappings(ClassDefinition[] classDefinitions) {
 		for (ClassDefinition classDefinition : classDefinitions) {
 			classDefinitionsMappings.put(classDefinition.getId(), classDefinition);
+		}
+	}
+
+	Object writeReplace() {
+		return new InternalClassDefinitionProxy(this);
+	}
+
+	/**
+	 * SerializationProxy
+	 */
+	private static class InternalClassDefinitionProxy implements Externalizable {
+
+		private static final long serialVersionUID = 3127589236225504001L;
+
+		private final InternalClassDefinitionContainer classDefinitionContainer;
+		private ClassDefinition[] classDefinitions;
+
+		private InternalClassDefinitionProxy() {
+			this.classDefinitionContainer = null;
+		}
+
+		private InternalClassDefinitionProxy(InternalClassDefinitionContainer classDefinitionContainer) {
+			this.classDefinitionContainer = classDefinitionContainer;
+		}
+
+		@Override
+		public void writeExternal(ObjectOutput out) throws IOException {
+			List<ClassDefinition> selectedClassDefinitions = new ArrayList<ClassDefinition>();
+			for (ClassDefinition classDefinition : classDefinitionContainer.classDefinitions) {
+				if (classDefinition.getId() < 1000) {
+					continue;
+				}
+
+				selectedClassDefinitions.add(classDefinition);
+			}
+
+			out.writeInt(selectedClassDefinitions.size());
+			for (ClassDefinition classDefinition : selectedClassDefinitions) {
+				final long id = classDefinition.getId();
+				final byte[] checksum = classDefinition.getChecksum();
+				final String canonicalName = classDefinition.getCanonicalName();
+				final long serialVersionUID = classDefinition.getSerialVersionUID();
+
+				out.writeLong(id);
+				out.writeUTF(canonicalName);
+				out.write(checksum);
+				out.writeLong(serialVersionUID);
+			}
+		}
+
+		@Override
+		public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+			int size = in.readInt();
+
+			classDefinitions = new ClassDefinition[size + ClassUtil.CLASS_DESCRIPTORS.length];
+			for (int i = 0; i < ClassUtil.CLASS_DESCRIPTORS.length; i++) {
+				classDefinitions[i] = ClassUtil.CLASS_DESCRIPTORS[i];
+			}
+
+			for (int i = 0; i < size; i++) {
+				final long id = in.readLong();
+				final String canonicalName = in.readUTF();
+				final byte[] checksum = new byte[20];
+				in.readFully(checksum);
+				final long serialVersionUID = in.readLong();
+
+				try {
+					Class<?> type = ClassUtil.loadClass(canonicalName);
+					classDefinitions[i + ClassUtil.CLASS_DESCRIPTORS.length] = new InternalClassDefinition(id, type, checksum, serialVersionUID);
+				}
+				catch (ClassNotFoundException e) {
+					throw new IOException("Class " + canonicalName + " could not be loaded", e);
+				}
+			}
+		}
+
+		private Object readResolve() {
+			InternalClassDefinitionContainer classDefinitionContainer = new InternalClassDefinitionContainer(classDefinitions);
+			classDefinitionContainer.initMappings(classDefinitions);
+			return classDefinitionContainer;
 		}
 	}
 }
