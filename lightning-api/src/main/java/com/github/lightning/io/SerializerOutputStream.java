@@ -17,14 +17,17 @@ package com.github.lightning.io;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.OutputStream;
 
 import com.github.lightning.Serializer;
 
-public class SerializerOutputStream extends DataOutputStream implements ObjectOutput {
+public class SerializerOutputStream extends FilterOutputStream implements ObjectOutput {
 
 	private final Serializer serializer;
+	private int written = 0;
 
 	public SerializerOutputStream(OutputStream out, Serializer serializer) {
 		super(out);
@@ -34,5 +37,160 @@ public class SerializerOutputStream extends DataOutputStream implements ObjectOu
 	@Override
 	public void writeObject(Object object) {
 		serializer.serialize(object, (DataOutput) this);
+	}
+
+	@Override
+	public synchronized void write(int b) throws IOException {
+		out.write(b);
+		increaseWritten(1);
+	}
+
+	@Override
+	public synchronized void write(byte[] b, int off, int len) throws IOException {
+		out.write(b, off, len);
+		increaseWritten(len);
+	}
+
+	@Override
+	public void writeBoolean(boolean v) throws IOException {
+		out.write(v ? 1 : 0);
+	}
+
+	@Override
+	public void writeByte(int v) throws IOException {
+		out.write(v);
+		increaseWritten(1);
+	}
+
+	@Override
+	public void writeShort(int v) throws IOException {
+		out.write((v >>> 8) & 0xFF);
+		out.write((v >>> 0) & 0xFF);
+		increaseWritten(2);
+	}
+
+	@Override
+	public void writeChar(int v) throws IOException {
+		out.write((v >>> 8) & 0xFF);
+		out.write((v >>> 0) & 0xFF);
+		increaseWritten(2);
+	}
+
+	@Override
+	public void writeInt(int v) throws IOException {
+		out.write((v >>> 24) & 0xFF);
+		out.write((v >>> 16) & 0xFF);
+		out.write((v >>> 8) & 0xFF);
+		out.write((v >>> 0) & 0xFF);
+		increaseWritten(4);
+	}
+
+	@Override
+	public void writeLong(long v) throws IOException {
+		byte[] buffer = new byte[8];
+		buffer[0] = (byte) (v >>> 56);
+		buffer[1] = (byte) (v >>> 48);
+		buffer[2] = (byte) (v >>> 40);
+		buffer[3] = (byte) (v >>> 32);
+		buffer[4] = (byte) (v >>> 24);
+		buffer[5] = (byte) (v >>> 16);
+		buffer[6] = (byte) (v >>> 8);
+		buffer[7] = (byte) (v >>> 0);
+		out.write(buffer, 0, 8);
+		increaseWritten(8);
+	}
+
+	@Override
+	public void writeFloat(float v) throws IOException {
+		writeInt(Float.floatToIntBits(v));
+	}
+
+	@Override
+	public void writeDouble(double v) throws IOException {
+		writeLong(Double.doubleToLongBits(v));
+	}
+
+	@Override
+	public void writeBytes(String s) throws IOException {
+		int len = s.length();
+		for (int i = 0; i < len; i++) {
+			out.write((byte) s.charAt(i));
+		}
+		increaseWritten(len);
+	}
+
+	@Override
+	public void writeChars(String s) throws IOException {
+		int len = s.length();
+		for (int i = 0; i < len; i++) {
+			int v = s.charAt(i);
+			out.write((v >>> 8) & 0xFF);
+			out.write((v >>> 0) & 0xFF);
+		}
+		increaseWritten(len * 2);
+	}
+
+	@Override
+	public void writeUTF(String s) throws IOException {
+		if (value == null) {
+			writeByte(0x80); // 0 means null, bit 8 means UTF8.
+			return;
+		}
+		int charCount = value.length();
+		if (charCount == 0) {
+			writeByte(1 | 0x80); // 1 means empty string, bit 8 means UTF8.
+			return;
+		}
+		// Detect ASCII.
+		boolean ascii = false;
+		if (charCount > 1 && charCount < 64) {
+			ascii = true;
+			for (int i = 0; i < charCount; i++) {
+				int c = value.charAt(i);
+				if (c > 127) {
+					ascii = false;
+					break;
+				}
+			}
+		}
+		if (ascii) {
+			if (capacity - position < charCount)
+				writeAscii_slow(value, charCount);
+			else {
+				value.getBytes(0, charCount, buffer, position);
+				position += charCount;
+			}
+			buffer[position - 1] |= 0x80;
+		}
+		else {
+			writeUtf8Length(charCount + 1);
+			int charIndex = 0;
+			if (capacity - position >= charCount) {
+				// Try to write 8 bit chars.
+				byte[] buffer = this.buffer;
+				int position = this.position;
+				for (; charIndex < charCount; charIndex++) {
+					int c = value.charAt(charIndex);
+					if (c > 127)
+						break;
+					buffer[position++] = (byte) c;
+				}
+				this.position = position;
+			}
+			if (charIndex < charCount)
+				writeString_slow(value, charCount, charIndex);
+		}
+	}
+
+	public int size() {
+		return written;
+	}
+
+	private void increaseWritten(int count) {
+		int temp = written + count;
+		if (temp < 0) {
+			temp = Integer.MAX_VALUE;
+		}
+		written = temp;
 	}
 }
