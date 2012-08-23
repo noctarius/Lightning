@@ -119,7 +119,8 @@ class InternalClassDefinitionContainer implements ClassDefinitionContainer, Seri
 		private final InternalClassDefinitionContainer classDefinitionContainer;
 		private ClassDefinition[] classDefinitions;
 
-		private InternalClassDefinitionProxy() {
+		@SuppressWarnings("unused")
+		public InternalClassDefinitionProxy() {
 			this.classDefinitionContainer = null;
 		}
 
