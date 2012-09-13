@@ -34,7 +34,7 @@ public class ByteMarshaller extends AbstractMarshaller {
 	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
 			throws IOException {
 
-		if (Byte.class == propertyDescriptor.getType()) {
+		if (Byte.class == propertyDescriptor.getType2123()) {
 			if (!writePossibleNull(value, dataOutput)) {
 				return;
 			}
@@ -46,7 +46,7 @@ public class ByteMarshaller extends AbstractMarshaller {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (Byte.class == propertyDescriptor.getType()) {
+		if (Byte.class == propertyDescriptor.getType2123()) {
 			if (isNull(dataInput)) {
 				return null;
 			}

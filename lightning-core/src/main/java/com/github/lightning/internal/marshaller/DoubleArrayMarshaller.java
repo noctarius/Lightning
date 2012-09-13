@@ -38,7 +38,7 @@ public class DoubleArrayMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		if (double[].class == propertyDescriptor.getType()) {
+		if (double[].class == propertyDescriptor.getType2123()) {
 			double[] array = (double[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -64,7 +64,7 @@ public class DoubleArrayMarshaller extends AbstractMarshaller {
 		}
 
 		int size = dataInput.readInt();
-		if (double[].class == propertyDescriptor.getType()) {
+		if (double[].class == propertyDescriptor.getType2123()) {
 			double[] array = new double[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readDouble();

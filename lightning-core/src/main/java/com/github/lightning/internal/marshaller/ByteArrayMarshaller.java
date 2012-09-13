@@ -38,7 +38,7 @@ public class ByteArrayMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		if (byte[].class == propertyDescriptor.getType()) {
+		if (byte[].class == propertyDescriptor.getType2123()) {
 			byte[] array = (byte[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -64,7 +64,7 @@ public class ByteArrayMarshaller extends AbstractMarshaller {
 		}
 
 		int size = dataInput.readInt();
-		if (byte[].class == propertyDescriptor.getType()) {
+		if (byte[].class == propertyDescriptor.getType2123()) {
 			byte[] array = new byte[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readByte();

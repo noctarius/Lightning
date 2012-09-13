@@ -49,7 +49,7 @@ class ObjenesisDelegatingMarshaller implements Marshaller {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		V value = (V) objectInstantiatorFactory.newInstance(propertyDescriptor.getType());
+		V value = (V) objectInstantiatorFactory.newInstance(propertyDescriptor.getType2123());
 		return delegatedMarshaller.unmarshall(value, propertyDescriptor, dataInput, serializationContext);
 	}
 

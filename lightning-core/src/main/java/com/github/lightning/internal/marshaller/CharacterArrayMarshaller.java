@@ -38,7 +38,7 @@ public class CharacterArrayMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		if (char[].class == propertyDescriptor.getType()) {
+		if (char[].class == propertyDescriptor.getType2123()) {
 			char[] array = (char[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -64,7 +64,7 @@ public class CharacterArrayMarshaller extends AbstractMarshaller {
 		}
 
 		int size = dataInput.readInt();
-		if (char[].class == propertyDescriptor.getType()) {
+		if (char[].class == propertyDescriptor.getType2123()) {
 			char[] array = new char[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readChar();

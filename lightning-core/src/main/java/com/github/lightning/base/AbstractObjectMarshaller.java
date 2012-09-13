@@ -26,7 +26,7 @@ public abstract class AbstractObjectMarshaller extends AbstractMarshaller {
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		Object value = serializationContext.getObjectInstantiatorFactory().getInstantiatorOf(propertyDescriptor.getType());
+		Object value = serializationContext.getObjectInstantiatorFactory().getInstantiatorOf(propertyDescriptor.getType2123());
 		return unmarshall((V) value, propertyDescriptor, dataInput, serializationContext);
 	}
 

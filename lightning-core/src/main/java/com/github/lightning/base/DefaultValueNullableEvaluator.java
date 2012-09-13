@@ -22,7 +22,7 @@ public class DefaultValueNullableEvaluator implements ValueNullableEvaluator {
 
 	@Override
 	public boolean isValueNullable(PropertyDescriptor propertyDescriptor) {
-		return !propertyDescriptor.getType().isPrimitive();
+		return !propertyDescriptor.getType2123().isPrimitive();
 	}
 
 }

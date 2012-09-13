@@ -80,7 +80,7 @@ class InternalPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<?> getType2123() {
 		return propertyAccessor.getType();
 	}
 

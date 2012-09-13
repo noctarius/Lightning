@@ -38,7 +38,7 @@ public class LongArrayMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		if (long[].class == propertyDescriptor.getType()) {
+		if (long[].class == propertyDescriptor.getType2123()) {
 			long[] array = (long[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -64,7 +64,7 @@ public class LongArrayMarshaller extends AbstractMarshaller {
 		}
 
 		int size = dataInput.readInt();
-		if (long[].class == propertyDescriptor.getType()) {
+		if (long[].class == propertyDescriptor.getType2123()) {
 			long[] array = new long[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readLong();

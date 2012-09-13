@@ -61,7 +61,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 	@SuppressWarnings("unchecked")
 	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		if (serializationContext.getSerializationStrategy() == SerializationStrategy.SizeOptimized) {
-			if (ClassUtil.isReferenceCapable(propertyDescriptor.getType())) {
+			if (ClassUtil.isReferenceCapable(propertyDescriptor.getType2123())) {
 				long referenceId = dataInput.readLong();
 				V instance;
 				if (containsReferenceId(referenceId, serializationContext)) {
@@ -78,7 +78,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 		}
 
 		V value = null;
-		if (!propertyDescriptor.getType().isArray()) {
+		if (!propertyDescriptor.getType2123().isArray()) {
 			value = (V) newInstance();
 		}
 
@@ -136,7 +136,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 			return propertyDescriptor.getMarshaller();
 		}
 
-		Marshaller marshaller = marshallers.get(propertyDescriptor.getType());
+		Marshaller marshaller = marshallers.get(propertyDescriptor.getType2123());
 		if (marshaller != null) {
 			return marshaller;
 		}
@@ -175,7 +175,7 @@ public abstract class AbstractGeneratedMarshaller implements Marshaller {
 
 		@Override
 		public boolean acceptType(Class<?> type) {
-			return marshalledProperty.getType().isAssignableFrom(type);
+			return marshalledProperty.getType2123().isAssignableFrom(type);
 		}
 
 		@Override

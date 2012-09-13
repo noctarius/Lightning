@@ -110,7 +110,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR, null, null);
 			fv.visitEnd();
 
-			if (propertyDescriptor.getType().isArray() && !propertyDescriptor.getType().getComponentType().isPrimitive()) {
+			if (propertyDescriptor.getType2123().isArray() && !propertyDescriptor.getType2123().getComponentType().isPrimitive()) {
 				// Write ComponentType PropertyDescriptor field
 				fv = cw.visitField(ACC_FINAL & ACC_PRIVATE, toFinalFieldName("component", propertyDescriptor), CHEATINGPROPERTYDESCRIPTOR_CLASS_DESCRIPTOR,
 						null, null);
@@ -165,7 +165,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 			mv.visitTypeInsn(CHECKCAST, PROPERTYDESCRIPTOR_CLASS_INTERNAL_TYPE);
 			mv.visitFieldInsn(PUTFIELD, className, toFinalFieldName("descriptor", propertyDescriptor), PROPERTYDESCRIPTOR_CLASS_DESCRIPTOR);
 
-			if (propertyDescriptor.getType().isArray() && !propertyDescriptor.getType().getComponentType().isPrimitive()) {
+			if (propertyDescriptor.getType2123().isArray() && !propertyDescriptor.getType2123().getComponentType().isPrimitive()) {
 				Label labelNonNull = new Label();
 
 				// Get type from PropertyAccessor
@@ -277,7 +277,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		}
 
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			if (propertyDescriptor.getType().isArray() && !propertyDescriptor.getType().getComponentType().isPrimitive()) {
+			if (propertyDescriptor.getType2123().isArray() && !propertyDescriptor.getType2123().getComponentType().isPrimitive()) {
 				visitObjectArrayPropertyAccessorRead(mv, className, propertyDescriptor);
 			}
 			else {
@@ -294,7 +294,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 	}
 
 	private void visitValuePropertyAccessorRead(MethodVisitor mv, String className, PropertyDescriptor propertyDescriptor) {
-		Class<?> propertyType = propertyDescriptor.getType();
+		Class<?> propertyType = propertyDescriptor.getType2123();
 
 		// Load this to method stack
 		mv.visitVarInsn(ALOAD, 0);
@@ -334,7 +334,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 	}
 
 	private void visitObjectArrayPropertyAccessorRead(MethodVisitor mv, String className, PropertyDescriptor propertyDescriptor) {
-		Class<?> propertyType = propertyDescriptor.getType();
+		Class<?> propertyType = propertyDescriptor.getType2123();
 
 		// Load this to method stack
 		mv.visitVarInsn(ALOAD, 0);
@@ -422,7 +422,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "unmarshall", MARSHALLER_UNMARSHALL_SIGNATURE, null, MARSHALLER_EXCEPTIONS);
 
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			if (propertyDescriptor.getType().isArray() && !propertyDescriptor.getType().getComponentType().isPrimitive()) {
+			if (propertyDescriptor.getType2123().isArray() && !propertyDescriptor.getType2123().getComponentType().isPrimitive()) {
 				visitObjectArrayPropertyAccessorWrite(mv, className, propertyDescriptor);
 			}
 			else {
@@ -442,7 +442,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 	}
 
 	private void visitValuePropertyAccessorWrite(MethodVisitor mv, String className, PropertyDescriptor propertyDescriptor) {
-		Class<?> propertyType = propertyDescriptor.getType();
+		Class<?> propertyType = propertyDescriptor.getType2123();
 
 		// Load this to method stack
 		mv.visitVarInsn(ALOAD, 0);
@@ -496,7 +496,7 @@ public class BytecodeMarshallerGenerator implements Opcodes, GeneratorConstants,
 	}
 
 	private void visitObjectArrayPropertyAccessorWrite(MethodVisitor mv, String className, PropertyDescriptor propertyDescriptor) {
-		Class<?> propertyType = propertyDescriptor.getType();
+		Class<?> propertyType = propertyDescriptor.getType2123();
 		Class<?> componentType = propertyType.getComponentType();
 
 		// Read size

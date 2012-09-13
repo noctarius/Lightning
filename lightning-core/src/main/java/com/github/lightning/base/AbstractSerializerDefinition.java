@@ -59,9 +59,9 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 	private AbstractSerializerDefinition parent = null;
 
 	@Override
-	public final void configure(DefinitionBuildingContext definitionBuildingContext, ObjectInstantiatorFactory objectInstantiatorFactory) {
+	public final void configure(DefinitionBuildingContext definitionBuildingContext2, ObjectInstantiatorFactory objectInstantiatorFactory) {
 		// Save PropertyDescriptorFactory for later use in configure()
-		this.definitionBuildingContext = definitionBuildingContext;
+		this.definitionBuildingContext = definitionBuildingContext2;
 
 		// Save ObjectInstantiatorFactory for later use in configure()
 		this.objectInstantiatorFactory = objectInstantiatorFactory;
@@ -99,7 +99,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 		for (Entry<PropertyDescriptor, Marshaller> entry : propertyMarshallers.entrySet()) {
 			visitor.visitPropertyDescriptor(entry.getKey(), entry.getValue());
 			
-			Class<?> type = entry.getKey().getType();
+			Class<?> type = entry.getKey().getType2123();
 			if (type.isPrimitive() || type.isArray() && type.getComponentType().isPrimitive()) {
 				continue;
 			}
@@ -284,7 +284,7 @@ public abstract class AbstractSerializerDefinition implements SerializerDefiniti
 					definitionBuildingContext.getMarshallerStrategy(), marshallers, definitionBuildingContext.getPropertyDescriptorFactory());
 
 			for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-				Class<?> fieldType = propertyDescriptor.getType();
+				Class<?> fieldType = propertyDescriptor.getType2123();
 				Marshaller marshaller = propertyDescriptor.getMarshaller();
 				visitor.visitAnnotatedAttribute(propertyDescriptor, marshaller);
 

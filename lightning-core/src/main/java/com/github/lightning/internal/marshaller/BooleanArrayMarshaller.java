@@ -38,7 +38,7 @@ public class BooleanArrayMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		if (boolean[].class == propertyDescriptor.getType()) {
+		if (boolean[].class == propertyDescriptor.getType2123()) {
 			boolean[] array = (boolean[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -64,7 +64,7 @@ public class BooleanArrayMarshaller extends AbstractMarshaller {
 		}
 
 		int size = dataInput.readInt();
-		if (boolean[].class == propertyDescriptor.getType()) {
+		if (boolean[].class == propertyDescriptor.getType2123()) {
 			boolean[] array = new boolean[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readBoolean();

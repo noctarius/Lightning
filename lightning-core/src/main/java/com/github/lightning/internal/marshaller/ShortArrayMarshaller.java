@@ -38,7 +38,7 @@ public class ShortArrayMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		if (short[].class == propertyDescriptor.getType()) {
+		if (short[].class == propertyDescriptor.getType2123()) {
 			short[] array = (short[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -64,7 +64,7 @@ public class ShortArrayMarshaller extends AbstractMarshaller {
 		}
 
 		int size = dataInput.readInt();
-		if (short[].class == propertyDescriptor.getType()) {
+		if (short[].class == propertyDescriptor.getType2123()) {
 			short[] array = new short[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readShort();

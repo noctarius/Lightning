@@ -38,7 +38,7 @@ public class EnumMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		dataOutput.writeLong(serializationContext.getClassDefinitionContainer().getClassDefinitionByType(propertyDescriptor.getType()).getId());
+		dataOutput.writeLong(serializationContext.getClassDefinitionContainer().getClassDefinitionByType(propertyDescriptor.getType2123()).getId());
 		dataOutput.writeInt(((Enum<?>) value).ordinal());
 	}
 

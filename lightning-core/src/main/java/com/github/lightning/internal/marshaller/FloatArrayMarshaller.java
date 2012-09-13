@@ -38,7 +38,7 @@ public class FloatArrayMarshaller extends AbstractMarshaller {
 			return;
 		}
 
-		if (float[].class == propertyDescriptor.getType()) {
+		if (float[].class == propertyDescriptor.getType2123()) {
 			float[] array = (float[]) value;
 			dataOutput.writeInt(array.length);
 
@@ -64,7 +64,7 @@ public class FloatArrayMarshaller extends AbstractMarshaller {
 		}
 
 		int size = dataInput.readInt();
-		if (float[].class == propertyDescriptor.getType()) {
+		if (float[].class == propertyDescriptor.getType2123()) {
 			float[] array = new float[size];
 			for (int i = 0; i < size; i++) {
 				array[i] = dataInput.readFloat();
