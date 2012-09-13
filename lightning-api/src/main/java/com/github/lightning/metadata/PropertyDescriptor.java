@@ -33,7 +33,7 @@ public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
 
 	String getPropertyName();
 
-	Class<?> getType();
+	Class<?> getType2123();
 
 	String getInternalSignature();
 
