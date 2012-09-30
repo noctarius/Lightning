@@ -18,10 +18,11 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings( "serial" )
 public class ClassDefinitionInconsistentException
     extends RuntimeException
 {
+
+    private static final long serialVersionUID = -1585228404035281265L;
 
     public ClassDefinitionInconsistentException()
     {

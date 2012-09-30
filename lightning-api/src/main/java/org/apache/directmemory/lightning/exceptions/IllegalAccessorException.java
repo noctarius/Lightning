@@ -18,10 +18,11 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings( "serial" )
 public class IllegalAccessorException
     extends RuntimeException
 {
+
+    private static final long serialVersionUID = 4787626329337667393L;
 
     public IllegalAccessorException()
     {

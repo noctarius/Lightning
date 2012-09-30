@@ -18,10 +18,11 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings( "serial" )
 public class SerializerDefinitionException
     extends RuntimeException
 {
+
+    private static final long serialVersionUID = -5334852575035142159L;
 
     public SerializerDefinitionException()
     {

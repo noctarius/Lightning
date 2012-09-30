@@ -18,10 +18,11 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings( "serial" )
 public class SerializerMarshallerGeneratorException
     extends RuntimeException
 {
+
+    private static final long serialVersionUID = 3794029259705664064L;
 
     public SerializerMarshallerGeneratorException()
     {
