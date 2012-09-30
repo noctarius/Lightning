@@ -21,7 +21,7 @@ under the License.
 	<pluginExecutions>
 		<pluginExecution>
 			<pluginExecutionFilter>
-				<groupId>com.github.lightning</groupId>
+				<groupId>org.apache.directmemory.lightning</groupId>
 				<artifactId>lightning-maven-plugin</artifactId>
 				<goals>
 					<goal>generate</goal>

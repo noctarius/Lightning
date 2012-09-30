@@ -25,7 +25,7 @@ under the License.
 
 	<parent>
 		<artifactId>lightning-reactor</artifactId>
-		<groupId>com.github.lightning</groupId>
+		<groupId>org.apache.directmemory.lightning</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
@@ -88,15 +88,15 @@ under the License.
 							<rules>
 								<rule>
 									<pattern>com.carrotsearch.**</pattern>
-									<result>com.github.lightning.internal.bundle.@1</result>
+									<result>org.apache.directmemory.lightning.internal.bundle.@1</result>
 								</rule>
 								<rule>
 									<pattern>org.objectweb.**</pattern>
-									<result>com.github.lightning.internal.bundle.@1</result>
+									<result>org.apache.directmemory.lightning.internal.bundle.@1</result>
 								</rule>
 								<rule>
 									<pattern>com.esotericsoftware.**</pattern>
-									<result>com.github.lightning.internal.bundle.@1</result>
+									<result>org.apache.directmemory.lightning.internal.bundle.@1</result>
 								</rule>
 							</rules>
 						</configuration>

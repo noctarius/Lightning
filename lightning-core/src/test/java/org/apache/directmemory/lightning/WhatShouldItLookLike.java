@@ -92,7 +92,7 @@ public class WhatShouldItLookLike {
 			serialize(Bar.class).using(BarMarshaller.class);
 
 			// Define serializable class using annotated members / methods (by
-			// usage of Lightning's @com.github.lightning.metadata.Attribute
+			// usage of Lightning's @org.apache.directmemory.lightning.metadata.Attribute
 			// annotation)
 			serialize(Foo.class).attributes();
 			serialize(Foo.class).attributes().exclude("value");

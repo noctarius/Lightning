@@ -27,7 +27,7 @@ under the License.
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.github.lightning</groupId>
+				<groupId>org.apache.directmemory.lightning</groupId>
 				<artifactId>lightning-maven-plugin</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 				<executions>

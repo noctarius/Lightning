@@ -25,7 +25,7 @@ under the License.
 
 	<parent>
 		<artifactId>lightning-integration</artifactId>
-		<groupId>com.github.lightning</groupId>
+		<groupId>org.apache.directmemory.lightning</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>

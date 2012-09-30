@@ -87,7 +87,7 @@ public final class InternalUtil {
 	public static ObjectInstantiator buildSunUnsafeInstantiator(Class<?> type) {
 		try {
 			Class<? extends ObjectInstantiator> clazz = (Class<? extends ObjectInstantiator>) ClassUtil
-					.loadClass("com.github.lightning.internal.instantiator.sun.SunUnsafeAllocateInstanceInstantiator");
+					.loadClass("org.apache.directmemory.lightning.internal.instantiator.sun.SunUnsafeAllocateInstanceInstantiator");
 
 			Constructor<? extends ObjectInstantiator> constructor = clazz.getDeclaredConstructor(Class.class);
 			return constructor.newInstance(type);
@@ -101,7 +101,7 @@ public final class InternalUtil {
 	public static PropertyAccessorFactory buildSunUnsafePropertyAccessor() {
 		try {
 			Class<? extends PropertyAccessorFactory> clazz = (Class<? extends PropertyAccessorFactory>) ClassUtil
-					.loadClass("com.github.lightning.internal.beans.SunUnsafePropertyAccessorFactory");
+					.loadClass("org.apache.directmemory.lightning.internal.beans.SunUnsafePropertyAccessorFactory");
 
 			Constructor<? extends PropertyAccessorFactory> constructor = clazz.getDeclaredConstructor();
 			constructor.setAccessible(true);

@@ -20,7 +20,7 @@ under the License.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.lightning</groupId>
+	<groupId>org.apache.directmemory.lightning</groupId>
 	<artifactId>lightning-reactor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Lightning: Reactor</name>
@@ -54,7 +54,10 @@ under the License.
 	<developers>
 		<developer>
 			<id>noctarius</id>
-			<name>Noctarius</name>
+			<name>Christoph Engelbert</name>
+			<roles>
+				<role>Committer</role>
+			</roles>
 		</developer>
 	</developers>
 
