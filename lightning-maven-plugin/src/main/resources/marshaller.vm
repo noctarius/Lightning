@@ -45,14 +45,14 @@ public final class ${className} extends AbstractGeneratedMarshaller {
 		List<PropertyDescriptor> propertyDescriptors) {
 		
 		super(marshalledType, marshallers, serializer, objectInstantiatorFactory);
-#set( $index = 0);
+#set( $index = 0)
 #foreach( $property in ${properties} )
-		${support.toFinalFieldName("descriptor", $property)} = propertyDescriptors.get(${index})
+		${support.toFinalFieldName("descriptor", $property)} = propertyDescriptors.get(${index});
 		
 		PropertyDescriptor ${property.propertyName} = findPropertyDescriptor("${property.propertyName}", propertyDescriptors);
 		Marshaller ${property.propertyName}Marshaller = ${property.propertyName}.getMarshaller();
 		if (${property.propertyName}Marshaller == null) {
-			${property.propertyName}Marshaller = findMarshaller(${property.propertyName}.getType());
+			${property.propertyName}Marshaller = findMarshaller(${property.propertyName});
 		}
 		${support.toFinalFieldName("marshaller", $property)} = ${property.propertyName}Marshaller;
 
@@ -62,14 +62,14 @@ public final class ${className} extends AbstractGeneratedMarshaller {
 	}
 	
 	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
-		if (isAlreadyMarshalled(value, type, dataOutput, serializationContext)) {
+		if (isAlreadyMarshalled(value, propertyDescriptor.getType(), dataOutput, serializationContext)) {
 			return;
 		}
 
 #foreach( $property in ${properties} )
 		ValuePropertyAccessor ${property.propertyName}PropertyAccessor = this.${support.toFinalFieldName("accessor", $property)};
-		Class<?> ${property.propertyName}PropertyType = ${property.propertyName}PropertyAccessor.getType();
-		this.${support.toFinalFieldName("marshaller", $property)}.marshall(${support.generateReader($property)}, ${property.propertyName}PropertyType, dataOutput, serializationContext);
+		PropertyDescriptor ${property.propertyName}PropertyDescriptor = this.${support.toFinalFieldName("descriptor", $property)};
+		this.${support.toFinalFieldName("marshaller", $property)}.marshall(${support.generateReader($property)}, ${property.propertyName}PropertyDescriptor, dataOutput, serializationContext);
 
 #end
 	}
@@ -77,8 +77,8 @@ public final class ${className} extends AbstractGeneratedMarshaller {
 	public <V> V unmarshall(V instance, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 #foreach( $property in ${properties} )
 		ValuePropertyAccessor ${property.propertyName}PropertyAccessor = this.${support.toFinalFieldName("accessor", $property)};
-		Class<?> ${property.propertyName}PropertyType = ${property.propertyName}PropertyAccessor.getType();
-		Object ${property.propertyName}Value = this.${support.toFinalFieldName("marshaller", $property)}.unmarshall(${property.propertyName}PropertyType, dataInput, serializationContext);
+		PropertyDescriptor ${property.propertyName}PropertyDescriptor = this.${support.toFinalFieldName("descriptor", $property)};
+		Object ${property.propertyName}Value = this.${support.toFinalFieldName("marshaller", $property)}.unmarshall(${property.propertyName}PropertyDescriptor, dataInput, serializationContext);
 		${support.generateWriter($property, "instance")}
 
 #end

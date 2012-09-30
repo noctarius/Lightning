@@ -17,8 +17,10 @@ import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
 public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMarshaller {
 
+	private final PropertyDescriptor DESCRIPTOR_BAR_LIGHTNING;
 	private final Marshaller MARSHALLER_BAR_LIGHTNING;
 	private final ValuePropertyAccessor ACCESSOR_BAR_LIGHTNING;
+	private final PropertyDescriptor DESCRIPTOR_FOO_LIGHTNING;
 	private final Marshaller MARSHALLER_FOO_LIGHTNING;
 	private final ValuePropertyAccessor ACCESSOR_FOO_LIGHTNING;
 
@@ -27,50 +29,52 @@ public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMars
 		List<PropertyDescriptor> propertyDescriptors) {
 		
 		super(marshalledType, marshallers, serializer, objectInstantiatorFactory);
-
+		DESCRIPTOR_BAR_LIGHTNING = propertyDescriptors.get(0);
+		
 		PropertyDescriptor bar = findPropertyDescriptor("bar", propertyDescriptors);
 		Marshaller barMarshaller = bar.getMarshaller();
 		if (barMarshaller == null) {
-			barMarshaller = findMarshaller(bar.getType());
+			barMarshaller = findMarshaller(bar);
 		}
 		MARSHALLER_BAR_LIGHTNING = barMarshaller;
 
 		ACCESSOR_BAR_LIGHTNING = (ValuePropertyAccessor) getPropertyAccessor("bar");
-
+		DESCRIPTOR_FOO_LIGHTNING = propertyDescriptors.get(1);
+		
 		PropertyDescriptor foo = findPropertyDescriptor("foo", propertyDescriptors);
 		Marshaller fooMarshaller = foo.getMarshaller();
 		if (fooMarshaller == null) {
-			fooMarshaller = findMarshaller(foo.getType());
+			fooMarshaller = findMarshaller(foo);
 		}
 		MARSHALLER_FOO_LIGHTNING = fooMarshaller;
 
 		ACCESSOR_FOO_LIGHTNING = (ValuePropertyAccessor) getPropertyAccessor("foo");
 	}
 	
-	public void marshall(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
-		if (isAlreadyMarshalled(value, type, dataOutput, serializationContext)) {
+	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
+		if (isAlreadyMarshalled(value, propertyDescriptor.getType(), dataOutput, serializationContext)) {
 			return;
 		}
 
 		ValuePropertyAccessor barPropertyAccessor = this.ACCESSOR_BAR_LIGHTNING;
-		Class<?> barPropertyType = barPropertyAccessor.getType();
-		this.MARSHALLER_BAR_LIGHTNING.marshall(Integer.valueOf(barPropertyAccessor.readInt(value)), barPropertyType, dataOutput, serializationContext);
+		PropertyDescriptor barPropertyDescriptor = this.DESCRIPTOR_BAR_LIGHTNING;
+		this.MARSHALLER_BAR_LIGHTNING.marshall(Integer.valueOf(barPropertyAccessor.readInt(value)), barPropertyDescriptor, dataOutput, serializationContext);
 
 		ValuePropertyAccessor fooPropertyAccessor = this.ACCESSOR_FOO_LIGHTNING;
-		Class<?> fooPropertyType = fooPropertyAccessor.getType();
-		this.MARSHALLER_FOO_LIGHTNING.marshall(fooPropertyAccessor.readObject(value), fooPropertyType, dataOutput, serializationContext);
+		PropertyDescriptor fooPropertyDescriptor = this.DESCRIPTOR_FOO_LIGHTNING;
+		this.MARSHALLER_FOO_LIGHTNING.marshall(fooPropertyAccessor.readObject(value), fooPropertyDescriptor, dataOutput, serializationContext);
 
 	}
 	
-	public <V> V unmarshall(V instance, Class<?> type, DataInput dataInput, SerializationContext serializationContext) throws IOException {
+	public <V> V unmarshall(V instance, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
 		ValuePropertyAccessor barPropertyAccessor = this.ACCESSOR_BAR_LIGHTNING;
-		Class<?> barPropertyType = barPropertyAccessor.getType();
-		Object barValue = this.MARSHALLER_BAR_LIGHTNING.unmarshall(barPropertyType, dataInput, serializationContext);
+		PropertyDescriptor barPropertyDescriptor = this.DESCRIPTOR_BAR_LIGHTNING;
+		Object barValue = this.MARSHALLER_BAR_LIGHTNING.unmarshall(barPropertyDescriptor, dataInput, serializationContext);
 		barPropertyAccessor.writeInt(instance, ((Integer) barValue).intValue());
 
 		ValuePropertyAccessor fooPropertyAccessor = this.ACCESSOR_FOO_LIGHTNING;
-		Class<?> fooPropertyType = fooPropertyAccessor.getType();
-		Object fooValue = this.MARSHALLER_FOO_LIGHTNING.unmarshall(fooPropertyType, dataInput, serializationContext);
+		PropertyDescriptor fooPropertyDescriptor = this.DESCRIPTOR_FOO_LIGHTNING;
+		Object fooValue = this.MARSHALLER_FOO_LIGHTNING.unmarshall(fooPropertyDescriptor, dataInput, serializationContext);
 		fooPropertyAccessor.writeObject(instance, fooValue);
 
 		return instance;
@@ -85,4 +89,3 @@ public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMars
 		return null;
 	}
 }
-

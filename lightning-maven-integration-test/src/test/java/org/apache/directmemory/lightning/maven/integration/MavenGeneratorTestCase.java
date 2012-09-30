@@ -34,7 +34,7 @@ public class MavenGeneratorTestCase {
 		assertTrue(recursiveSearchClassFile("FooLightningGeneratedMarshaller.class", target));
 
 		File testfile = new File(getClass().getClassLoader().getResource("generated.java.out").toURI());
-		File generatedFile = new File("target/generated-sources/lightning/com/github/lightning/maven/integration/FooLightningGeneratedMarshaller.java");
+		File generatedFile = new File("target/generated-sources/lightning/org/apache/directmemory/lightning/maven/integration/FooLightningGeneratedMarshaller.java");
 		String expected = SupportUtil.readAllText(testfile, Charset.forName("UTF-8"));
 		String result = SupportUtil.readAllText(generatedFile, Charset.forName("UTF-8"));
 		assertEquals(expected, result);
