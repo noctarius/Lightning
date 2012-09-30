@@ -1,5 +1,5 @@
 
-package com.github.lightning.maven.integration;
+package org.apache.directmemory.lightning.maven.integration;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.github.lightning.Marshaller;
-import com.github.lightning.SerializationContext;
-import com.github.lightning.instantiator.ObjectInstantiatorFactory;
-import com.github.lightning.internal.ClassDescriptorAwareSerializer;
-import com.github.lightning.internal.generator.AbstractGeneratedMarshaller;
-import com.github.lightning.metadata.ValuePropertyAccessor;
-import com.github.lightning.metadata.PropertyDescriptor;
+import org.apache.directmemory.lightning.Marshaller;
+import org.apache.directmemory.lightning.SerializationContext;
+import org.apache.directmemory.lightning.instantiator.ObjectInstantiatorFactory;
+import org.apache.directmemory.lightning.internal.ClassDescriptorAwareSerializer;
+import org.apache.directmemory.lightning.internal.generator.AbstractGeneratedMarshaller;
+import org.apache.directmemory.lightning.metadata.ValuePropertyAccessor;
+import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
 public final class FooLightningGeneratedMarshaller extends AbstractGeneratedMarshaller {
 
