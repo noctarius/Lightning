@@ -20,11 +20,10 @@ package com.github.lightning.internal.instantiator.strategy;
 
 import com.github.lightning.instantiator.ObjectInstantiator;
 import com.github.lightning.internal.instantiator.gcj.GCJInstantiator;
-import com.github.lightning.internal.instantiator.jrockit.JRockit131Instantiator;
-import com.github.lightning.internal.instantiator.jrockit.JRockitLegacyInstantiator;
 import com.github.lightning.internal.instantiator.perc.PercInstantiator;
 import com.github.lightning.internal.instantiator.sun.Sun13Instantiator;
 import com.github.lightning.internal.instantiator.sun.SunReflectionFactoryInstantiator;
+import com.github.lightning.internal.util.InternalUtil;
 
 /**
  * Guess the best instantiator for a given class. The instantiator will
@@ -60,22 +59,15 @@ public class StdInstantiatorStrategy extends BaseInstantiatorStrategy {
 			if (VM_VERSION.startsWith("1.3")) {
 				return new Sun13Instantiator(type);
 			}
-		}
-		else if (JVM_NAME.startsWith(JROCKIT)) {
-			if (VM_VERSION.startsWith("1.3")) {
-				return new JRockit131Instantiator(type);
+			else if (InternalUtil.isUnsafeAvailable()) {
+				return InternalUtil.buildSunUnsafeInstantiator(type);
 			}
-			else if (VM_VERSION.startsWith("1.4")) {
-				// JRockit vendor version will be RXX where XX is the version
-				// Versions prior to 26 need special handling
-				// From R26 on, java.vm.version starts with R
-				if (!VENDOR_VERSION.startsWith("R")) {
-					// On R25.1 and R25.2, ReflectionFactory should work.
-					// Otherwise, we must use the
-					// Legacy instantiator.
-					if (VM_INFO == null || !VM_INFO.startsWith("R25.1") || !VM_INFO.startsWith("R25.2")) {
-						return new JRockitLegacyInstantiator(type);
-					}
+		}
+		else if (JVM_NAME.startsWith(ORACLE_JROCKIT)) {
+			if (!VENDOR_VERSION.startsWith("R")) {
+				// Beginning with R25.1 sun.misc.Unsafe should work.
+				if (InternalUtil.isUnsafeAvailable()) {
+					return InternalUtil.buildSunUnsafeInstantiator(type);
 				}
 			}
 		}

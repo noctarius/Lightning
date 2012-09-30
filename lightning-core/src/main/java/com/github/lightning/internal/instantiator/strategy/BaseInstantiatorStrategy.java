@@ -26,8 +26,11 @@ package com.github.lightning.internal.instantiator.strategy;
  */
 public abstract class BaseInstantiatorStrategy implements InstantiatorStrategy {
 
-	/** JVM_NAME prefix for JRockit */
-	protected static final String JROCKIT = "BEA";
+	/** JVM_NAME prefix for BEA releases of JRockit */
+	protected static final String BEA_JROCKIT = "BEA";
+	
+	/** JVM_NAME prefix for Oracle releases of JRockit */
+	protected static final String ORACLE_JROCKIT = "Oracle JRockit(R)";
 
 	/** JVM_NAME prefix for GCJ */
 	protected static final String GNU = "GNU libgcj";
