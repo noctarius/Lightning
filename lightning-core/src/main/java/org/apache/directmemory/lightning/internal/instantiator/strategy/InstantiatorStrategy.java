@@ -25,14 +25,14 @@ import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
  * 
  * @author Henri Tremblay
  */
-public interface InstantiatorStrategy {
+public interface InstantiatorStrategy
+{
 
-	/**
-	 * Create a dedicated instantiator for the given class
-	 * 
-	 * @param type
-	 *            Class that will be instantiate
-	 * @return Dedicated instantiator
-	 */
-	ObjectInstantiator newInstantiatorOf(Class<?> type);
+    /**
+     * Create a dedicated instantiator for the given class
+     * 
+     * @param type Class that will be instantiate
+     * @return Dedicated instantiator
+     */
+    ObjectInstantiator newInstantiatorOf( Class<?> type );
 }

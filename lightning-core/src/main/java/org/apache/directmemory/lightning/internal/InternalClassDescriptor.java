@@ -29,90 +29,108 @@ import org.apache.directmemory.lightning.metadata.ClassDefinition;
 import org.apache.directmemory.lightning.metadata.ClassDescriptor;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class InternalClassDescriptor
+    implements ClassDescriptor
+{
 
-public class InternalClassDescriptor implements ClassDescriptor {
+    private final Set<PropertyDescriptor> propertyDescriptors = new HashSet<PropertyDescriptor>();
 
-	private final Set<PropertyDescriptor> propertyDescriptors = new HashSet<PropertyDescriptor>();
-	private final Logger logger;
-	private final Class<?> type;
+    private final Logger logger;
 
-	private ClassDefinition classDefinition;
-	private Marshaller marshaller;
+    private final Class<?> type;
 
-	public InternalClassDescriptor(Class<?> type, Logger logger) {
-		this.type = type;
-		this.logger = logger;
-	}
+    private ClassDefinition classDefinition;
 
-	@Override
-	public ClassDefinition getClassDefinition() {
-		return classDefinition;
-	}
+    private Marshaller marshaller;
 
-	@Override
-	public Class<?> getType() {
-		return type;
-	}
+    public InternalClassDescriptor( Class<?> type, Logger logger )
+    {
+        this.type = type;
+        this.logger = logger;
+    }
 
-	@Override
-	public List<PropertyDescriptor> getPropertyDescriptors() {
-		return new ArrayList<PropertyDescriptor>(propertyDescriptors);
-	}
+    @Override
+    public ClassDefinition getClassDefinition()
+    {
+        return classDefinition;
+    }
 
-	@Override
-	public Marshaller getMarshaller() {
-		return marshaller;
-	}
+    @Override
+    public Class<?> getType()
+    {
+        return type;
+    }
 
-	public boolean push(PropertyDescriptor propertyDescriptor) {
-		return propertyDescriptors.add(propertyDescriptor);
-	}
+    @Override
+    public List<PropertyDescriptor> getPropertyDescriptors()
+    {
+        return new ArrayList<PropertyDescriptor>( propertyDescriptors );
+    }
 
-	public void setMarshaller(Marshaller marshaller) {
-		this.marshaller = marshaller;
-	}
+    @Override
+    public Marshaller getMarshaller()
+    {
+        return marshaller;
+    }
 
-	public ClassDescriptor build(ClassDefinition[] classDefinitions) {
-		for (ClassDefinition classDefinition : classDefinitions) {
-			if (classDefinition.getType() == type) {
-				this.classDefinition = classDefinition;
-				return this;
-			}
-		}
+    public boolean push( PropertyDescriptor propertyDescriptor )
+    {
+        return propertyDescriptors.add( propertyDescriptor );
+    }
 
-		classDefinition = new InternalClassDefinition(getType(), getPropertyDescriptors(), logger);
-		return this;
-	}
+    public void setMarshaller( Marshaller marshaller )
+    {
+        this.marshaller = marshaller;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
+    public ClassDescriptor build( ClassDefinition[] classDefinitions )
+    {
+        for ( ClassDefinition classDefinition : classDefinitions )
+        {
+            if ( classDefinition.getType() == type )
+            {
+                this.classDefinition = classDefinition;
+                return this;
+            }
+        }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		InternalClassDescriptor other = (InternalClassDescriptor) obj;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		}
-		else if (!type.equals(other.type))
-			return false;
-		return true;
-	}
+        classDefinition = new InternalClassDefinition( getType(), getPropertyDescriptors(), logger );
+        return this;
+    }
 
-	@Override
-	public String toString() {
-		return "InternalClassDescriptor [propertyDescriptors=" + propertyDescriptors + ", type=" + type + ", classDefinition=" + classDefinition
-				+ ", marshaller=" + marshaller + "]";
-	}
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( type == null ) ? 0 : type.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        InternalClassDescriptor other = (InternalClassDescriptor) obj;
+        if ( type == null )
+        {
+            if ( other.type != null )
+                return false;
+        }
+        else if ( !type.equals( other.type ) )
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "InternalClassDescriptor [propertyDescriptors=" + propertyDescriptors + ", type=" + type
+            + ", classDefinition=" + classDefinition + ", marshaller=" + marshaller + "]";
+    }
 }

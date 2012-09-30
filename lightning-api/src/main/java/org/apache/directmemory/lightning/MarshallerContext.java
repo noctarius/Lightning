@@ -20,10 +20,11 @@ package org.apache.directmemory.lightning;
 
 import java.lang.reflect.Type;
 
-public interface MarshallerContext {
+public interface MarshallerContext
+{
 
-	Marshaller getMarshaller(Type type);
+    Marshaller getMarshaller( Type type );
 
-	void bindMarshaller(Type type, Marshaller marshaller);
+    void bindMarshaller( Type type, Marshaller marshaller );
 
 }

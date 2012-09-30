@@ -33,140 +33,178 @@ import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
 import org.jgroups.util.Util;
 
+public class LightningJGroupsMembershipListener
+    extends ReceiverAdapter
+{
 
-public class LightningJGroupsMembershipListener extends ReceiverAdapter {
+    private final List<Address> lastMembersView = new ArrayList<Address>();
 
-	private final List<Address> lastMembersView = new ArrayList<Address>();
+    private final ExecutorService executorService;
 
-	private final ExecutorService executorService;
-	private final Serializer serializer;
-	private final JChannel channel;
+    private final Serializer serializer;
 
-	public LightningJGroupsMembershipListener(JChannel channel, Serializer serializer, ExecutorService executorService) {
+    private final JChannel channel;
 
-		this.channel = channel;
-		this.serializer = serializer;
-		this.executorService = executorService;
-	}
+    public LightningJGroupsMembershipListener( JChannel channel, Serializer serializer, ExecutorService executorService )
+    {
 
-	@Override
-	public void viewAccepted(View view) {
-		Runnable task;
-		if (view instanceof MergeView) {
-			task = handleSplitBrainMerge(view);
-		}
-		else {
-			task = handleMemberJoin(view);
-		}
+        this.channel = channel;
+        this.serializer = serializer;
+        this.executorService = executorService;
+    }
 
-		if (task != null) {
-			executorService.submit(task);
-		}
-	}
+    @Override
+    public void viewAccepted( View view )
+    {
+        Runnable task;
+        if ( view instanceof MergeView )
+        {
+            task = handleSplitBrainMerge( view );
+        }
+        else
+        {
+            task = handleMemberJoin( view );
+        }
 
-	@Override
-	public void receive(Message msg) {
-		// If we received a ClassDefinitionContainer handle it otherwise just
-		// ignore the message
-		if (msg.getObject() instanceof ClassDefinitionContainer) {
-			ClassDefinitionContainer container = (ClassDefinitionContainer) msg.getObject();
-			try {
-				serializer.setClassDefinitionContainer(container);
-			}
-			catch (ClassDefinitionInconsistentException e) {
-				channel.disconnect();
-				throw new LightningClusterException("Class checksums are not consistent, channel disconnected", e);
-			}
-		}
-	}
+        if ( task != null )
+        {
+            executorService.submit( task );
+        }
+    }
 
-	private Runnable handleMemberJoin(View view) {
-		List<Address> members = view.getMembers();
+    @Override
+    public void receive( Message msg )
+    {
+        // If we received a ClassDefinitionContainer handle it otherwise just
+        // ignore the message
+        if ( msg.getObject() instanceof ClassDefinitionContainer )
+        {
+            ClassDefinitionContainer container = (ClassDefinitionContainer) msg.getObject();
+            try
+            {
+                serializer.setClassDefinitionContainer( container );
+            }
+            catch ( ClassDefinitionInconsistentException e )
+            {
+                channel.disconnect();
+                throw new LightningClusterException( "Class checksums are not consistent, channel disconnected", e );
+            }
+        }
+    }
 
-		// Quote from JGroups documentation:
-		// *Note that the first member of a view is the coordinator (the one who
-		// emits new views).*
-		Address coordinator = members.get(0);
+    private Runnable handleMemberJoin( View view )
+    {
+        List<Address> members = view.getMembers();
 
-		if (channel.getAddress().equals(coordinator)) {
-			final ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
-			final List<Address> receivers = findNewMembers(view);
+        // Quote from JGroups documentation:
+        // *Note that the first member of a view is the coordinator (the one who
+        // emits new views).*
+        Address coordinator = members.get( 0 );
 
-			try {
-				final byte[] byteBuffer = Util.objectToByteBuffer(container);
+        if ( channel.getAddress().equals( coordinator ) )
+        {
+            final ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+            final List<Address> receivers = findNewMembers( view );
 
-				return new Runnable() {
+            try
+            {
+                final byte[] byteBuffer = Util.objectToByteBuffer( container );
 
-					@Override
-					public void run() {
-						for (Address receiver : receivers) {
-							try {
-								channel.send(receiver, byteBuffer);
-							}
-							catch (Exception e) {
-								throw new LightningClusterException("Could not send ClassDefinitionContainer to address " + receiver, e);
-							}
-						}
-					}
-				};
-			}
-			catch (Exception e) {
-				throw new LightningClusterException("Could not serialize ClassDefinitionContainer", e);
-			}
-		}
+                return new Runnable()
+                {
 
-		return null;
-	}
+                    @Override
+                    public void run()
+                    {
+                        for ( Address receiver : receivers )
+                        {
+                            try
+                            {
+                                channel.send( receiver, byteBuffer );
+                            }
+                            catch ( Exception e )
+                            {
+                                throw new LightningClusterException(
+                                                                     "Could not send ClassDefinitionContainer to address "
+                                                                         + receiver, e );
+                            }
+                        }
+                    }
+                };
+            }
+            catch ( Exception e )
+            {
+                throw new LightningClusterException( "Could not serialize ClassDefinitionContainer", e );
+            }
+        }
 
-	private Runnable handleSplitBrainMerge(View view) {
-		final List<Address> members = new ArrayList<Address>(view.getMembers());
+        return null;
+    }
 
-		// Quote from JGroups documentation:
-		// *Note that the first member of a view is the coordinator (the one who
-		// emits new views).*
-		Address coordinator = members.get(0);
+    private Runnable handleSplitBrainMerge( View view )
+    {
+        final List<Address> members = new ArrayList<Address>( view.getMembers() );
 
-		if (channel.getAddress().equals(coordinator)) {
-			final ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+        // Quote from JGroups documentation:
+        // *Note that the first member of a view is the coordinator (the one who
+        // emits new views).*
+        Address coordinator = members.get( 0 );
 
-			try {
-				final byte[] byteBuffer = Util.objectToByteBuffer(container);
+        if ( channel.getAddress().equals( coordinator ) )
+        {
+            final ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-				return new Runnable() {
+            try
+            {
+                final byte[] byteBuffer = Util.objectToByteBuffer( container );
 
-					@Override
-					public void run() {
-						for (int i = 1; i < members.size(); i++) {
-							Address receiver = members.get(i);
-							if (receiver == null) {
-								continue;
-							}
+                return new Runnable()
+                {
 
-							try {
-								channel.send(receiver, byteBuffer);
-							}
-							catch (Exception e) {
-								throw new LightningClusterException("Could not send ClassDefinitionContainer to address " + receiver, e);
-							}
-						}
-					}
-				};
-			}
-			catch (Exception e) {
-				throw new LightningClusterException("Could not serialize ClassDefinitionContainer", e);
-			}
-		}
+                    @Override
+                    public void run()
+                    {
+                        for ( int i = 1; i < members.size(); i++ )
+                        {
+                            Address receiver = members.get( i );
+                            if ( receiver == null )
+                            {
+                                continue;
+                            }
 
-		return null;
-	}
+                            try
+                            {
+                                channel.send( receiver, byteBuffer );
+                            }
+                            catch ( Exception e )
+                            {
+                                throw new LightningClusterException(
+                                                                     "Could not send ClassDefinitionContainer to address "
+                                                                         + receiver, e );
+                            }
+                        }
+                    }
+                };
+            }
+            catch ( Exception e )
+            {
+                throw new LightningClusterException( "Could not serialize ClassDefinitionContainer", e );
+            }
+        }
 
-	private List<Address> findNewMembers(View view) {
-		List<Address> newMembers = new ArrayList<Address>();
-		for (Address member : view.getMembers()) {
-			if (!lastMembersView.contains(member)) {
-				newMembers.add(member);
-			}
-		}
-		return newMembers;
-	}
+        return null;
+    }
+
+    private List<Address> findNewMembers( View view )
+    {
+        List<Address> newMembers = new ArrayList<Address>();
+        for ( Address member : view.getMembers() )
+        {
+            if ( !lastMembersView.contains( member ) )
+            {
+                newMembers.add( member );
+            }
+        }
+        return newMembers;
+    }
 }

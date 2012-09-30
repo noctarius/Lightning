@@ -19,29 +19,28 @@
 package org.apache.directmemory.lightning;
 
 /**
- * Defines the comparison strategy of classes between different serializers. The
- * standard strategy of Java is SerialVersionUID but Lightning has some lighter
- * algorithm which only takes properties into account.
+ * Defines the comparison strategy of classes between different serializers. The standard strategy of Java is
+ * SerialVersionUID but Lightning has some lighter algorithm which only takes properties into account.
  * 
  * @author noctarius
  */
-public enum ClassComparisonStrategy {
+public enum ClassComparisonStrategy
+{
 
-	/**
-	 * Default Java Serialization like SerialVersionUID
-	 */
-	SerialVersionUID,
+    /**
+     * Default Java Serialization like SerialVersionUID
+     */
+    SerialVersionUID,
 
-	/**
-	 * Lightning checksum calculation
-	 */
-	LightningChecksum,
+    /**
+     * Lightning checksum calculation
+     */
+    LightningChecksum,
 
-	/**
-	 * Instructs Lightning to skip all kinds of comparison between the different
-	 * ClassDefinitionContainers. This is not recommended but is required for
-	 * possible schema evolution features.
-	 */
-	SkipComparison
+    /**
+     * Instructs Lightning to skip all kinds of comparison between the different ClassDefinitionContainers. This is not
+     * recommended but is required for possible schema evolution features.
+     */
+    SkipComparison
 
 }

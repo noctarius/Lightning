@@ -21,8 +21,10 @@ package org.apache.directmemory.lightning.internal;
 import org.apache.directmemory.lightning.Serializer;
 import org.apache.directmemory.lightning.metadata.ClassDescriptor;
 
-public interface ClassDescriptorAwareSerializer extends Serializer {
+public interface ClassDescriptorAwareSerializer
+    extends Serializer
+{
 
-	ClassDescriptor findClassDescriptor(Class<?> type);
+    ClassDescriptor findClassDescriptor( Class<?> type );
 
 }

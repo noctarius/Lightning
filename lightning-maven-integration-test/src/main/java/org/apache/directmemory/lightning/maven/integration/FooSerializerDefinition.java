@@ -20,10 +20,13 @@ package org.apache.directmemory.lightning.maven.integration;
 
 import org.apache.directmemory.lightning.base.AbstractSerializerDefinition;
 
-public class FooSerializerDefinition extends AbstractSerializerDefinition {
+public class FooSerializerDefinition
+    extends AbstractSerializerDefinition
+{
 
-	@Override
-	protected void configure() {
-		serialize(Foo.class).attributes();
-	}
+    @Override
+    protected void configure()
+    {
+        serialize( Foo.class ).attributes();
+    }
 }

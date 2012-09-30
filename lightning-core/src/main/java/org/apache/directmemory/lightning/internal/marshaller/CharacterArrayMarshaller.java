@@ -26,63 +26,80 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class CharacterArrayMarshaller
+    extends AbstractMarshaller
+{
 
-public class CharacterArrayMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return char[].class == type || Character[].class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return char[].class == type || Character[].class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( !writePossibleNull( value, dataOutput ) )
+        {
+            return;
+        }
 
-		if (!writePossibleNull(value, dataOutput)) {
-			return;
-		}
+        if ( char[].class == propertyDescriptor.getType() )
+        {
+            char[] array = (char[]) value;
+            dataOutput.writeInt( array.length );
 
-		if (char[].class == propertyDescriptor.getType()) {
-			char[] array = (char[]) value;
-			dataOutput.writeInt(array.length);
+            for ( char arrayValue : array )
+            {
+                dataOutput.writeChar( arrayValue );
+            }
+        }
+        else
+        {
+            Character[] array = (Character[]) value;
+            dataOutput.writeInt( array.length );
 
-			for (char arrayValue : array) {
-				dataOutput.writeChar(arrayValue);
-			}
-		}
-		else {
-			Character[] array = (Character[]) value;
-			dataOutput.writeInt(array.length);
+            for ( char arrayValue : array )
+            {
+                dataOutput.writeChar( arrayValue );
+            }
+        }
+    }
 
-			for (char arrayValue : array) {
-				dataOutput.writeChar(arrayValue);
-			}
-		}
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( isNull( dataInput ) )
+        {
+            return null;
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (isNull(dataInput)) {
-			return null;
-		}
+        int size = dataInput.readInt();
+        if ( char[].class == propertyDescriptor.getType() )
+        {
+            char[] array = new char[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readChar();
+            }
 
-		int size = dataInput.readInt();
-		if (char[].class == propertyDescriptor.getType()) {
-			char[] array = new char[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readChar();
-			}
+            return (V) array;
+        }
+        else
+        {
+            Character[] array = new Character[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readChar();
+            }
 
-			return (V) array;
-		}
-		else {
-			Character[] array = new Character[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readChar();
-			}
-
-			return (V) array;
-		}
-	}
+            return (V) array;
+        }
+    }
 }

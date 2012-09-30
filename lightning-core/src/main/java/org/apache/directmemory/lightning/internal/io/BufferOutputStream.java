@@ -22,21 +22,28 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
-public class BufferOutputStream extends OutputStream {
+public class BufferOutputStream
+    extends OutputStream
+{
 
-	private final ByteBuffer byteBuffer;
+    private final ByteBuffer byteBuffer;
 
-	public BufferOutputStream(ByteBuffer byteBuffer) {
-		this.byteBuffer = byteBuffer;
-	}
+    public BufferOutputStream( ByteBuffer byteBuffer )
+    {
+        this.byteBuffer = byteBuffer;
+    }
 
-	@Override
-	public synchronized void write(int b) throws IOException {
-		byteBuffer.put((byte) b);
-	}
+    @Override
+    public synchronized void write( int b )
+        throws IOException
+    {
+        byteBuffer.put( (byte) b );
+    }
 
-	@Override
-	public synchronized void write(byte[] bytes, int off, int len) throws IOException {
-		byteBuffer.put(bytes, off, len);
-	}
+    @Override
+    public synchronized void write( byte[] bytes, int off, int len )
+        throws IOException
+    {
+        byteBuffer.put( bytes, off, len );
+    }
 }

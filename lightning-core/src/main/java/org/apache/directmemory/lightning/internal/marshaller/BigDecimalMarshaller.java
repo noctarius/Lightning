@@ -28,41 +28,50 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class BigDecimalMarshaller
+    extends AbstractMarshaller
+{
 
-public class BigDecimalMarshaller extends AbstractMarshaller {
+    private static final Charset CHARSET = Charset.forName( "ASCII" );
 
-	private static final Charset CHARSET = Charset.forName("ASCII");
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return BigDecimal.class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return BigDecimal.class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( !writePossibleNull( value, dataOutput ) )
+        {
+            return;
+        }
 
-		if (!writePossibleNull(value, dataOutput)) {
-			return;
-		}
+        String representation = ( (BigDecimal) value ).toString();
+        byte[] data = representation.getBytes( CHARSET );
+        dataOutput.writeInt( data.length );
+        dataOutput.write( data );
+    }
 
-		String representation = ((BigDecimal) value).toString();
-		byte[] data = representation.getBytes(CHARSET);
-		dataOutput.writeInt(data.length);
-		dataOutput.write(data);
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( isNull( dataInput ) )
+        {
+            return null;
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (isNull(dataInput)) {
-			return null;
-		}
+        int length = dataInput.readInt();
+        byte[] data = new byte[length];
+        dataInput.readFully( data );
 
-		int length = dataInput.readInt();
-		byte[] data = new byte[length];
-		dataInput.readFully(data);
-
-		return (V) new BigDecimal(new String(data, CHARSET));
-	}
+        return (V) new BigDecimal( new String( data, CHARSET ) );
+    }
 }

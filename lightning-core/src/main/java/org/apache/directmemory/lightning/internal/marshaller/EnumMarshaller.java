@@ -26,44 +26,55 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class EnumMarshaller
+    extends AbstractMarshaller
+{
 
-public class EnumMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return Enum.class.isAssignableFrom( type );
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return Enum.class.isAssignableFrom(type);
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( !writePossibleNull( value, dataOutput ) )
+        {
+            return;
+        }
 
-		if (!writePossibleNull(value, dataOutput)) {
-			return;
-		}
+        dataOutput.writeLong( serializationContext.getClassDefinitionContainer().getClassDefinitionByType( propertyDescriptor.getType() ).getId() );
+        dataOutput.writeInt( ( (Enum<?>) value ).ordinal() );
+    }
 
-		dataOutput.writeLong(serializationContext.getClassDefinitionContainer().getClassDefinitionByType(propertyDescriptor.getType()).getId());
-		dataOutput.writeInt(((Enum<?>) value).ordinal());
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( isNull( dataInput ) )
+        {
+            return null;
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (isNull(dataInput)) {
-			return null;
-		}
+        long typeId = dataInput.readLong();
+        Class<?> propertyType = serializationContext.getClassDefinitionContainer().getTypeById( typeId );
 
-		long typeId = dataInput.readLong();
-		Class<?> propertyType = serializationContext.getClassDefinitionContainer().getTypeById(typeId);
+        int ordinal = dataInput.readInt();
+        Enum<?>[] values = ( (Class<Enum<?>>) propertyType ).getEnumConstants();
+        for ( Enum<?> value : values )
+        {
+            if ( value.ordinal() == ordinal )
+            {
+                return (V) value;
+            }
+        }
 
-		int ordinal = dataInput.readInt();
-		Enum<?>[] values = ((Class<Enum<?>>) propertyType).getEnumConstants();
-		for (Enum<?> value : values) {
-			if (value.ordinal() == ordinal) {
-				return (V) value;
-			}
-		}
-
-		return null;
-	}
+        return null;
+    }
 }

@@ -18,22 +18,28 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings("serial")
-public class ClassDefinitionInconsistentException extends RuntimeException {
+@SuppressWarnings( "serial" )
+public class ClassDefinitionInconsistentException
+    extends RuntimeException
+{
 
-	public ClassDefinitionInconsistentException() {
-		super();
-	}
+    public ClassDefinitionInconsistentException()
+    {
+        super();
+    }
 
-	public ClassDefinitionInconsistentException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public ClassDefinitionInconsistentException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-	public ClassDefinitionInconsistentException(String message) {
-		super(message);
-	}
+    public ClassDefinitionInconsistentException( String message )
+    {
+        super( message );
+    }
 
-	public ClassDefinitionInconsistentException(Throwable cause) {
-		super(cause);
-	}
+    public ClassDefinitionInconsistentException( Throwable cause )
+    {
+        super( cause );
+    }
 }

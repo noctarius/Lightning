@@ -20,8 +20,9 @@ package org.apache.directmemory.lightning;
 
 import java.lang.reflect.Type;
 
-public interface TypeBindableMarshaller {
+public interface TypeBindableMarshaller
+{
 
-	Marshaller bindType(Type... bindingTypes);
+    Marshaller bindType( Type... bindingTypes );
 
 }

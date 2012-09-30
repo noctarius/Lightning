@@ -24,11 +24,11 @@ import java.lang.reflect.Method;
 import org.apache.directmemory.lightning.Marshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public interface PropertyDescriptorFactory
+{
 
-public interface PropertyDescriptorFactory {
+    PropertyDescriptor byMethod( Method method, Marshaller marshaller, Class<?> definedClass );
 
-	PropertyDescriptor byMethod(Method method, Marshaller marshaller, Class<?> definedClass);
-
-	PropertyDescriptor byField(Field field, Marshaller marshaller, Class<?> definedClass);
+    PropertyDescriptor byField( Field field, Marshaller marshaller, Class<?> definedClass );
 
 }

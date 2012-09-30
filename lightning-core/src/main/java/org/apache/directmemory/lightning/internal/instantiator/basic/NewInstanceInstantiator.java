@@ -21,30 +21,34 @@ package org.apache.directmemory.lightning.internal.instantiator.basic;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
 import org.apache.directmemory.lightning.internal.instantiator.ObjenesisException;
 
-
 /**
- * The simplest instantiator - simply calls Class.newInstance(). This can deal
- * with default public
- * constructors, but that's about it.
+ * The simplest instantiator - simply calls Class.newInstance(). This can deal with default public constructors, but
+ * that's about it.
  * 
  * @author Joe Walnes
  * @see ObjectInstantiator
  */
-public class NewInstanceInstantiator implements ObjectInstantiator {
+public class NewInstanceInstantiator
+    implements ObjectInstantiator
+{
 
-	private final Class<?> type;
+    private final Class<?> type;
 
-	public NewInstanceInstantiator(Class<?> type) {
-		this.type = type;
-	}
+    public NewInstanceInstantiator( Class<?> type )
+    {
+        this.type = type;
+    }
 
-	@Override
-	public Object newInstance() {
-		try {
-			return type.newInstance();
-		}
-		catch (Exception e) {
-			throw new ObjenesisException(e);
-		}
-	}
+    @Override
+    public Object newInstance()
+    {
+        try
+        {
+            return type.newInstance();
+        }
+        catch ( Exception e )
+        {
+            throw new ObjenesisException( e );
+        }
+    }
 }

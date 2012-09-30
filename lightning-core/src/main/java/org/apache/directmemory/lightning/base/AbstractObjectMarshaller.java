@@ -24,16 +24,22 @@ import java.io.IOException;
 import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public abstract class AbstractObjectMarshaller
+    extends AbstractMarshaller
+{
 
-public abstract class AbstractObjectMarshaller extends AbstractMarshaller {
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public final <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                                   SerializationContext serializationContext )
+        throws IOException
+    {
+        Object value =
+            serializationContext.getObjectInstantiatorFactory().getInstantiatorOf( propertyDescriptor.getType() );
+        return unmarshall( (V) value, propertyDescriptor, dataInput, serializationContext );
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public final <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		Object value = serializationContext.getObjectInstantiatorFactory().getInstantiatorOf(propertyDescriptor.getType());
-		return unmarshall((V) value, propertyDescriptor, dataInput, serializationContext);
-	}
-
-	public abstract <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext)
-			throws IOException;
+    public abstract <V> V unmarshall( V value, PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                                      SerializationContext serializationContext )
+        throws IOException;
 }

@@ -31,24 +31,29 @@ import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 import org.junit.Test;
 import org.objectweb.asm.ClassVisitor;
 
+public class ClassDefinitionContainerTestCase
+{
 
-public class ClassDefinitionContainerTestCase {
+    private static final Class<?>[] CLASSES = { ClassVisitor.class };
 
-	private static final Class<?>[] CLASSES = { ClassVisitor.class };
+    @Test
+    public void testClassDefinitionContainer()
+        throws Exception
+    {
+        final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
 
-	@Test
-	public void testClassDefinitionContainer() throws Exception {
-		final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
+        for ( Class<?> clazz : CLASSES )
+        {
+            PropertyDescriptor label = null;
+            classDefinitions.add( new InternalClassDefinition( clazz, Collections.<PropertyDescriptor> emptyList(),
+                                                               new LoggerAdapter() ) );
+        }
 
-		for (Class<?> clazz : CLASSES) {
-			PropertyDescriptor label = null;
-			classDefinitions.add(new InternalClassDefinition(clazz, Collections.<PropertyDescriptor> emptyList(), new LoggerAdapter()));
-		}
+        ClassDefinitionContainer classDefinitionContainer = new InternalClassDefinitionContainer( classDefinitions );
 
-		ClassDefinitionContainer classDefinitionContainer = new InternalClassDefinitionContainer(classDefinitions);
-
-		for (ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions()) {
-			Class<?> clazz = null;
-		}
-	}
+        for ( ClassDefinition classDefinition : classDefinitionContainer.getClassDefinitions() )
+        {
+            Class<?> clazz = null;
+        }
+    }
 }

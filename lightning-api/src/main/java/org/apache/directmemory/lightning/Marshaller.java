@@ -24,13 +24,17 @@ import java.io.IOException;
 
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public interface Marshaller
+{
 
-public interface Marshaller {
+    boolean acceptType( Class<?> type );
 
-	boolean acceptType(Class<?> type);
+    void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                   SerializationContext serializationContext )
+        throws IOException;
 
-	void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext) throws IOException;
-
-	<V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException;
+    <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                      SerializationContext serializationContext )
+        throws IOException;
 
 }

@@ -31,162 +31,192 @@ import java.io.Serializable;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
 import org.apache.directmemory.lightning.internal.instantiator.ObjenesisException;
 
-
 /**
- * Instantiates a class by using a dummy input stream that always feeds data for
- * an empty object of
- * the same kind. NOTE: This instantiator may not work properly if the class
- * being instantiated
- * defines a "readResolve" method, since it may return objects that have been
- * returned previously
- * (i.e., there's no guarantee that the returned object is a new one), or even
- * objects from a
- * completely different class.
+ * Instantiates a class by using a dummy input stream that always feeds data for an empty object of the same kind. NOTE:
+ * This instantiator may not work properly if the class being instantiated defines a "readResolve" method, since it may
+ * return objects that have been returned previously (i.e., there's no guarantee that the returned object is a new one),
+ * or even objects from a completely different class.
  * 
  * @author Leonardo Mesquita
  * @see org.apache.directmemory.lightning.instantiator.ObjectInstantiator
  */
-public class ObjectInputStreamInstantiator implements ObjectInstantiator {
+public class ObjectInputStreamInstantiator
+    implements ObjectInstantiator
+{
 
-	private static class MockStream extends InputStream {
+    private static class MockStream
+        extends InputStream
+    {
 
-		private int pointer;
-		private byte[] data;
-		private int sequence;
-		private static final int[] NEXT = new int[] { 1, 2, 2 };
-		private byte[][] buffers;
+        private int pointer;
 
-		private final byte[] FIRST_DATA;
-		private static byte[] HEADER;
-		private static byte[] REPEATING_DATA;
+        private byte[] data;
 
-		static {
-			initialize();
-		}
+        private int sequence;
 
-		private static void initialize() {
-			try {
-				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-				DataOutputStream dout = new DataOutputStream(byteOut);
-				dout.writeShort(ObjectStreamConstants.STREAM_MAGIC);
-				dout.writeShort(ObjectStreamConstants.STREAM_VERSION);
-				HEADER = byteOut.toByteArray();
+        private static final int[] NEXT = new int[] { 1, 2, 2 };
 
-				byteOut = new ByteArrayOutputStream();
-				dout = new DataOutputStream(byteOut);
+        private byte[][] buffers;
 
-				dout.writeByte(ObjectStreamConstants.TC_OBJECT);
-				dout.writeByte(ObjectStreamConstants.TC_REFERENCE);
-				dout.writeInt(ObjectStreamConstants.baseWireHandle);
-				REPEATING_DATA = byteOut.toByteArray();
-			}
-			catch (IOException e) {
-				throw new Error("IOException: " + e.getMessage());
-			}
+        private final byte[] FIRST_DATA;
 
-		}
+        private static byte[] HEADER;
 
-		public MockStream(Class<?> clazz) {
-			this.pointer = 0;
-			this.sequence = 0;
-			this.data = HEADER;
+        private static byte[] REPEATING_DATA;
 
-			// (byte) TC_OBJECT
-			// (byte) TC_CLASSDESC
-			// (short length)
-			// (byte * className.length)
-			// (long)serialVersionUID
-			// (byte) SC_SERIALIZABLE
-			// (short)0 <fields>
-			// TC_ENDBLOCKDATA
-			// TC_NULL
-			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-			DataOutputStream dout = new DataOutputStream(byteOut);
-			try {
-				dout.writeByte(ObjectStreamConstants.TC_OBJECT);
-				dout.writeByte(ObjectStreamConstants.TC_CLASSDESC);
-				dout.writeUTF(clazz.getName());
-				dout.writeLong(ObjectStreamClass.lookup(clazz).getSerialVersionUID());
-				dout.writeByte(ObjectStreamConstants.SC_SERIALIZABLE);
-				dout.writeShort((short) 0); // Zero fields
-				dout.writeByte(ObjectStreamConstants.TC_ENDBLOCKDATA);
-				dout.writeByte(ObjectStreamConstants.TC_NULL);
-			}
-			catch (IOException e) {
-				throw new Error("IOException: " + e.getMessage());
-			}
-			this.FIRST_DATA = byteOut.toByteArray();
-			buffers = new byte[][] { HEADER, FIRST_DATA, REPEATING_DATA };
-		}
+        static
+        {
+            initialize();
+        }
 
-		private void advanceBuffer() {
-			pointer = 0;
-			sequence = NEXT[sequence];
-			data = buffers[sequence];
-		}
+        private static void initialize()
+        {
+            try
+            {
+                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+                DataOutputStream dout = new DataOutputStream( byteOut );
+                dout.writeShort( ObjectStreamConstants.STREAM_MAGIC );
+                dout.writeShort( ObjectStreamConstants.STREAM_VERSION );
+                HEADER = byteOut.toByteArray();
 
-		@Override
-		public int read() throws IOException {
-			int result = data[pointer++];
-			if (pointer >= data.length) {
-				advanceBuffer();
-			}
+                byteOut = new ByteArrayOutputStream();
+                dout = new DataOutputStream( byteOut );
 
-			return result;
-		}
+                dout.writeByte( ObjectStreamConstants.TC_OBJECT );
+                dout.writeByte( ObjectStreamConstants.TC_REFERENCE );
+                dout.writeInt( ObjectStreamConstants.baseWireHandle );
+                REPEATING_DATA = byteOut.toByteArray();
+            }
+            catch ( IOException e )
+            {
+                throw new Error( "IOException: " + e.getMessage() );
+            }
 
-		@Override
-		public int available() throws IOException {
-			return Integer.MAX_VALUE;
-		}
+        }
 
-		@Override
-		public int read(byte[] b, int off, int len) throws IOException {
-			int left = len;
-			int remaining = data.length - pointer;
+        public MockStream( Class<?> clazz )
+        {
+            this.pointer = 0;
+            this.sequence = 0;
+            this.data = HEADER;
 
-			while (remaining <= left) {
-				System.arraycopy(data, pointer, b, off, remaining);
-				off += remaining;
-				left -= remaining;
-				advanceBuffer();
-				remaining = data.length - pointer;
-			}
-			if (left > 0) {
-				System.arraycopy(data, pointer, b, off, left);
-				pointer += left;
-			}
+            // (byte) TC_OBJECT
+            // (byte) TC_CLASSDESC
+            // (short length)
+            // (byte * className.length)
+            // (long)serialVersionUID
+            // (byte) SC_SERIALIZABLE
+            // (short)0 <fields>
+            // TC_ENDBLOCKDATA
+            // TC_NULL
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            DataOutputStream dout = new DataOutputStream( byteOut );
+            try
+            {
+                dout.writeByte( ObjectStreamConstants.TC_OBJECT );
+                dout.writeByte( ObjectStreamConstants.TC_CLASSDESC );
+                dout.writeUTF( clazz.getName() );
+                dout.writeLong( ObjectStreamClass.lookup( clazz ).getSerialVersionUID() );
+                dout.writeByte( ObjectStreamConstants.SC_SERIALIZABLE );
+                dout.writeShort( (short) 0 ); // Zero fields
+                dout.writeByte( ObjectStreamConstants.TC_ENDBLOCKDATA );
+                dout.writeByte( ObjectStreamConstants.TC_NULL );
+            }
+            catch ( IOException e )
+            {
+                throw new Error( "IOException: " + e.getMessage() );
+            }
+            this.FIRST_DATA = byteOut.toByteArray();
+            buffers = new byte[][] { HEADER, FIRST_DATA, REPEATING_DATA };
+        }
 
-			return len;
-		}
-	}
+        private void advanceBuffer()
+        {
+            pointer = 0;
+            sequence = NEXT[sequence];
+            data = buffers[sequence];
+        }
 
-	private ObjectInputStream inputStream;
+        @Override
+        public int read()
+            throws IOException
+        {
+            int result = data[pointer++];
+            if ( pointer >= data.length )
+            {
+                advanceBuffer();
+            }
 
-	public ObjectInputStreamInstantiator(Class<?> clazz) {
-		if (Serializable.class.isAssignableFrom(clazz)) {
-			try {
-				this.inputStream = new ObjectInputStream(new MockStream(clazz));
-			}
-			catch (IOException e) {
-				throw new Error("IOException: " + e.getMessage());
-			}
-		}
-		else {
-			throw new ObjenesisException(new NotSerializableException(clazz + " not serializable"));
-		}
-	}
+            return result;
+        }
 
-	@Override
-	public Object newInstance() {
-		try {
-			return inputStream.readObject();
-		}
-		catch (ClassNotFoundException e) {
-			throw new Error("ClassNotFoundException: " + e.getMessage());
-		}
-		catch (Exception e) {
-			throw new ObjenesisException(e);
-		}
-	}
+        @Override
+        public int available()
+            throws IOException
+        {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public int read( byte[] b, int off, int len )
+            throws IOException
+        {
+            int left = len;
+            int remaining = data.length - pointer;
+
+            while ( remaining <= left )
+            {
+                System.arraycopy( data, pointer, b, off, remaining );
+                off += remaining;
+                left -= remaining;
+                advanceBuffer();
+                remaining = data.length - pointer;
+            }
+            if ( left > 0 )
+            {
+                System.arraycopy( data, pointer, b, off, left );
+                pointer += left;
+            }
+
+            return len;
+        }
+    }
+
+    private ObjectInputStream inputStream;
+
+    public ObjectInputStreamInstantiator( Class<?> clazz )
+    {
+        if ( Serializable.class.isAssignableFrom( clazz ) )
+        {
+            try
+            {
+                this.inputStream = new ObjectInputStream( new MockStream( clazz ) );
+            }
+            catch ( IOException e )
+            {
+                throw new Error( "IOException: " + e.getMessage() );
+            }
+        }
+        else
+        {
+            throw new ObjenesisException( new NotSerializableException( clazz + " not serializable" ) );
+        }
+    }
+
+    @Override
+    public Object newInstance()
+    {
+        try
+        {
+            return inputStream.readObject();
+        }
+        catch ( ClassNotFoundException e )
+        {
+            throw new Error( "ClassNotFoundException: " + e.getMessage() );
+        }
+        catch ( Exception e )
+        {
+            throw new ObjenesisException( e );
+        }
+    }
 }

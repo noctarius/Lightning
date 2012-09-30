@@ -18,23 +18,29 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings("serial")
-public class IllegalAccessorException extends RuntimeException {
+@SuppressWarnings( "serial" )
+public class IllegalAccessorException
+    extends RuntimeException
+{
 
-	public IllegalAccessorException() {
-		super();
-	}
+    public IllegalAccessorException()
+    {
+        super();
+    }
 
-	public IllegalAccessorException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public IllegalAccessorException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-	public IllegalAccessorException(String message) {
-		super(message);
-	}
+    public IllegalAccessorException( String message )
+    {
+        super( message );
+    }
 
-	public IllegalAccessorException(Throwable cause) {
-		super(cause);
-	}
+    public IllegalAccessorException( Throwable cause )
+    {
+        super( cause );
+    }
 
 }

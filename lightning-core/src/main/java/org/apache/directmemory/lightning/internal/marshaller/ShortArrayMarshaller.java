@@ -26,63 +26,80 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class ShortArrayMarshaller
+    extends AbstractMarshaller
+{
 
-public class ShortArrayMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return short[].class == type || Short[].class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return short[].class == type || Short[].class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( !writePossibleNull( value, dataOutput ) )
+        {
+            return;
+        }
 
-		if (!writePossibleNull(value, dataOutput)) {
-			return;
-		}
+        if ( short[].class == propertyDescriptor.getType() )
+        {
+            short[] array = (short[]) value;
+            dataOutput.writeInt( array.length );
 
-		if (short[].class == propertyDescriptor.getType()) {
-			short[] array = (short[]) value;
-			dataOutput.writeInt(array.length);
+            for ( short arrayValue : array )
+            {
+                dataOutput.writeShort( arrayValue );
+            }
+        }
+        else
+        {
+            Short[] array = (Short[]) value;
+            dataOutput.writeInt( array.length );
 
-			for (short arrayValue : array) {
-				dataOutput.writeShort(arrayValue);
-			}
-		}
-		else {
-			Short[] array = (Short[]) value;
-			dataOutput.writeInt(array.length);
+            for ( short arrayValue : array )
+            {
+                dataOutput.writeShort( arrayValue );
+            }
+        }
+    }
 
-			for (short arrayValue : array) {
-				dataOutput.writeShort(arrayValue);
-			}
-		}
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( isNull( dataInput ) )
+        {
+            return null;
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (isNull(dataInput)) {
-			return null;
-		}
+        int size = dataInput.readInt();
+        if ( short[].class == propertyDescriptor.getType() )
+        {
+            short[] array = new short[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readShort();
+            }
 
-		int size = dataInput.readInt();
-		if (short[].class == propertyDescriptor.getType()) {
-			short[] array = new short[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readShort();
-			}
+            return (V) array;
+        }
+        else
+        {
+            Short[] array = new Short[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readShort();
+            }
 
-			return (V) array;
-		}
-		else {
-			Short[] array = new Short[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readShort();
-			}
-
-			return (V) array;
-		}
-	}
+            return (V) array;
+        }
+    }
 }

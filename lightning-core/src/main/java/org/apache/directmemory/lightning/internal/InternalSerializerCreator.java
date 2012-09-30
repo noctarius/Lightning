@@ -53,163 +53,208 @@ import org.apache.directmemory.lightning.metadata.ClassDescriptor;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 import org.apache.directmemory.lightning.metadata.ValueNullableEvaluator;
 
+public final class InternalSerializerCreator
+{
 
-public final class InternalSerializerCreator {
+    private final Map<Class<?>, InternalClassDescriptor> classDescriptors =
+        new HashMap<Class<?>, InternalClassDescriptor>();
 
-	private final Map<Class<?>, InternalClassDescriptor> classDescriptors = new HashMap<Class<?>, InternalClassDescriptor>();
-	private final List<SerializerDefinition> serializerDefinitions = new ArrayList<SerializerDefinition>();
-	private final Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
-	private final ObjectInstantiatorFactory objectInstantiatorFactory = new ObjenesisSerializer(true);
+    private final List<SerializerDefinition> serializerDefinitions = new ArrayList<SerializerDefinition>();
 
-	private ValueNullableEvaluator valueNullableEvaluator;
-	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
-	private Class<? extends Annotation> attributeAnnotation = Attribute.class;
-	private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
-	private File debugCacheDirectory = null;
-	private Logger logger = new LoggerAdapter();
+    private final Map<Class<?>, Marshaller> marshallers = new HashMap<Class<?>, Marshaller>();
 
-	public InternalSerializerCreator() {
-	}
+    private final ObjectInstantiatorFactory objectInstantiatorFactory = new ObjenesisSerializer( true );
 
-	public InternalSerializerCreator addSerializerDefinitions(Iterable<? extends SerializerDefinition> serializerDefinitions) {
-		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
-			this.serializerDefinitions.add(serializerDefinition);
-		}
+    private ValueNullableEvaluator valueNullableEvaluator;
 
-		return this;
-	}
+    private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 
-	public InternalSerializerCreator setDebugCacheDirectory(File debugCacheDirectory) {
-		this.debugCacheDirectory = debugCacheDirectory;
-		return this;
-	}
+    private Class<? extends Annotation> attributeAnnotation = Attribute.class;
 
-	public InternalSerializerCreator setLogger(Logger logger) {
-		this.logger = logger;
-		return this;
-	}
+    private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
 
-	public InternalSerializerCreator setAttributeAnnotation(Class<? extends Annotation> attributeAnnotation) {
-		this.attributeAnnotation = attributeAnnotation;
-		return this;
-	}
+    private File debugCacheDirectory = null;
 
-	public InternalSerializerCreator setSerializationStrategy(SerializationStrategy serializationStrategy) {
-		this.serializationStrategy = serializationStrategy;
-		return this;
-	}
+    private Logger logger = new LoggerAdapter();
 
-	public InternalSerializerCreator setClassComparisonStrategy(ClassComparisonStrategy classComparisonStrategy) {
-		this.classComparisonStrategy = classComparisonStrategy;
-		return this;
-	}
+    public InternalSerializerCreator()
+    {
+    }
 
-	public InternalSerializerCreator setValueNullableEvaluator(ValueNullableEvaluator valueNullableEvaluator) {
-		this.valueNullableEvaluator = valueNullableEvaluator;
-		return this;
-	}
+    public InternalSerializerCreator addSerializerDefinitions( Iterable<? extends SerializerDefinition> serializerDefinitions )
+    {
+        for ( SerializerDefinition serializerDefinition : serializerDefinitions )
+        {
+            this.serializerDefinitions.add( serializerDefinition );
+        }
 
-	public Serializer build() {
-		PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory(logger);
-		MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
-		DefinitionBuildingContext definitionBuildingContext = new InternalDefinitionBuildingContext(marshallerStrategy, propertyDescriptorFactory);
+        return this;
+    }
 
-		DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
-		for (SerializerDefinition serializerDefinition : serializerDefinitions) {
-			serializerDefinition.configure(definitionBuildingContext, objectInstantiatorFactory);
-			serializerDefinition.acceptVisitor(definitionVisitor);
-		}
+    public InternalSerializerCreator setDebugCacheDirectory( File debugCacheDirectory )
+    {
+        this.debugCacheDirectory = debugCacheDirectory;
+        return this;
+    }
 
-		Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>(Arrays.asList(ClassUtil.CLASS_DESCRIPTORS));
-		for (InternalClassDescriptor classDescriptor : classDescriptors.values()) {
-			classDefinitions.add(classDescriptor.build(ClassUtil.CLASS_DESCRIPTORS).getClassDefinition());
-		}
+    public InternalSerializerCreator setLogger( Logger logger )
+    {
+        this.logger = logger;
+        return this;
+    }
 
-		Map<Class<?>, ClassDescriptor> cleanedClassDescriptors = new HashMap<Class<?>, ClassDescriptor>(classDescriptors.size());
-		for (Entry<Class<?>, InternalClassDescriptor> entry : classDescriptors.entrySet()) {
-			cleanedClassDescriptors.put(entry.getKey(), entry.getValue());
-		}
+    public InternalSerializerCreator setAttributeAnnotation( Class<? extends Annotation> attributeAnnotation )
+    {
+        this.attributeAnnotation = attributeAnnotation;
+        return this;
+    }
 
-		return new InternalSerializer(new InternalClassDefinitionContainer(classDefinitions), serializationStrategy, classComparisonStrategy,
-				cleanedClassDescriptors, marshallers, objectInstantiatorFactory, logger, marshallerStrategy, debugCacheDirectory, valueNullableEvaluator);
-	}
+    public InternalSerializerCreator setSerializationStrategy( SerializationStrategy serializationStrategy )
+    {
+        this.serializationStrategy = serializationStrategy;
+        return this;
+    }
 
-	private InternalClassDescriptor findClassDescriptor(Class<?> type) {
-		InternalClassDescriptor classDescriptor = classDescriptors.get(type);
-		if (classDescriptor == null) {
-			classDescriptor = new InternalClassDescriptor(type, logger);
-			classDescriptors.put(type, classDescriptor);
-		}
+    public InternalSerializerCreator setClassComparisonStrategy( ClassComparisonStrategy classComparisonStrategy )
+    {
+        this.classComparisonStrategy = classComparisonStrategy;
+        return this;
+    }
 
-		return classDescriptor;
-	}
+    public InternalSerializerCreator setValueNullableEvaluator( ValueNullableEvaluator valueNullableEvaluator )
+    {
+        this.valueNullableEvaluator = valueNullableEvaluator;
+        return this;
+    }
 
-	private class InternalDefinitionVisitor implements DefinitionVisitor {
+    public Serializer build()
+    {
+        PropertyDescriptorFactory propertyDescriptorFactory = new InternalPropertyDescriptorFactory( logger );
+        MarshallerStrategy marshallerStrategy = new InternalMarshallerStrategy();
+        DefinitionBuildingContext definitionBuildingContext =
+            new InternalDefinitionBuildingContext( marshallerStrategy, propertyDescriptorFactory );
 
-		private final Stack<Class<? extends Annotation>> attributeAnnotation = new Stack<Class<? extends Annotation>>();
+        DefinitionVisitor definitionVisitor = new InternalDefinitionVisitor();
+        for ( SerializerDefinition serializerDefinition : serializerDefinitions )
+        {
+            serializerDefinition.configure( definitionBuildingContext, objectInstantiatorFactory );
+            serializerDefinition.acceptVisitor( definitionVisitor );
+        }
 
-		@Override
-		public void visitSerializerDefinition(SerializerDefinition serializerDefinition) {
-			// If at top level definition just add the base annotation
-			if (attributeAnnotation.size() == 0) {
-				if (InternalSerializerCreator.this.attributeAnnotation == null) {
-					attributeAnnotation.push(Attribute.class);
-				}
-				else {
-					attributeAnnotation.push(InternalSerializerCreator.this.attributeAnnotation);
-				}
-			}
-			else {
-				Class<? extends Annotation> annotation = attributeAnnotation.peek();
-				attributeAnnotation.push(annotation);
-			}
-		}
+        Set<ClassDefinition> classDefinitions =
+            new HashSet<ClassDefinition>( Arrays.asList( ClassUtil.CLASS_DESCRIPTORS ) );
+        for ( InternalClassDescriptor classDescriptor : classDescriptors.values() )
+        {
+            classDefinitions.add( classDescriptor.build( ClassUtil.CLASS_DESCRIPTORS ).getClassDefinition() );
+        }
 
-		@Override
-		public void visitAttributeAnnotation(Class<? extends Annotation> attributeAnnotation) {
-			// Remove last element and replace it with the real annotation to
-			// use right from that moment
-			this.attributeAnnotation.pop();
-			this.attributeAnnotation.push(attributeAnnotation);
-		}
+        Map<Class<?>, ClassDescriptor> cleanedClassDescriptors =
+            new HashMap<Class<?>, ClassDescriptor>( classDescriptors.size() );
+        for ( Entry<Class<?>, InternalClassDescriptor> entry : classDescriptors.entrySet() )
+        {
+            cleanedClassDescriptors.put( entry.getKey(), entry.getValue() );
+        }
 
-		@Override
-		public void visitClassDefine(Type type, Marshaller marshaller) {
-			Class<?> rawType = TypeUtil.getBaseType(type);
-			InternalClassDescriptor classDescriptor = findClassDescriptor(rawType);
-			classDescriptor.setMarshaller(marshaller);
+        return new InternalSerializer( new InternalClassDefinitionContainer( classDefinitions ), serializationStrategy,
+                                       classComparisonStrategy, cleanedClassDescriptors, marshallers,
+                                       objectInstantiatorFactory, logger, marshallerStrategy, debugCacheDirectory,
+                                       valueNullableEvaluator );
+    }
 
-			marshallers.put(rawType, marshaller);
-		}
+    private InternalClassDescriptor findClassDescriptor( Class<?> type )
+    {
+        InternalClassDescriptor classDescriptor = classDescriptors.get( type );
+        if ( classDescriptor == null )
+        {
+            classDescriptor = new InternalClassDescriptor( type, logger );
+            classDescriptors.put( type, classDescriptor );
+        }
 
-		@Override
-		public void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDefinedClass());
+        return classDescriptor;
+    }
 
-			if (logger.isTraceEnabled()) {
-				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
-						+ propertyDescriptor.getDefinedClass().getCanonicalName());
-			}
+    private class InternalDefinitionVisitor
+        implements DefinitionVisitor
+    {
 
-			classDescriptor.push(propertyDescriptor);
-		}
+        private final Stack<Class<? extends Annotation>> attributeAnnotation = new Stack<Class<? extends Annotation>>();
 
-		@Override
-		public void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller marshaller) {
-			InternalClassDescriptor classDescriptor = findClassDescriptor(propertyDescriptor.getDefinedClass());
+        @Override
+        public void visitSerializerDefinition( SerializerDefinition serializerDefinition )
+        {
+            // If at top level definition just add the base annotation
+            if ( attributeAnnotation.size() == 0 )
+            {
+                if ( InternalSerializerCreator.this.attributeAnnotation == null )
+                {
+                    attributeAnnotation.push( Attribute.class );
+                }
+                else
+                {
+                    attributeAnnotation.push( InternalSerializerCreator.this.attributeAnnotation );
+                }
+            }
+            else
+            {
+                Class<? extends Annotation> annotation = attributeAnnotation.peek();
+                attributeAnnotation.push( annotation );
+            }
+        }
 
-			if (logger.isTraceEnabled()) {
-				logger.trace("Found property " + propertyDescriptor.getName() + " (" + propertyDescriptor.getInternalSignature() + ") on type "
-						+ propertyDescriptor.getDefinedClass().getCanonicalName());
-			}
+        @Override
+        public void visitAttributeAnnotation( Class<? extends Annotation> attributeAnnotation )
+        {
+            // Remove last element and replace it with the real annotation to
+            // use right from that moment
+            this.attributeAnnotation.pop();
+            this.attributeAnnotation.push( attributeAnnotation );
+        }
 
-			classDescriptor.push(propertyDescriptor);
-		}
+        @Override
+        public void visitClassDefine( Type type, Marshaller marshaller )
+        {
+            Class<?> rawType = TypeUtil.getBaseType( type );
+            InternalClassDescriptor classDescriptor = findClassDescriptor( rawType );
+            classDescriptor.setMarshaller( marshaller );
 
-		@Override
-		public void visitFinalizeSerializerDefinition(SerializerDefinition serializerDefinition) {
-			// Clean this level up
-			this.attributeAnnotation.pop();
-		}
-	}
+            marshallers.put( rawType, marshaller );
+        }
+
+        @Override
+        public void visitAnnotatedAttribute( PropertyDescriptor propertyDescriptor, Marshaller marshaller )
+        {
+            InternalClassDescriptor classDescriptor = findClassDescriptor( propertyDescriptor.getDefinedClass() );
+
+            if ( logger.isTraceEnabled() )
+            {
+                logger.trace( "Found property " + propertyDescriptor.getName() + " ("
+                    + propertyDescriptor.getInternalSignature() + ") on type "
+                    + propertyDescriptor.getDefinedClass().getCanonicalName() );
+            }
+
+            classDescriptor.push( propertyDescriptor );
+        }
+
+        @Override
+        public void visitPropertyDescriptor( PropertyDescriptor propertyDescriptor, Marshaller marshaller )
+        {
+            InternalClassDescriptor classDescriptor = findClassDescriptor( propertyDescriptor.getDefinedClass() );
+
+            if ( logger.isTraceEnabled() )
+            {
+                logger.trace( "Found property " + propertyDescriptor.getName() + " ("
+                    + propertyDescriptor.getInternalSignature() + ") on type "
+                    + propertyDescriptor.getDefinedClass().getCanonicalName() );
+            }
+
+            classDescriptor.push( propertyDescriptor );
+        }
+
+        @Override
+        public void visitFinalizeSerializerDefinition( SerializerDefinition serializerDefinition )
+        {
+            // Clean this level up
+            this.attributeAnnotation.pop();
+        }
+    }
 }

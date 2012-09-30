@@ -18,10 +18,11 @@
  */
 package org.apache.directmemory.lightning.bindings;
 
-public interface AnnotatedBinder {
+public interface AnnotatedBinder
+{
 
-	AnnotatedBinder exclude(String property);
+    AnnotatedBinder exclude( String property );
 
-	AnnotatedBinder excludes(String... properties);
+    AnnotatedBinder excludes( String... properties );
 
 }

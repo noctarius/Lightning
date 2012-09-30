@@ -26,33 +26,43 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
-public class MavenGeneratorTestCase {
+public class MavenGeneratorTestCase
+{
 
-	@Test
-	public void testGeneration() throws Exception {
-		File target = new File("target/classes");
-		assertTrue(recursiveSearchClassFile("FooLightningGeneratedMarshaller.class", target));
+    @Test
+    public void testGeneration()
+        throws Exception
+    {
+        File target = new File( "target/classes" );
+        assertTrue( recursiveSearchClassFile( "FooLightningGeneratedMarshaller.class", target ) );
 
-		File testfile = new File(getClass().getClassLoader().getResource("generated.java.out").toURI());
-		File generatedFile = new File("target/generated-sources/lightning/org/apache/directmemory/lightning/maven/integration/FooLightningGeneratedMarshaller.java");
-		String expected = SupportUtil.readAllText(testfile, Charset.forName("UTF-8"));
-		String result = SupportUtil.readAllText(generatedFile, Charset.forName("UTF-8"));
-		assertEquals(expected, result);
-	}
+        File testfile = new File( getClass().getClassLoader().getResource( "generated.java.out" ).toURI() );
+        File generatedFile =
+            new File(
+                      "target/generated-sources/lightning/org/apache/directmemory/lightning/maven/integration/FooLightningGeneratedMarshaller.java" );
+        String expected = SupportUtil.readAllText( testfile, Charset.forName( "UTF-8" ) );
+        String result = SupportUtil.readAllText( generatedFile, Charset.forName( "UTF-8" ) );
+        assertEquals( expected, result );
+    }
 
-	private boolean recursiveSearchClassFile(String classFile, File path) {
-		if (path.isFile() && path.getName().equals(classFile)) {
-			return true;
-		}
+    private boolean recursiveSearchClassFile( String classFile, File path )
+    {
+        if ( path.isFile() && path.getName().equals( classFile ) )
+        {
+            return true;
+        }
 
-		if (path.isDirectory()) {
-			for (File childPath : path.listFiles()) {
-				if (recursiveSearchClassFile(classFile, childPath)) {
-					return true;
-				}
-			}
-		}
+        if ( path.isDirectory() )
+        {
+            for ( File childPath : path.listFiles() )
+            {
+                if ( recursiveSearchClassFile( classFile, childPath ) )
+                {
+                    return true;
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

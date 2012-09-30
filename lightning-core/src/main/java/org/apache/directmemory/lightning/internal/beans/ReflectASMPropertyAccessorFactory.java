@@ -29,113 +29,137 @@ import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 import com.esotericsoftware.reflectasm.FieldAccess;
 import com.esotericsoftware.reflectasm.MethodAccess;
 
-public class ReflectASMPropertyAccessorFactory implements PropertyAccessorFactory {
+public class ReflectASMPropertyAccessorFactory
+    implements PropertyAccessorFactory
+{
 
-	private final Map<Class<?>, MethodAccess> methodAccessCache = new HashMap<Class<?>, MethodAccess>();
-	private final Map<Class<?>, FieldAccess> fieldAccessCache = new HashMap<Class<?>, FieldAccess>();
+    private final Map<Class<?>, MethodAccess> methodAccessCache = new HashMap<Class<?>, MethodAccess>();
 
-	@Override
-	public PropertyAccessor fieldAccess(Field field, Class<?> definedClass) {
-		if (field.getType().isArray()) {
-			return null;
-		}
+    private final Map<Class<?>, FieldAccess> fieldAccessCache = new HashMap<Class<?>, FieldAccess>();
 
-		try {
-			return buildForField(field, definedClass);
-		}
-		catch (IllegalArgumentException e) {
-			// If field is not public
-			return null;
-		}
-	}
+    @Override
+    public PropertyAccessor fieldAccess( Field field, Class<?> definedClass )
+    {
+        if ( field.getType().isArray() )
+        {
+            return null;
+        }
 
-	@Override
-	public PropertyAccessor methodAccess(Method method, Class<?> definedClass) {
-		if (method.getReturnType().isArray()) {
-			return null;
-		}
+        try
+        {
+            return buildForField( field, definedClass );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            // If field is not public
+            return null;
+        }
+    }
 
-		try {
-			return buildForMethod(method, definedClass);
-		}
-		catch (IllegalArgumentException e) {
-			return null;
-		}
-	}
+    @Override
+    public PropertyAccessor methodAccess( Method method, Class<?> definedClass )
+    {
+        if ( method.getReturnType().isArray() )
+        {
+            return null;
+        }
 
-	private FieldAccess getFieldAccess(Field field) {
-		Class<?> declaringClass = field.getDeclaringClass();
+        try
+        {
+            return buildForMethod( method, definedClass );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            return null;
+        }
+    }
 
-		FieldAccess fieldAccess = fieldAccessCache.get(declaringClass);
-		if (fieldAccess != null) {
-			return fieldAccess;
-		}
+    private FieldAccess getFieldAccess( Field field )
+    {
+        Class<?> declaringClass = field.getDeclaringClass();
 
-		fieldAccess = FieldAccess.get(declaringClass);
-		fieldAccessCache.put(declaringClass, fieldAccess);
+        FieldAccess fieldAccess = fieldAccessCache.get( declaringClass );
+        if ( fieldAccess != null )
+        {
+            return fieldAccess;
+        }
 
-		return fieldAccess;
-	}
+        fieldAccess = FieldAccess.get( declaringClass );
+        fieldAccessCache.put( declaringClass, fieldAccess );
 
-	private MethodAccess getMethodAccess(Method method) {
-		Class<?> definedClass = method.getDeclaringClass();
+        return fieldAccess;
+    }
 
-		MethodAccess methodAccess = methodAccessCache.get(definedClass);
-		if (methodAccess != null) {
-			return methodAccess;
-		}
+    private MethodAccess getMethodAccess( Method method )
+    {
+        Class<?> definedClass = method.getDeclaringClass();
 
-		methodAccess = MethodAccess.get(definedClass);
-		methodAccessCache.put(definedClass, methodAccess);
+        MethodAccess methodAccess = methodAccessCache.get( definedClass );
+        if ( methodAccess != null )
+        {
+            return methodAccess;
+        }
 
-		return methodAccess;
-	}
+        methodAccess = MethodAccess.get( definedClass );
+        methodAccessCache.put( definedClass, methodAccess );
 
-	private PropertyAccessor buildForField(Field field, Class<?> definedClass) {
-		final FieldAccess fieldAccess = getFieldAccess(field);
-		final int fieldIndex = fieldAccess.getIndex(field.getName());
-		return new FieldValuePropertyAccessor(field, definedClass) {
+        return methodAccess;
+    }
 
-			@Override
-			public <T> void writeObject(Object instance, T value) {
-				fieldAccess.set(instance, fieldIndex, value);
-			}
+    private PropertyAccessor buildForField( Field field, Class<?> definedClass )
+    {
+        final FieldAccess fieldAccess = getFieldAccess( field );
+        final int fieldIndex = fieldAccess.getIndex( field.getName() );
+        return new FieldValuePropertyAccessor( field, definedClass )
+        {
 
-			@Override
-			@SuppressWarnings("unchecked")
-			public <T> T readObject(Object instance) {
-				return (T) fieldAccess.get(instance, fieldIndex);
-			}
-		};
-	}
+            @Override
+            public <T> void writeObject( Object instance, T value )
+            {
+                fieldAccess.set( instance, fieldIndex, value );
+            }
 
-	private PropertyAccessor buildForMethod(Method method, Class<?> definedClass) {
-		final MethodAccess methodAccess = getMethodAccess(method);
+            @Override
+            @SuppressWarnings( "unchecked" )
+            public <T> T readObject( Object instance )
+            {
+                return (T) fieldAccess.get( instance, fieldIndex );
+            }
+        };
+    }
 
-		Method getter = BeanUtil.findGetterMethod(method);
-		Method setter = BeanUtil.findSetterMethod(method);
+    private PropertyAccessor buildForMethod( Method method, Class<?> definedClass )
+    {
+        final MethodAccess methodAccess = getMethodAccess( method );
 
-		final int getterMethodIndex = methodAccess.getIndex(getter.getName(), method.getParameterTypes());
-		final int setterMethodIndex = methodAccess.getIndex(setter.getName(), method.getParameterTypes());
+        Method getter = BeanUtil.findGetterMethod( method );
+        Method setter = BeanUtil.findSetterMethod( method );
 
-		return new MethodValuePropertyAccessor(setter, getter, definedClass) {
+        final int getterMethodIndex = methodAccess.getIndex( getter.getName(), method.getParameterTypes() );
+        final int setterMethodIndex = methodAccess.getIndex( setter.getName(), method.getParameterTypes() );
 
-			@Override
-			public void writeShort(Object instance, short value) {
-				writeObject(instance, value);
-			}
+        return new MethodValuePropertyAccessor( setter, getter, definedClass )
+        {
 
-			@Override
-			public <T> void writeObject(Object instance, T value) {
-				methodAccess.invoke(instance, setterMethodIndex, value);
-			}
+            @Override
+            public void writeShort( Object instance, short value )
+            {
+                writeObject( instance, value );
+            }
 
-			@Override
-			@SuppressWarnings("unchecked")
-			public <T> T readObject(Object instance) {
-				return (T) methodAccess.invoke(instance, getterMethodIndex);
-			}
+            @Override
+            public <T> void writeObject( Object instance, T value )
+            {
+                methodAccess.invoke( instance, setterMethodIndex, value );
+            }
 
-		};
-	}
+            @Override
+            @SuppressWarnings( "unchecked" )
+            public <T> T readObject( Object instance )
+            {
+                return (T) methodAccess.invoke( instance, getterMethodIndex );
+            }
+
+        };
+    }
 }

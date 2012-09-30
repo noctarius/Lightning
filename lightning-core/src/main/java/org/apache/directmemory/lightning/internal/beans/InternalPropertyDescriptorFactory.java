@@ -28,25 +28,29 @@ import org.apache.directmemory.lightning.logging.Logger;
 import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class InternalPropertyDescriptorFactory
+    implements PropertyDescriptorFactory
+{
 
-public class InternalPropertyDescriptorFactory implements PropertyDescriptorFactory {
+    private final PropertyAccessorStrategy propertyAccessorStrategy;
 
-	private final PropertyAccessorStrategy propertyAccessorStrategy;
+    public InternalPropertyDescriptorFactory( Logger logger )
+    {
+        propertyAccessorStrategy = new PropertyAccessorStrategy( logger );
+    }
 
-	public InternalPropertyDescriptorFactory(Logger logger) {
-		propertyAccessorStrategy = new PropertyAccessorStrategy(logger);
-	}
+    @Override
+    public PropertyDescriptor byMethod( Method method, Marshaller marshaller, Class<?> definedClass )
+    {
+        PropertyAccessor propertyAccessor = propertyAccessorStrategy.byMethod( method, definedClass );
+        String propertyName = BeanUtil.buildPropertyName( method );
+        return new InternalPropertyDescriptor( propertyName, marshaller, method.getAnnotations(), propertyAccessor );
+    }
 
-	@Override
-	public PropertyDescriptor byMethod(Method method, Marshaller marshaller, Class<?> definedClass) {
-		PropertyAccessor propertyAccessor = propertyAccessorStrategy.byMethod(method, definedClass);
-		String propertyName = BeanUtil.buildPropertyName(method);
-		return new InternalPropertyDescriptor(propertyName, marshaller, method.getAnnotations(), propertyAccessor);
-	}
-
-	@Override
-	public PropertyDescriptor byField(Field field, Marshaller marshaller, Class<?> definedClass) {
-		PropertyAccessor propertyAccessor = propertyAccessorStrategy.byField(field, definedClass);
-		return new InternalPropertyDescriptor(field.getName(), marshaller, field.getAnnotations(), propertyAccessor);
-	}
+    @Override
+    public PropertyDescriptor byField( Field field, Marshaller marshaller, Class<?> definedClass )
+    {
+        PropertyAccessor propertyAccessor = propertyAccessorStrategy.byField( field, definedClass );
+        return new InternalPropertyDescriptor( field.getName(), marshaller, field.getAnnotations(), propertyAccessor );
+    }
 }

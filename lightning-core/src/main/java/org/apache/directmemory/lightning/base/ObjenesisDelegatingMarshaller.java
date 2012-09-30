@@ -27,34 +27,44 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiatorFactory;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+class ObjenesisDelegatingMarshaller
+    implements Marshaller
+{
 
-class ObjenesisDelegatingMarshaller implements Marshaller {
+    private final ObjectInstantiatorFactory objectInstantiatorFactory;
 
-	private final ObjectInstantiatorFactory objectInstantiatorFactory;
-	private final AbstractObjectMarshaller delegatedMarshaller;
+    private final AbstractObjectMarshaller delegatedMarshaller;
 
-	ObjenesisDelegatingMarshaller(AbstractObjectMarshaller delegatedMarshaller, ObjectInstantiatorFactory objectInstantiatorFactory) {
-		this.delegatedMarshaller = delegatedMarshaller;
-		this.objectInstantiatorFactory = objectInstantiatorFactory;
-	}
+    ObjenesisDelegatingMarshaller( AbstractObjectMarshaller delegatedMarshaller,
+                                   ObjectInstantiatorFactory objectInstantiatorFactory )
+    {
+        this.delegatedMarshaller = delegatedMarshaller;
+        this.objectInstantiatorFactory = objectInstantiatorFactory;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return delegatedMarshaller.acceptType(type);
-	}
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return delegatedMarshaller.acceptType( type );
+    }
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-		delegatedMarshaller.marshall(value, propertyDescriptor, dataOutput, serializationContext);
-	}
+        delegatedMarshaller.marshall( value, propertyDescriptor, dataOutput, serializationContext );
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		V value = (V) objectInstantiatorFactory.newInstance(propertyDescriptor.getType());
-		return delegatedMarshaller.unmarshall(value, propertyDescriptor, dataInput, serializationContext);
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        V value = (V) objectInstantiatorFactory.newInstance( propertyDescriptor.getType() );
+        return delegatedMarshaller.unmarshall( value, propertyDescriptor, dataInput, serializationContext );
+    }
 
 }

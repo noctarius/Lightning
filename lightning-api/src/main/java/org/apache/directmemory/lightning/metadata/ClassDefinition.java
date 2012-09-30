@@ -18,16 +18,17 @@
  */
 package org.apache.directmemory.lightning.metadata;
 
-public interface ClassDefinition {
+public interface ClassDefinition
+{
 
-	String getCanonicalName();
+    String getCanonicalName();
 
-	Class<?> getType();
+    Class<?> getType();
 
-	byte[] getChecksum();
+    byte[] getChecksum();
 
-	long getId();
+    long getId();
 
-	long getSerialVersionUID();
+    long getSerialVersionUID();
 
 }

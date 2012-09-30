@@ -23,11 +23,11 @@ import java.lang.reflect.Method;
 
 import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 
+public interface PropertyAccessorFactory
+{
 
-public interface PropertyAccessorFactory {
+    PropertyAccessor fieldAccess( Field field, Class<?> definedClass );
 
-	PropertyAccessor fieldAccess(Field field, Class<?> definedClass);
-
-	PropertyAccessor methodAccess(Method method, Class<?> definedClass);
+    PropertyAccessor methodAccess( Method method, Class<?> definedClass );
 
 }

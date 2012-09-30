@@ -19,7 +19,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 <plugin>
-   <extension
-         point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
-   </extension>
+  <extension
+    point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
+  </extension>
 </plugin>

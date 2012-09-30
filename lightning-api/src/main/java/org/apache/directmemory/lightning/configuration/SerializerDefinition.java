@@ -22,10 +22,11 @@ import org.apache.directmemory.lightning.generator.DefinitionBuildingContext;
 import org.apache.directmemory.lightning.generator.DefinitionVisitor;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiatorFactory;
 
-public interface SerializerDefinition {
+public interface SerializerDefinition
+{
 
-	void configure(DefinitionBuildingContext definitionBuildingContext, ObjectInstantiatorFactory instantiator);
+    void configure( DefinitionBuildingContext definitionBuildingContext, ObjectInstantiatorFactory instantiator );
 
-	void acceptVisitor(DefinitionVisitor visitor);
+    void acceptVisitor( DefinitionVisitor visitor );
 
 }

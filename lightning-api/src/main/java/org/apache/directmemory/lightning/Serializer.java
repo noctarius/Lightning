@@ -28,27 +28,27 @@ import java.nio.ByteBuffer;
 
 import org.apache.directmemory.lightning.metadata.ClassDefinitionContainer;
 
+public interface Serializer
+{
 
-public interface Serializer {
+    ClassDefinitionContainer getClassDefinitionContainer();
 
-	ClassDefinitionContainer getClassDefinitionContainer();
+    void setClassDefinitionContainer( ClassDefinitionContainer classDefinitionContainer );
 
-	void setClassDefinitionContainer(ClassDefinitionContainer classDefinitionContainer);
+    <V> void serialize( V value, DataOutput dataOutput );
 
-	<V> void serialize(V value, DataOutput dataOutput);
+    <V> void serialize( V value, OutputStream outputStream );
 
-	<V> void serialize(V value, OutputStream outputStream);
+    <V> void serialize( V value, Writer writer );
 
-	<V> void serialize(V value, Writer writer);
+    <V> void serialize( V value, ByteBuffer buffer );
 
-	<V> void serialize(V value, ByteBuffer buffer);
+    <V> V deserialize( DataInput dataInput );
 
-	<V> V deserialize(DataInput dataInput);
+    <V> V deserialize( InputStream inputStream );
 
-	<V> V deserialize(InputStream inputStream);
+    <V> V deserialize( Reader reader );
 
-	<V> V deserialize(Reader reader);
-
-	<V> V deserialize(ByteBuffer buffer);
+    <V> V deserialize( ByteBuffer buffer );
 
 }

@@ -26,36 +26,47 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class BooleanMarshaller
+    extends AbstractMarshaller
+{
 
-public class BooleanMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return boolean.class == type || Boolean.class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return boolean.class == type || Boolean.class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( Boolean.class == propertyDescriptor.getType() )
+        {
+            if ( !writePossibleNull( value, dataOutput ) )
+            {
+                return;
+            }
+        }
 
-		if (Boolean.class == propertyDescriptor.getType()) {
-			if (!writePossibleNull(value, dataOutput)) {
-				return;
-			}
-		}
+        dataOutput.writeBoolean( (Boolean) value );
+    }
 
-		dataOutput.writeBoolean((Boolean) value);
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( Boolean.class == propertyDescriptor.getType() )
+        {
+            if ( isNull( dataInput ) )
+            {
+                return null;
+            }
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (Boolean.class == propertyDescriptor.getType()) {
-			if (isNull(dataInput)) {
-				return null;
-			}
-		}
-
-		return (V) Boolean.valueOf(dataInput.readBoolean());
-	}
+        return (V) Boolean.valueOf( dataInput.readBoolean() );
+    }
 }

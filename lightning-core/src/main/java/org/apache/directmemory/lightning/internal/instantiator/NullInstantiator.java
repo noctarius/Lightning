@@ -25,13 +25,16 @@ import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
  * 
  * @author Henri Tremblay
  */
-public class NullInstantiator implements ObjectInstantiator {
+public class NullInstantiator
+    implements ObjectInstantiator
+{
 
-	/**
-	 * @return Always null
-	 */
-	@Override
-	public Object newInstance() {
-		return null;
-	}
+    /**
+     * @return Always null
+     */
+    @Override
+    public Object newInstance()
+    {
+        return null;
+    }
 }

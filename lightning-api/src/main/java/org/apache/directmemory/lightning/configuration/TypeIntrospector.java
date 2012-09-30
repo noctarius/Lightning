@@ -26,10 +26,11 @@ import org.apache.directmemory.lightning.MarshallerStrategy;
 import org.apache.directmemory.lightning.generator.PropertyDescriptorFactory;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public interface TypeIntrospector
+{
 
-public interface TypeIntrospector {
-
-	List<PropertyDescriptor> introspect(Type type, MarshallerStrategy marshallerStrategy, MarshallerContext marshallerContext,
-			PropertyDescriptorFactory propertyDescriptorFactory);
+    List<PropertyDescriptor> introspect( Type type, MarshallerStrategy marshallerStrategy,
+                                         MarshallerContext marshallerContext,
+                                         PropertyDescriptorFactory propertyDescriptorFactory );
 
 }

@@ -28,11 +28,12 @@ import org.apache.directmemory.lightning.instantiator.ObjectInstantiatorFactory;
 import org.apache.directmemory.lightning.internal.ClassDescriptorAwareSerializer;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public interface MarshallerGenerator
+{
 
-public interface MarshallerGenerator {
-
-	Marshaller generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors, Map<Class<?>, Marshaller> marshallers,
-			ClassDescriptorAwareSerializer serializer, SerializationStrategy serializationStrategy, ObjectInstantiatorFactory objectInstantiatorFactory,
-			File debugCacheDirectory);
+    Marshaller generateMarshaller( Class<?> type, List<PropertyDescriptor> propertyDescriptors,
+                                   Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
+                                   SerializationStrategy serializationStrategy,
+                                   ObjectInstantiatorFactory objectInstantiatorFactory, File debugCacheDirectory );
 
 }

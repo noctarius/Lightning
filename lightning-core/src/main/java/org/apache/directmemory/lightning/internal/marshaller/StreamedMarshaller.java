@@ -27,24 +27,31 @@ import org.apache.directmemory.lightning.Streamed;
 import org.apache.directmemory.lightning.base.AbstractObjectMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class StreamedMarshaller
+    extends AbstractObjectMarshaller
+{
 
-public class StreamedMarshaller extends AbstractObjectMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return Streamed.class.isAssignableFrom( type );
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return Streamed.class.isAssignableFrom(type);
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        ( (Streamed) value ).writeTo( dataOutput );
+    }
 
-		((Streamed) value).writeTo(dataOutput);
-	}
-
-	@Override
-	public <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		((Streamed) value).readFrom(dataInput);
-		return value;
-	}
+    @Override
+    public <V> V unmarshall( V value, PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        ( (Streamed) value ).readFrom( dataInput );
+        return value;
+    }
 }

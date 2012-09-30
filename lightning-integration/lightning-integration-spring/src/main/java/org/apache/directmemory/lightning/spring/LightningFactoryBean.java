@@ -33,104 +33,131 @@ import org.apache.directmemory.lightning.metadata.Attribute;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
+public class LightningFactoryBean
+    implements FactoryBean, InitializingBean
+{
 
-public class LightningFactoryBean implements FactoryBean, InitializingBean {
+    private Serializer singletonSerializer;
 
-	private Serializer singletonSerializer;
+    private boolean prototype = false;
 
-	private boolean prototype = false;
-	private List<SerializerDefinition> serializerDefinitions = new ArrayList<SerializerDefinition>();
-	private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
-	private Class<? extends Annotation> attributesAnnotation = Attribute.class;
-	private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
-	private Logger logger = new SpringLoggingAdapter();
-	private File debugCacheDirectory = null;
+    private List<SerializerDefinition> serializerDefinitions = new ArrayList<SerializerDefinition>();
 
-	@Override
-	public Object getObject() throws Exception {
-		if (isSingleton()) {
-			return singletonSerializer;
-		}
+    private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
 
-		return Lightning.newBuilder().classComparisonStrategy(classComparisonStrategy).debugCacheDirectory(debugCacheDirectory)
-				.describesAttributs(attributesAnnotation).logger(logger).serializationStrategy(serializationStrategy)
-				.serializerDefinitions(serializerDefinitions).build();
-	}
+    private Class<? extends Annotation> attributesAnnotation = Attribute.class;
 
-	@Override
-	public Class<?> getObjectType() {
-		return Serializer.class;
-	}
+    private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 
-	@Override
-	public boolean isSingleton() {
-		return !prototype;
-	}
+    private Logger logger = new SpringLoggingAdapter();
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (isSingleton()) {
-			synchronized (this) {
-				singletonSerializer = Lightning.newBuilder().classComparisonStrategy(classComparisonStrategy).debugCacheDirectory(debugCacheDirectory)
-						.describesAttributs(attributesAnnotation).logger(logger).serializationStrategy(serializationStrategy)
-						.serializerDefinitions(serializerDefinitions).build();
-			}
-		}
-	}
+    private File debugCacheDirectory = null;
 
-	public void setPrototype(boolean prototype) {
-		this.prototype = prototype;
-	}
+    @Override
+    public Object getObject()
+        throws Exception
+    {
+        if ( isSingleton() )
+        {
+            return singletonSerializer;
+        }
 
-	public boolean getPrototype() {
-		return prototype;
-	}
+        return Lightning.newBuilder().classComparisonStrategy( classComparisonStrategy ).debugCacheDirectory( debugCacheDirectory ).describesAttributs( attributesAnnotation ).logger( logger ).serializationStrategy( serializationStrategy ).serializerDefinitions( serializerDefinitions ).build();
+    }
 
-	public List<SerializerDefinition> getSerializerDefinitions() {
-		return serializerDefinitions;
-	}
+    @Override
+    public Class<?> getObjectType()
+    {
+        return Serializer.class;
+    }
 
-	public void setSerializerDefinitions(List<SerializerDefinition> serializerDefinitions) {
-		this.serializerDefinitions = serializerDefinitions;
-	}
+    @Override
+    public boolean isSingleton()
+    {
+        return !prototype;
+    }
 
-	public ClassComparisonStrategy getClassComparisonStrategy() {
-		return classComparisonStrategy;
-	}
+    @Override
+    public void afterPropertiesSet()
+        throws Exception
+    {
+        if ( isSingleton() )
+        {
+            synchronized ( this )
+            {
+                singletonSerializer =
+                    Lightning.newBuilder().classComparisonStrategy( classComparisonStrategy ).debugCacheDirectory( debugCacheDirectory ).describesAttributs( attributesAnnotation ).logger( logger ).serializationStrategy( serializationStrategy ).serializerDefinitions( serializerDefinitions ).build();
+            }
+        }
+    }
 
-	public void setClassComparisonStrategy(ClassComparisonStrategy classComparisonStrategy) {
-		this.classComparisonStrategy = classComparisonStrategy;
-	}
+    public void setPrototype( boolean prototype )
+    {
+        this.prototype = prototype;
+    }
 
-	public File getDebugCacheDirectory() {
-		return debugCacheDirectory;
-	}
+    public boolean getPrototype()
+    {
+        return prototype;
+    }
 
-	public void setDebugCacheDirectory(File debugCacheDirectory) {
-		this.debugCacheDirectory = debugCacheDirectory;
-	}
+    public List<SerializerDefinition> getSerializerDefinitions()
+    {
+        return serializerDefinitions;
+    }
 
-	public Class<? extends Annotation> getAttributesAnnotation() {
-		return attributesAnnotation;
-	}
+    public void setSerializerDefinitions( List<SerializerDefinition> serializerDefinitions )
+    {
+        this.serializerDefinitions = serializerDefinitions;
+    }
 
-	public void setAttributesAnnotation(Class<? extends Annotation> attributesAnnotation) {
-		this.attributesAnnotation = attributesAnnotation;
-	}
+    public ClassComparisonStrategy getClassComparisonStrategy()
+    {
+        return classComparisonStrategy;
+    }
 
-	public Logger getLogger() {
-		return logger;
-	}
+    public void setClassComparisonStrategy( ClassComparisonStrategy classComparisonStrategy )
+    {
+        this.classComparisonStrategy = classComparisonStrategy;
+    }
 
-	public void setLogger(Logger logger) {
-		this.logger = logger;
-	}
+    public File getDebugCacheDirectory()
+    {
+        return debugCacheDirectory;
+    }
 
-	public SerializationStrategy getSerializationStrategy() {
-		return serializationStrategy;
-	}
+    public void setDebugCacheDirectory( File debugCacheDirectory )
+    {
+        this.debugCacheDirectory = debugCacheDirectory;
+    }
 
-	public void setSerializationStrategy(SerializationStrategy serializationStrategy) {
-		this.serializationStrategy = serializationStrategy;
-	}
+    public Class<? extends Annotation> getAttributesAnnotation()
+    {
+        return attributesAnnotation;
+    }
+
+    public void setAttributesAnnotation( Class<? extends Annotation> attributesAnnotation )
+    {
+        this.attributesAnnotation = attributesAnnotation;
+    }
+
+    public Logger getLogger()
+    {
+        return logger;
+    }
+
+    public void setLogger( Logger logger )
+    {
+        this.logger = logger;
+    }
+
+    public SerializationStrategy getSerializationStrategy()
+    {
+        return serializationStrategy;
+    }
+
+    public void setSerializationStrategy( SerializationStrategy serializationStrategy )
+    {
+        this.serializationStrategy = serializationStrategy;
+    }
 }

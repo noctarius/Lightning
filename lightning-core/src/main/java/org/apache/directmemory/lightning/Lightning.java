@@ -34,84 +34,103 @@ import org.apache.directmemory.lightning.logging.Logger;
 import org.apache.directmemory.lightning.logging.LoggerAdapter;
 import org.apache.directmemory.lightning.metadata.ValueNullableEvaluator;
 
+public final class Lightning
+{
 
-public final class Lightning {
+    private Lightning()
+    {
+    }
 
-	private Lightning() {
-	}
+    public static final Builder newBuilder()
+    {
+        return new Builder();
+    }
 
-	public static final Builder newBuilder() {
-		return new Builder();
-	}
+    public static final Serializer createSerializer( SerializerDefinition... serializerDefinitions )
+    {
+        return createSerializer( Arrays.asList( serializerDefinitions ) );
+    }
 
-	public static final Serializer createSerializer(SerializerDefinition... serializerDefinitions) {
-		return createSerializer(Arrays.asList(serializerDefinitions));
-	}
+    public static final Serializer createSerializer( Iterable<? extends SerializerDefinition> serializerDefinitions )
+    {
+        return new Builder().serializerDefinitions( serializerDefinitions ).build();
+    }
 
-	public static final Serializer createSerializer(Iterable<? extends SerializerDefinition> serializerDefinitions) {
-		return new Builder().serializerDefinitions(serializerDefinitions).build();
-	}
+    public static class Builder
+    {
 
-	public static class Builder {
+        private Set<SerializerDefinition> serializerDefinitions = new HashSet<SerializerDefinition>();
 
-		private Set<SerializerDefinition> serializerDefinitions = new HashSet<SerializerDefinition>();
-		private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
-		private Class<? extends Annotation> attributeAnnotation = null;
-		private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
-		private ValueNullableEvaluator valueNullableEvaluator = new DefaultValueNullableEvaluator();
-		private File debugCacheDirectory = null;
-		private Logger logger = new LoggerAdapter();
+        private SerializationStrategy serializationStrategy = SerializationStrategy.SpeedOptimized;
 
-		private Builder() {
-		}
+        private Class<? extends Annotation> attributeAnnotation = null;
 
-		public Builder describesAttributs(Class<? extends Annotation> attributeAnnotation) {
-			this.attributeAnnotation = attributeAnnotation;
-			return this;
-		}
+        private ClassComparisonStrategy classComparisonStrategy = ClassComparisonStrategy.LightningChecksum;
 
-		public Builder debugCacheDirectory(File debugCacheDirectory) {
-			this.debugCacheDirectory = debugCacheDirectory;
-			return this;
-		}
+        private ValueNullableEvaluator valueNullableEvaluator = new DefaultValueNullableEvaluator();
 
-		public Builder serializationStrategy(SerializationStrategy serializationStrategy) {
-			this.serializationStrategy = serializationStrategy;
-			return this;
-		}
+        private File debugCacheDirectory = null;
 
-		public Builder classComparisonStrategy(ClassComparisonStrategy classComparisonStrategy) {
-			this.classComparisonStrategy = classComparisonStrategy;
-			return this;
-		}
+        private Logger logger = new LoggerAdapter();
 
-		public Builder serializerDefinitions(SerializerDefinition... serializerDefinitions) {
-			return serializerDefinitions(Arrays.asList(serializerDefinitions));
-		}
+        private Builder()
+        {
+        }
 
-		public Builder serializerDefinitions(Iterable<? extends SerializerDefinition> serializerDefinitions) {
-			for (SerializerDefinition serializerDefinition : serializerDefinitions) {
-				this.serializerDefinitions.add(serializerDefinition);
-			}
-			return this;
-		}
+        public Builder describesAttributs( Class<? extends Annotation> attributeAnnotation )
+        {
+            this.attributeAnnotation = attributeAnnotation;
+            return this;
+        }
 
-		public Builder setValueNullableEvaluator(ValueNullableEvaluator valueNullableEvaluator) {
-			this.valueNullableEvaluator = valueNullableEvaluator;
-			return this;
-		}
+        public Builder debugCacheDirectory( File debugCacheDirectory )
+        {
+            this.debugCacheDirectory = debugCacheDirectory;
+            return this;
+        }
 
-		public Builder logger(Logger logger) {
-			this.logger = logger;
-			return this;
-		}
+        public Builder serializationStrategy( SerializationStrategy serializationStrategy )
+        {
+            this.serializationStrategy = serializationStrategy;
+            return this;
+        }
 
-		public Serializer build() {
-			return new InternalSerializerCreator().setLogger(logger).setSerializationStrategy(serializationStrategy)
-					.setClassComparisonStrategy(classComparisonStrategy).setAttributeAnnotation(attributeAnnotation)
-					.setDebugCacheDirectory(debugCacheDirectory).setValueNullableEvaluator(valueNullableEvaluator)
-					.addSerializerDefinitions(serializerDefinitions).build();
-		}
-	}
+        public Builder classComparisonStrategy( ClassComparisonStrategy classComparisonStrategy )
+        {
+            this.classComparisonStrategy = classComparisonStrategy;
+            return this;
+        }
+
+        public Builder serializerDefinitions( SerializerDefinition... serializerDefinitions )
+        {
+            return serializerDefinitions( Arrays.asList( serializerDefinitions ) );
+        }
+
+        public Builder serializerDefinitions( Iterable<? extends SerializerDefinition> serializerDefinitions )
+        {
+            for ( SerializerDefinition serializerDefinition : serializerDefinitions )
+            {
+                this.serializerDefinitions.add( serializerDefinition );
+            }
+            return this;
+        }
+
+        public Builder setValueNullableEvaluator( ValueNullableEvaluator valueNullableEvaluator )
+        {
+            this.valueNullableEvaluator = valueNullableEvaluator;
+            return this;
+        }
+
+        public Builder logger( Logger logger )
+        {
+            this.logger = logger;
+            return this;
+        }
+
+        public Serializer build()
+        {
+            return new InternalSerializerCreator().setLogger( logger ).setSerializationStrategy( serializationStrategy ).setClassComparisonStrategy( classComparisonStrategy ).setAttributeAnnotation( attributeAnnotation ).setDebugCacheDirectory( debugCacheDirectory ).setValueNullableEvaluator( valueNullableEvaluator ).addSerializerDefinitions( serializerDefinitions ).build();
+        }
+    }
 
 }

@@ -26,36 +26,47 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class ByteMarshaller
+    extends AbstractMarshaller
+{
 
-public class ByteMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return byte.class == type || Byte.class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return byte.class == type || Byte.class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( Byte.class == propertyDescriptor.getType() )
+        {
+            if ( !writePossibleNull( value, dataOutput ) )
+            {
+                return;
+            }
+        }
 
-		if (Byte.class == propertyDescriptor.getType()) {
-			if (!writePossibleNull(value, dataOutput)) {
-				return;
-			}
-		}
+        dataOutput.writeByte( (Byte) value );
+    }
 
-		dataOutput.writeByte((Byte) value);
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( Byte.class == propertyDescriptor.getType() )
+        {
+            if ( isNull( dataInput ) )
+            {
+                return null;
+            }
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (Byte.class == propertyDescriptor.getType()) {
-			if (isNull(dataInput)) {
-				return null;
-			}
-		}
-
-		return (V) Byte.valueOf(dataInput.readByte());
-	}
+        return (V) Byte.valueOf( dataInput.readByte() );
+    }
 }

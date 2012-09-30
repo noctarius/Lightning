@@ -25,28 +25,28 @@ import org.apache.directmemory.lightning.internal.instantiator.strategy.Serializ
  * 
  * @author Henri Tremblay
  */
-public class ObjenesisSerializer extends ObjenesisBase {
+public class ObjenesisSerializer
+    extends ObjenesisBase
+{
 
-	/**
-	 * Default constructor using the
-	 * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy}
-	 */
-	public ObjenesisSerializer() {
-		super(new SerializingInstantiatorStrategy());
-	}
+    /**
+     * Default constructor using the
+     * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy}
+     */
+    public ObjenesisSerializer()
+    {
+        super( new SerializingInstantiatorStrategy() );
+    }
 
-	/**
-	 * Instance using the
-	 * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy}
-	 * with or without caching
-	 * {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator}s
-	 * 
-	 * @param useCache
-	 *            If
-	 *            {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator} s
-	 *            should be cached
-	 */
-	public ObjenesisSerializer(boolean useCache) {
-		super(new SerializingInstantiatorStrategy(), useCache);
-	}
+    /**
+     * Instance using the
+     * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.SerializingInstantiatorStrategy} with or
+     * without caching {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator}s
+     * 
+     * @param useCache If {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator} s should be cached
+     */
+    public ObjenesisSerializer( boolean useCache )
+    {
+        super( new SerializingInstantiatorStrategy(), useCache );
+    }
 }

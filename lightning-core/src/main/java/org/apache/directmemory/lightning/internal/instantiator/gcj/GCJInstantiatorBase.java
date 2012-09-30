@@ -25,53 +25,64 @@ import java.lang.reflect.Method;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
 import org.apache.directmemory.lightning.internal.instantiator.ObjenesisException;
 
-
 /**
- * Base class for GCJ-based instantiators. It initializes reflection access to
- * method
- * ObjectInputStream.newObject, as well as creating a dummy ObjectInputStream to
- * be used as the
- * "this" argument for the method.
+ * Base class for GCJ-based instantiators. It initializes reflection access to method ObjectInputStream.newObject, as
+ * well as creating a dummy ObjectInputStream to be used as the "this" argument for the method.
  * 
  * @author Leonardo Mesquita
  */
-public abstract class GCJInstantiatorBase implements ObjectInstantiator {
+public abstract class GCJInstantiatorBase
+    implements ObjectInstantiator
+{
 
-	protected static Method newObjectMethod = null;
-	protected static ObjectInputStream dummyStream;
+    protected static Method newObjectMethod = null;
 
-	private static class DummyStream extends ObjectInputStream {
+    protected static ObjectInputStream dummyStream;
 
-		public DummyStream() throws IOException {
-		}
-	}
+    private static class DummyStream
+        extends ObjectInputStream
+    {
 
-	private static void initialize() {
-		if (newObjectMethod == null) {
-			try {
-				newObjectMethod = ObjectInputStream.class.getDeclaredMethod("newObject", new Class[] { Class.class, Class.class });
-				newObjectMethod.setAccessible(true);
-				dummyStream = new DummyStream();
-			}
-			catch (RuntimeException e) {
-				throw new ObjenesisException(e);
-			}
-			catch (NoSuchMethodException e) {
-				throw new ObjenesisException(e);
-			}
-			catch (IOException e) {
-				throw new ObjenesisException(e);
-			}
-		}
-	}
+        public DummyStream()
+            throws IOException
+        {
+        }
+    }
 
-	protected final Class<?> type;
+    private static void initialize()
+    {
+        if ( newObjectMethod == null )
+        {
+            try
+            {
+                newObjectMethod =
+                    ObjectInputStream.class.getDeclaredMethod( "newObject", new Class[] { Class.class, Class.class } );
+                newObjectMethod.setAccessible( true );
+                dummyStream = new DummyStream();
+            }
+            catch ( RuntimeException e )
+            {
+                throw new ObjenesisException( e );
+            }
+            catch ( NoSuchMethodException e )
+            {
+                throw new ObjenesisException( e );
+            }
+            catch ( IOException e )
+            {
+                throw new ObjenesisException( e );
+            }
+        }
+    }
 
-	public GCJInstantiatorBase(Class<?> type) {
-		this.type = type;
-		initialize();
-	}
+    protected final Class<?> type;
 
-	@Override
-	public abstract Object newInstance();
+    public GCJInstantiatorBase( Class<?> type )
+    {
+        this.type = type;
+        initialize();
+    }
+
+    @Override
+    public abstract Object newInstance();
 }

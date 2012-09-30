@@ -36,55 +36,66 @@ import org.apache.directmemory.lightning.internal.util.BeanUtil;
 import org.apache.directmemory.lightning.internal.util.TypeUtil;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class AnnotatedTypeIntrospector
+    implements TypeIntrospector
+{
 
-public class AnnotatedTypeIntrospector implements TypeIntrospector {
+    private final Class<? extends Annotation> annotationType;
 
-	private final Class<? extends Annotation> annotationType;
-	private final List<String> excludes;
+    private final List<String> excludes;
 
-	public AnnotatedTypeIntrospector(Class<? extends Annotation> annotationType, List<String> excludes) {
-		this.annotationType = annotationType;
-		this.excludes = excludes;
-	}
+    public AnnotatedTypeIntrospector( Class<? extends Annotation> annotationType, List<String> excludes )
+    {
+        this.annotationType = annotationType;
+        this.excludes = excludes;
+    }
 
-	@Override
-	public List<PropertyDescriptor> introspect(Type type, MarshallerStrategy marshallerStrategy, MarshallerContext marshallerContext,
-			PropertyDescriptorFactory propertyDescriptorFactory) {
+    @Override
+    public List<PropertyDescriptor> introspect( Type type, MarshallerStrategy marshallerStrategy,
+                                                MarshallerContext marshallerContext,
+                                                PropertyDescriptorFactory propertyDescriptorFactory )
+    {
 
-		if (!(type instanceof Class)) {
-			return Collections.emptyList();
-		}
+        if ( !( type instanceof Class ) )
+        {
+            return Collections.emptyList();
+        }
 
-		Class<?> clazz = (Class<?>) type;
-		Set<Field> properties = BeanUtil.findPropertiesByClass(clazz, annotationType);
+        Class<?> clazz = (Class<?>) type;
+        Set<Field> properties = BeanUtil.findPropertiesByClass( clazz, annotationType );
 
-		List<PropertyDescriptor> propertyDescriptors = new ArrayList<PropertyDescriptor>();
-		for (Field property : properties) {
-			if (isExcluded(property.getName())) {
-				continue;
-			}
+        List<PropertyDescriptor> propertyDescriptors = new ArrayList<PropertyDescriptor>();
+        for ( Field property : properties )
+        {
+            if ( isExcluded( property.getName() ) )
+            {
+                continue;
+            }
 
-			Class<?> fieldType = property.getType();
+            Class<?> fieldType = property.getType();
 
-			Marshaller marshaller = marshallerStrategy.getMarshaller(fieldType, marshallerContext, false);
+            Marshaller marshaller = marshallerStrategy.getMarshaller( fieldType, marshallerContext, false );
 
-			if (marshaller == null && fieldType.isArray()) {
-				marshaller = marshallerStrategy.getMarshaller(fieldType.getComponentType(), marshallerContext, false);
-			}
+            if ( marshaller == null && fieldType.isArray() )
+            {
+                marshaller = marshallerStrategy.getMarshaller( fieldType.getComponentType(), marshallerContext, false );
+            }
 
-			if (marshaller instanceof TypeBindableMarshaller) {
-				Type[] typeArguments = TypeUtil.getTypeArgument(property.getGenericType());
-				marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
-			}
+            if ( marshaller instanceof TypeBindableMarshaller )
+            {
+                Type[] typeArguments = TypeUtil.getTypeArgument( property.getGenericType() );
+                marshaller = ( (TypeBindableMarshaller) marshaller ).bindType( typeArguments );
+            }
 
-			propertyDescriptors.add(propertyDescriptorFactory.byField(property, marshaller, clazz));
-		}
+            propertyDescriptors.add( propertyDescriptorFactory.byField( property, marshaller, clazz ) );
+        }
 
-		return propertyDescriptors;
-	}
+        return propertyDescriptors;
+    }
 
-	private boolean isExcluded(String propertyName) {
-		return excludes.contains(propertyName);
-	}
+    private boolean isExcluded( String propertyName )
+    {
+        return excludes.contains( propertyName );
+    }
 
 }

@@ -26,21 +26,29 @@ import org.apache.directmemory.lightning.Marshaller;
 import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public abstract class AbstractMarshaller
+    implements Marshaller
+{
 
-public abstract class AbstractMarshaller implements Marshaller {
+    @Override
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        return null;
+    }
 
-	@Override
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		return null;
-	}
+    protected boolean writePossibleNull( Object value, DataOutput dataOutput )
+        throws IOException
+    {
+        dataOutput.writeByte( value == null ? 1 : 0 );
+        return value != null;
+    }
 
-	protected boolean writePossibleNull(Object value, DataOutput dataOutput) throws IOException {
-		dataOutput.writeByte(value == null ? 1 : 0);
-		return value != null;
-	}
-
-	protected boolean isNull(DataInput dataInput) throws IOException {
-		byte isNull = dataInput.readByte();
-		return isNull == 1 ? true : false;
-	}
+    protected boolean isNull( DataInput dataInput )
+        throws IOException
+    {
+        byte isNull = dataInput.readByte();
+        return isNull == 1 ? true : false;
+    }
 }

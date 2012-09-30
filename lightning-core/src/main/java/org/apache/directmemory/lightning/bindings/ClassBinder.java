@@ -23,21 +23,21 @@ import java.lang.annotation.Annotation;
 import org.apache.directmemory.lightning.Marshaller;
 import org.apache.directmemory.lightning.configuration.TypeIntrospector;
 
+public interface ClassBinder<T>
+{
 
-public interface ClassBinder<T> {
+    AnnotatedBinder attributes();
 
-	AnnotatedBinder attributes();
+    AnnotatedBinder attributes( Class<? extends Annotation> annotation );
 
-	AnnotatedBinder attributes(Class<? extends Annotation> annotation);
+    void attributes( AttributeBinder<?>... attributes );
 
-	void attributes(AttributeBinder<?>... attributes);
+    void using( Class<?> clazz );
 
-	void using(Class<?> clazz);
+    void using( Marshaller marshaller );
 
-	void using(Marshaller marshaller);
+    void using( TypeIntrospector typeIntrospector );
 
-	void using(TypeIntrospector typeIntrospector);
-
-	Class<T> getType();
+    Class<T> getType();
 
 }

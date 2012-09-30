@@ -37,119 +37,149 @@ import org.apache.directmemory.lightning.metadata.ValueNullableEvaluator;
 import com.carrotsearch.hppc.LongObjectMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 
-public class InternalSerializationContext implements SerializationContext {
+public class InternalSerializationContext
+    implements SerializationContext
+{
 
-	private final Map<Object, Long> referencesMarshall;
-	private final LongObjectMap<Object> referencesUnmarshall;
-	private final MarshallerContext marshallerContext = new InternalMarshallerContext();
+    private final Map<Object, Long> referencesMarshall;
 
-	private final ClassDefinitionContainer classDefinitionContainer;
-	private final SerializationStrategy serializationStrategy;
-	private final MarshallerStrategy marshallerStrategy;
-	private final ObjectInstantiatorFactory objectInstantiatorFactory;
-	private final ValueNullableEvaluator valueNullableEvaluator;
+    private final LongObjectMap<Object> referencesUnmarshall;
 
-	private long nextReferenceIdMarshall = 10000;
+    private final MarshallerContext marshallerContext = new InternalMarshallerContext();
 
-	public InternalSerializationContext(ClassDefinitionContainer classDefinitionContainer, SerializationStrategy serializationStrategy,
-			MarshallerStrategy marshallerStrategy, ObjectInstantiatorFactory objectInstantiatorFactory, ValueNullableEvaluator valueNullableEvaluator,
-			Map<Class<?>, Marshaller> definedMarshallers) {
+    private final ClassDefinitionContainer classDefinitionContainer;
 
-		this.classDefinitionContainer = classDefinitionContainer;
-		this.serializationStrategy = serializationStrategy;
-		this.marshallerStrategy = marshallerStrategy;
-		this.objectInstantiatorFactory = objectInstantiatorFactory;
-		this.valueNullableEvaluator = valueNullableEvaluator;
+    private final SerializationStrategy serializationStrategy;
 
-		for (Entry<Class<?>, Marshaller> entry : definedMarshallers.entrySet()) {
-			this.marshallerContext.bindMarshaller(entry.getKey(), entry.getValue());
-		}
+    private final MarshallerStrategy marshallerStrategy;
 
-		if (serializationStrategy == SerializationStrategy.SizeOptimized) {
-			this.referencesMarshall = new IdentityHashMap<Object, Long>();
-			this.referencesUnmarshall = new LongObjectOpenHashMap<Object>();
-		}
-		else {
-			this.referencesMarshall = null;
-			this.referencesUnmarshall = null;
-		}
-	}
+    private final ObjectInstantiatorFactory objectInstantiatorFactory;
 
-	@Override
-	public ClassDefinitionContainer getClassDefinitionContainer() {
-		return classDefinitionContainer;
-	}
+    private final ValueNullableEvaluator valueNullableEvaluator;
 
-	@Override
-	public SerializationStrategy getSerializationStrategy() {
-		return serializationStrategy;
-	}
+    private long nextReferenceIdMarshall = 10000;
 
-	@Override
-	public ObjectInstantiatorFactory getObjectInstantiatorFactory() {
-		return objectInstantiatorFactory;
-	}
+    public InternalSerializationContext( ClassDefinitionContainer classDefinitionContainer,
+                                         SerializationStrategy serializationStrategy,
+                                         MarshallerStrategy marshallerStrategy,
+                                         ObjectInstantiatorFactory objectInstantiatorFactory,
+                                         ValueNullableEvaluator valueNullableEvaluator,
+                                         Map<Class<?>, Marshaller> definedMarshallers )
+    {
 
-	@Override
-	public long findReferenceIdByObject(Object instance) {
-		Long referenceId = referencesMarshall.get(instance);
-		if (referenceId == null) {
-			return -1;
-		}
-		return referenceId;
-	}
+        this.classDefinitionContainer = classDefinitionContainer;
+        this.serializationStrategy = serializationStrategy;
+        this.marshallerStrategy = marshallerStrategy;
+        this.objectInstantiatorFactory = objectInstantiatorFactory;
+        this.valueNullableEvaluator = valueNullableEvaluator;
 
-	@Override
-	public long putMarshalledInstance(Object instance) {
-		long newId = getNextReferenceIdMarshall();
-		referencesMarshall.put(instance, newId);
-		return newId;
-	}
+        for ( Entry<Class<?>, Marshaller> entry : definedMarshallers.entrySet() )
+        {
+            this.marshallerContext.bindMarshaller( entry.getKey(), entry.getValue() );
+        }
 
-	@Override
-	public Object findObjectByReferenceId(long referenceId) {
-		return referencesUnmarshall.get(referenceId);
-	}
+        if ( serializationStrategy == SerializationStrategy.SizeOptimized )
+        {
+            this.referencesMarshall = new IdentityHashMap<Object, Long>();
+            this.referencesUnmarshall = new LongObjectOpenHashMap<Object>();
+        }
+        else
+        {
+            this.referencesMarshall = null;
+            this.referencesUnmarshall = null;
+        }
+    }
 
-	@Override
-	public boolean containsReferenceId(long referenceId) {
-		return referencesUnmarshall.containsKey(referenceId);
-	}
+    @Override
+    public ClassDefinitionContainer getClassDefinitionContainer()
+    {
+        return classDefinitionContainer;
+    }
 
-	@Override
-	public long putUnmarshalledInstance(long refrenceId, Object instance) {
-		referencesUnmarshall.put(refrenceId, instance);
-		return refrenceId;
-	}
+    @Override
+    public SerializationStrategy getSerializationStrategy()
+    {
+        return serializationStrategy;
+    }
 
-	@Override
-	public Marshaller findMarshaller(Type type) {
-		Class<?> rawType = TypeUtil.getBaseType(type);
-		Marshaller marshaller = marshallerStrategy.getMarshaller(rawType, marshallerContext, false);
+    @Override
+    public ObjectInstantiatorFactory getObjectInstantiatorFactory()
+    {
+        return objectInstantiatorFactory;
+    }
 
-		if (marshaller instanceof TypeBindableMarshaller) {
-			Type[] typeArguments = TypeUtil.getTypeArgument(type);
-			marshaller = ((TypeBindableMarshaller) marshaller).bindType(typeArguments);
-		}
+    @Override
+    public long findReferenceIdByObject( Object instance )
+    {
+        Long referenceId = referencesMarshall.get( instance );
+        if ( referenceId == null )
+        {
+            return -1;
+        }
+        return referenceId;
+    }
 
-		return marshaller;
-	}
+    @Override
+    public long putMarshalledInstance( Object instance )
+    {
+        long newId = getNextReferenceIdMarshall();
+        referencesMarshall.put( instance, newId );
+        return newId;
+    }
 
-	public Map<Object, Long> getReferencesMarshall() {
-		return referencesMarshall;
-	}
+    @Override
+    public Object findObjectByReferenceId( long referenceId )
+    {
+        return referencesUnmarshall.get( referenceId );
+    }
 
-	public LongObjectMap<Object> getReferencesUnmarshall() {
-		return referencesUnmarshall;
-	}
+    @Override
+    public boolean containsReferenceId( long referenceId )
+    {
+        return referencesUnmarshall.containsKey( referenceId );
+    }
 
-	public long getNextReferenceIdMarshall() {
-		long newId = nextReferenceIdMarshall++;
-		return newId;
-	}
+    @Override
+    public long putUnmarshalledInstance( long refrenceId, Object instance )
+    {
+        referencesUnmarshall.put( refrenceId, instance );
+        return refrenceId;
+    }
 
-	@Override
-	public ValueNullableEvaluator getValueNullableEvaluator() {
-		return valueNullableEvaluator;
-	}
+    @Override
+    public Marshaller findMarshaller( Type type )
+    {
+        Class<?> rawType = TypeUtil.getBaseType( type );
+        Marshaller marshaller = marshallerStrategy.getMarshaller( rawType, marshallerContext, false );
+
+        if ( marshaller instanceof TypeBindableMarshaller )
+        {
+            Type[] typeArguments = TypeUtil.getTypeArgument( type );
+            marshaller = ( (TypeBindableMarshaller) marshaller ).bindType( typeArguments );
+        }
+
+        return marshaller;
+    }
+
+    public Map<Object, Long> getReferencesMarshall()
+    {
+        return referencesMarshall;
+    }
+
+    public LongObjectMap<Object> getReferencesUnmarshall()
+    {
+        return referencesUnmarshall;
+    }
+
+    public long getNextReferenceIdMarshall()
+    {
+        long newId = nextReferenceIdMarshall++;
+        return newId;
+    }
+
+    @Override
+    public ValueNullableEvaluator getValueNullableEvaluator()
+    {
+        return valueNullableEvaluator;
+    }
 }

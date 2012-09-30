@@ -37,156 +37,195 @@ import org.apache.directmemory.lightning.metadata.ClassDefinitionContainer;
 import com.carrotsearch.hppc.LongObjectMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 
-class InternalClassDefinitionContainer implements ClassDefinitionContainer, Serializable {
+class InternalClassDefinitionContainer
+    implements ClassDefinitionContainer, Serializable
+{
 
-	private static final long serialVersionUID = -8496850178968208567L;
+    private static final long serialVersionUID = -8496850178968208567L;
 
-	private final ClassDefinition[] classDefinitions;
-	private final LongObjectMap<ClassDefinition> classDefinitionsMappings;
+    private final ClassDefinition[] classDefinitions;
 
-	// Serialization
-	private InternalClassDefinitionContainer(ClassDefinition[] classDefinitions) {
-		this.classDefinitions = classDefinitions;
-		this.classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>();
-	}
+    private final LongObjectMap<ClassDefinition> classDefinitionsMappings;
 
-	InternalClassDefinitionContainer(Set<ClassDefinition> classDefinitions) {
-		this.classDefinitions = classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]);
-		this.classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>(classDefinitions.size());
-		initMappings(this.classDefinitions);
-	}
+    // Serialization
+    private InternalClassDefinitionContainer( ClassDefinition[] classDefinitions )
+    {
+        this.classDefinitions = classDefinitions;
+        this.classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>();
+    }
 
-	@Override
-	public Collection<ClassDefinition> getClassDefinitions() {
-		return Arrays.asList(Arrays.copyOf(classDefinitions, classDefinitions.length));
-	}
+    InternalClassDefinitionContainer( Set<ClassDefinition> classDefinitions )
+    {
+        this.classDefinitions = classDefinitions.toArray( new ClassDefinition[classDefinitions.size()] );
+        this.classDefinitionsMappings = new LongObjectOpenHashMap<ClassDefinition>( classDefinitions.size() );
+        initMappings( this.classDefinitions );
+    }
 
-	@Override
-	public Class<?> getTypeById(long id) {
-		ClassDefinition classDefinition = classDefinitionsMappings.get(id);
-		return classDefinition != null ? classDefinition.getType() : null;
-	}
+    @Override
+    public Collection<ClassDefinition> getClassDefinitions()
+    {
+        return Arrays.asList( Arrays.copyOf( classDefinitions, classDefinitions.length ) );
+    }
 
-	@Override
-	public ClassDefinition getClassDefinitionByCanonicalName(String canonicalName) {
-		for (ClassDefinition classDefinition : classDefinitions) {
-			if (classDefinition.getCanonicalName().equals(canonicalName)) {
-				return classDefinition;
-			}
-		}
-		return null;
-	}
+    @Override
+    public Class<?> getTypeById( long id )
+    {
+        ClassDefinition classDefinition = classDefinitionsMappings.get( id );
+        return classDefinition != null ? classDefinition.getType() : null;
+    }
 
-	@Override
-	public ClassDefinition getClassDefinitionById(long id) {
-		ClassDefinition classDefinition = classDefinitionsMappings.get(id);
-		return classDefinition != null ? classDefinition : null;
-	}
+    @Override
+    public ClassDefinition getClassDefinitionByCanonicalName( String canonicalName )
+    {
+        for ( ClassDefinition classDefinition : classDefinitions )
+        {
+            if ( classDefinition.getCanonicalName().equals( canonicalName ) )
+            {
+                return classDefinition;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public ClassDefinition getClassDefinitionByType(Class<?> type) {
-		if (List.class.isAssignableFrom(type)) {
-			type = List.class;
-		}
-		else if (Set.class.isAssignableFrom(type)) {
-			type = Set.class;
-		}
-		else if (Map.class.isAssignableFrom(type)) {
-			type = Map.class;
-		}
+    @Override
+    public ClassDefinition getClassDefinitionById( long id )
+    {
+        ClassDefinition classDefinition = classDefinitionsMappings.get( id );
+        return classDefinition != null ? classDefinition : null;
+    }
 
-		for (ClassDefinition classDefinition : classDefinitions) {
-			if (classDefinition.getType() == type) {
-				return classDefinition;
-			}
-		}
-		return null;
-	}
+    @Override
+    public ClassDefinition getClassDefinitionByType( Class<?> type )
+    {
+        if ( List.class.isAssignableFrom( type ) )
+        {
+            type = List.class;
+        }
+        else if ( Set.class.isAssignableFrom( type ) )
+        {
+            type = Set.class;
+        }
+        else if ( Map.class.isAssignableFrom( type ) )
+        {
+            type = Map.class;
+        }
 
-	private void initMappings(ClassDefinition[] classDefinitions) {
-		for (ClassDefinition classDefinition : classDefinitions) {
-			classDefinitionsMappings.put(classDefinition.getId(), classDefinition);
-		}
-	}
+        for ( ClassDefinition classDefinition : classDefinitions )
+        {
+            if ( classDefinition.getType() == type )
+            {
+                return classDefinition;
+            }
+        }
+        return null;
+    }
 
-	Object writeReplace() {
-		return new InternalClassDefinitionProxy(this);
-	}
+    private void initMappings( ClassDefinition[] classDefinitions )
+    {
+        for ( ClassDefinition classDefinition : classDefinitions )
+        {
+            classDefinitionsMappings.put( classDefinition.getId(), classDefinition );
+        }
+    }
 
-	/**
-	 * SerializationProxy
-	 */
-	private static class InternalClassDefinitionProxy implements Externalizable {
+    Object writeReplace()
+    {
+        return new InternalClassDefinitionProxy( this );
+    }
 
-		private static final long serialVersionUID = 3127589236225504001L;
+    /**
+     * SerializationProxy
+     */
+    private static class InternalClassDefinitionProxy
+        implements Externalizable
+    {
 
-		private final InternalClassDefinitionContainer classDefinitionContainer;
-		private ClassDefinition[] classDefinitions;
+        private static final long serialVersionUID = 3127589236225504001L;
 
-		@SuppressWarnings("unused")
-		public InternalClassDefinitionProxy() {
-			this.classDefinitionContainer = null;
-		}
+        private final InternalClassDefinitionContainer classDefinitionContainer;
 
-		private InternalClassDefinitionProxy(InternalClassDefinitionContainer classDefinitionContainer) {
-			this.classDefinitionContainer = classDefinitionContainer;
-		}
+        private ClassDefinition[] classDefinitions;
 
-		@Override
-		public void writeExternal(ObjectOutput out) throws IOException {
-			List<ClassDefinition> selectedClassDefinitions = new ArrayList<ClassDefinition>();
-			for (ClassDefinition classDefinition : classDefinitionContainer.classDefinitions) {
-				if (classDefinition.getId() < 1000) {
-					continue;
-				}
+        @SuppressWarnings( "unused" )
+        public InternalClassDefinitionProxy()
+        {
+            this.classDefinitionContainer = null;
+        }
 
-				selectedClassDefinitions.add(classDefinition);
-			}
+        private InternalClassDefinitionProxy( InternalClassDefinitionContainer classDefinitionContainer )
+        {
+            this.classDefinitionContainer = classDefinitionContainer;
+        }
 
-			out.writeInt(selectedClassDefinitions.size());
-			for (ClassDefinition classDefinition : selectedClassDefinitions) {
-				final long id = classDefinition.getId();
-				final byte[] checksum = classDefinition.getChecksum();
-				final String canonicalName = classDefinition.getCanonicalName();
-				final long serialVersionUID = classDefinition.getSerialVersionUID();
+        @Override
+        public void writeExternal( ObjectOutput out )
+            throws IOException
+        {
+            List<ClassDefinition> selectedClassDefinitions = new ArrayList<ClassDefinition>();
+            for ( ClassDefinition classDefinition : classDefinitionContainer.classDefinitions )
+            {
+                if ( classDefinition.getId() < 1000 )
+                {
+                    continue;
+                }
 
-				out.writeLong(id);
-				out.writeUTF(canonicalName);
-				out.write(checksum);
-				out.writeLong(serialVersionUID);
-			}
-		}
+                selectedClassDefinitions.add( classDefinition );
+            }
 
-		@Override
-		public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-			int size = in.readInt();
+            out.writeInt( selectedClassDefinitions.size() );
+            for ( ClassDefinition classDefinition : selectedClassDefinitions )
+            {
+                final long id = classDefinition.getId();
+                final byte[] checksum = classDefinition.getChecksum();
+                final String canonicalName = classDefinition.getCanonicalName();
+                final long serialVersionUID = classDefinition.getSerialVersionUID();
 
-			classDefinitions = new ClassDefinition[size + ClassUtil.CLASS_DESCRIPTORS.length];
-			for (int i = 0; i < ClassUtil.CLASS_DESCRIPTORS.length; i++) {
-				classDefinitions[i] = ClassUtil.CLASS_DESCRIPTORS[i];
-			}
+                out.writeLong( id );
+                out.writeUTF( canonicalName );
+                out.write( checksum );
+                out.writeLong( serialVersionUID );
+            }
+        }
 
-			for (int i = 0; i < size; i++) {
-				final long id = in.readLong();
-				final String canonicalName = in.readUTF();
-				final byte[] checksum = new byte[20];
-				in.readFully(checksum);
-				final long serialVersionUID = in.readLong();
+        @Override
+        public void readExternal( ObjectInput in )
+            throws IOException, ClassNotFoundException
+        {
+            int size = in.readInt();
 
-				try {
-					Class<?> type = ClassUtil.loadClass(canonicalName);
-					classDefinitions[i + ClassUtil.CLASS_DESCRIPTORS.length] = new InternalClassDefinition(id, type, checksum, serialVersionUID);
-				}
-				catch (ClassNotFoundException e) {
-					throw new IOException("Class " + canonicalName + " could not be loaded", e);
-				}
-			}
-		}
+            classDefinitions = new ClassDefinition[size + ClassUtil.CLASS_DESCRIPTORS.length];
+            for ( int i = 0; i < ClassUtil.CLASS_DESCRIPTORS.length; i++ )
+            {
+                classDefinitions[i] = ClassUtil.CLASS_DESCRIPTORS[i];
+            }
 
-		private Object readResolve() {
-			InternalClassDefinitionContainer classDefinitionContainer = new InternalClassDefinitionContainer(classDefinitions);
-			classDefinitionContainer.initMappings(classDefinitions);
-			return classDefinitionContainer;
-		}
-	}
+            for ( int i = 0; i < size; i++ )
+            {
+                final long id = in.readLong();
+                final String canonicalName = in.readUTF();
+                final byte[] checksum = new byte[20];
+                in.readFully( checksum );
+                final long serialVersionUID = in.readLong();
+
+                try
+                {
+                    Class<?> type = ClassUtil.loadClass( canonicalName );
+                    classDefinitions[i + ClassUtil.CLASS_DESCRIPTORS.length] =
+                        new InternalClassDefinition( id, type, checksum, serialVersionUID );
+                }
+                catch ( ClassNotFoundException e )
+                {
+                    throw new IOException( "Class " + canonicalName + " could not be loaded", e );
+                }
+            }
+        }
+
+        private Object readResolve()
+        {
+            InternalClassDefinitionContainer classDefinitionContainer =
+                new InternalClassDefinitionContainer( classDefinitions );
+            classDefinitionContainer.initMappings( classDefinitions );
+            return classDefinitionContainer;
+        }
+    }
 }

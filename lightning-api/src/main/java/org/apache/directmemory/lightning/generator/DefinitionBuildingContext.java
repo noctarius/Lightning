@@ -20,10 +20,11 @@ package org.apache.directmemory.lightning.generator;
 
 import org.apache.directmemory.lightning.MarshallerStrategy;
 
-public interface DefinitionBuildingContext {
+public interface DefinitionBuildingContext
+{
 
-	PropertyDescriptorFactory getPropertyDescriptorFactory();
+    PropertyDescriptorFactory getPropertyDescriptorFactory();
 
-	MarshallerStrategy getMarshallerStrategy();
+    MarshallerStrategy getMarshallerStrategy();
 
 }

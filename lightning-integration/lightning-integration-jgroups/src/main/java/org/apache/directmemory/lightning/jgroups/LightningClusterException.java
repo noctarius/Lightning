@@ -18,22 +18,28 @@
  */
 package org.apache.directmemory.lightning.jgroups;
 
-@SuppressWarnings("serial")
-public class LightningClusterException extends RuntimeException {
+@SuppressWarnings( "serial" )
+public class LightningClusterException
+    extends RuntimeException
+{
 
-	public LightningClusterException() {
-		super();
-	}
+    public LightningClusterException()
+    {
+        super();
+    }
 
-	public LightningClusterException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public LightningClusterException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-	public LightningClusterException(String message) {
-		super(message);
-	}
+    public LightningClusterException( String message )
+    {
+        super( message );
+    }
 
-	public LightningClusterException(Throwable cause) {
-		super(cause);
-	}
+    public LightningClusterException( Throwable cause )
+    {
+        super( cause );
+    }
 }

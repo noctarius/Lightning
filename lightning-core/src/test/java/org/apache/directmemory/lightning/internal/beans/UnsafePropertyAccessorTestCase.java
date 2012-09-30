@@ -25,198 +25,246 @@ import org.apache.directmemory.lightning.internal.beans.SunUnsafePropertyAccesso
 import org.apache.directmemory.lightning.metadata.ArrayPropertyAccessor;
 import org.junit.Test;
 
+public class UnsafePropertyAccessorTestCase
+{
 
-public class UnsafePropertyAccessorTestCase {
+    @Test
+    public void testUnsafeBooleanArray()
+        throws Exception
+    {
+        class BooleanArrayTest
+        {
 
-	@Test
-	public void testUnsafeBooleanArray() throws Exception {
-		class BooleanArrayTest {
+            private boolean[] array = new boolean[10];
+        }
 
-			private boolean[] array = new boolean[10];
-		}
+        Field field = BooleanArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, BooleanArrayTest.class );
 
-		Field field = BooleanArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, BooleanArrayTest.class);
+        BooleanArrayTest test = new BooleanArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = i % 2 == 0 ? true : false;
+        }
 
-		BooleanArrayTest test = new BooleanArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = i % 2 == 0 ? true : false;
-		}
+        BooleanArrayTest result = new BooleanArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            boolean value = propertyAccessor.readBoolean( test.array, i );
+            propertyAccessor.writeBoolean( result.array, i, value );
+        }
 
-		BooleanArrayTest result = new BooleanArrayTest();
-		for (int i = 0; i < 10; i++) {
-			boolean value = propertyAccessor.readBoolean(test.array, i);
-			propertyAccessor.writeBoolean(result.array, i, value);
-		}
+        Arrays.equals( test.array, result.array );
+    }
 
-		Arrays.equals(test.array, result.array);
-	}
+    @Test
+    public void testUnsafeByteArray()
+        throws Exception
+    {
+        class ByteArrayTest
+        {
 
-	@Test
-	public void testUnsafeByteArray() throws Exception {
-		class ByteArrayTest {
+            private byte[] array = new byte[10];
+        }
 
-			private byte[] array = new byte[10];
-		}
+        Field field = ByteArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, ByteArrayTest.class );
 
-		Field field = ByteArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, ByteArrayTest.class);
+        ByteArrayTest test = new ByteArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = (byte) ( i + 1 );
+        }
 
-		ByteArrayTest test = new ByteArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = (byte) (i + 1);
-		}
+        ByteArrayTest result = new ByteArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            byte value = propertyAccessor.readByte( test.array, i );
+            propertyAccessor.writeByte( result.array, i, value );
+        }
 
-		ByteArrayTest result = new ByteArrayTest();
-		for (int i = 0; i < 10; i++) {
-			byte value = propertyAccessor.readByte(test.array, i);
-			propertyAccessor.writeByte(result.array, i, value);
-		}
+        Arrays.equals( test.array, result.array );
+    }
 
-		Arrays.equals(test.array, result.array);
-	}
+    @Test
+    public void testUnsafeShortArray()
+        throws Exception
+    {
+        class ShortArrayTest
+        {
 
-	@Test
-	public void testUnsafeShortArray() throws Exception {
-		class ShortArrayTest {
+            private short[] array = new short[10];
+        }
 
-			private short[] array = new short[10];
-		}
+        Field field = ShortArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, ShortArrayTest.class );
 
-		Field field = ShortArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, ShortArrayTest.class);
+        ShortArrayTest test = new ShortArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = (short) ( i + 1 );
+        }
 
-		ShortArrayTest test = new ShortArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = (short) (i + 1);
-		}
+        ShortArrayTest result = new ShortArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            short value = propertyAccessor.readShort( test.array, i );
+            propertyAccessor.writeShort( result.array, i, value );
+        }
 
-		ShortArrayTest result = new ShortArrayTest();
-		for (int i = 0; i < 10; i++) {
-			short value = propertyAccessor.readShort(test.array, i);
-			propertyAccessor.writeShort(result.array, i, value);
-		}
+        Arrays.equals( test.array, result.array );
+    }
 
-		Arrays.equals(test.array, result.array);
-	}
+    @Test
+    public void testUnsafeIntArray()
+        throws Exception
+    {
+        class IntArrayTest
+        {
 
-	@Test
-	public void testUnsafeIntArray() throws Exception {
-		class IntArrayTest {
+            private int[] array = new int[10];
+        }
 
-			private int[] array = new int[10];
-		}
+        Field field = IntArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, IntArrayTest.class );
 
-		Field field = IntArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, IntArrayTest.class);
+        IntArrayTest test = new IntArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = i + 1;
+        }
 
-		IntArrayTest test = new IntArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = i + 1;
-		}
+        IntArrayTest result = new IntArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            int value = propertyAccessor.readInt( test.array, i );
+            propertyAccessor.writeInt( result.array, i, value );
+        }
 
-		IntArrayTest result = new IntArrayTest();
-		for (int i = 0; i < 10; i++) {
-			int value = propertyAccessor.readInt(test.array, i);
-			propertyAccessor.writeInt(result.array, i, value);
-		}
+        Arrays.equals( test.array, result.array );
+    }
 
-		Arrays.equals(test.array, result.array);
-	}
+    @Test
+    public void testUnsafeLongArray()
+        throws Exception
+    {
+        class LongArrayTest
+        {
 
-	@Test
-	public void testUnsafeLongArray() throws Exception {
-		class LongArrayTest {
+            private long[] array = new long[10];
+        }
 
-			private long[] array = new long[10];
-		}
+        Field field = LongArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, LongArrayTest.class );
 
-		Field field = LongArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, LongArrayTest.class);
+        LongArrayTest test = new LongArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = i + 1;
+        }
 
-		LongArrayTest test = new LongArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = i + 1;
-		}
+        LongArrayTest result = new LongArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            long value = propertyAccessor.readLong( test.array, i );
+            propertyAccessor.writeLong( result.array, i, value );
+        }
 
-		LongArrayTest result = new LongArrayTest();
-		for (int i = 0; i < 10; i++) {
-			long value = propertyAccessor.readLong(test.array, i);
-			propertyAccessor.writeLong(result.array, i, value);
-		}
+        Arrays.equals( test.array, result.array );
+    }
 
-		Arrays.equals(test.array, result.array);
-	}
+    @Test
+    public void testUnsafeFloatArray()
+        throws Exception
+    {
+        class FloatArrayTest
+        {
 
-	@Test
-	public void testUnsafeFloatArray() throws Exception {
-		class FloatArrayTest {
+            private float[] array = new float[10];
+        }
 
-			private float[] array = new float[10];
-		}
+        Field field = FloatArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, FloatArrayTest.class );
 
-		Field field = FloatArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, FloatArrayTest.class);
+        FloatArrayTest test = new FloatArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = (float) ( i + 1. );
+        }
 
-		FloatArrayTest test = new FloatArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = (float) (i + 1.);
-		}
+        FloatArrayTest result = new FloatArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            float value = propertyAccessor.readFloat( test.array, i );
+            propertyAccessor.writeFloat( result.array, i, value );
+        }
 
-		FloatArrayTest result = new FloatArrayTest();
-		for (int i = 0; i < 10; i++) {
-			float value = propertyAccessor.readFloat(test.array, i);
-			propertyAccessor.writeFloat(result.array, i, value);
-		}
+        Arrays.equals( test.array, result.array );
+    }
 
-		Arrays.equals(test.array, result.array);
-	}
+    @Test
+    public void testUnsafeDoubleArray()
+        throws Exception
+    {
+        class DoubleArrayTest
+        {
 
-	@Test
-	public void testUnsafeDoubleArray() throws Exception {
-		class DoubleArrayTest {
+            private double[] array = new double[10];
+        }
 
-			private double[] array = new double[10];
-		}
+        Field field = DoubleArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, DoubleArrayTest.class );
 
-		Field field = DoubleArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, DoubleArrayTest.class);
+        DoubleArrayTest test = new DoubleArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = i + 1.;
+        }
 
-		DoubleArrayTest test = new DoubleArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = i + 1.;
-		}
+        DoubleArrayTest result = new DoubleArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            double value = propertyAccessor.readDouble( test.array, i );
+            propertyAccessor.writeDouble( result.array, i, value );
+        }
 
-		DoubleArrayTest result = new DoubleArrayTest();
-		for (int i = 0; i < 10; i++) {
-			double value = propertyAccessor.readDouble(test.array, i);
-			propertyAccessor.writeDouble(result.array, i, value);
-		}
+        Arrays.equals( test.array, result.array );
+    }
 
-		Arrays.equals(test.array, result.array);
-	}
+    @Test
+    public void testUnsafeObjectArray()
+        throws Exception
+    {
+        class ObjectArrayTest
+        {
 
-	@Test
-	public void testUnsafeObjectArray() throws Exception {
-		class ObjectArrayTest {
+            private String[] array = new String[10];
+        }
 
-			private String[] array = new String[10];
-		}
+        Field field = ObjectArrayTest.class.getDeclaredField( "array" );
+        ArrayPropertyAccessor propertyAccessor =
+            (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess( field, ObjectArrayTest.class );
 
-		Field field = ObjectArrayTest.class.getDeclaredField("array");
-		ArrayPropertyAccessor propertyAccessor = (ArrayPropertyAccessor) new SunUnsafePropertyAccessorFactory().fieldAccess(field, ObjectArrayTest.class);
+        ObjectArrayTest test = new ObjectArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            test.array[i] = "Hello" + i;
+        }
 
-		ObjectArrayTest test = new ObjectArrayTest();
-		for (int i = 0; i < 10; i++) {
-			test.array[i] = "Hello" + i;
-		}
+        ObjectArrayTest result = new ObjectArrayTest();
+        for ( int i = 0; i < 10; i++ )
+        {
+            Object value = propertyAccessor.readObject( test.array, i );
+            propertyAccessor.writeObject( result.array, i, value );
+        }
 
-		ObjectArrayTest result = new ObjectArrayTest();
-		for (int i = 0; i < 10; i++) {
-			Object value = propertyAccessor.readObject(test.array, i);
-			propertyAccessor.writeObject(result.array, i, value);
-		}
-
-		Arrays.equals(test.array, result.array);
-	}
+        Arrays.equals( test.array, result.array );
+    }
 }

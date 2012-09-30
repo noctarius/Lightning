@@ -26,36 +26,47 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class CharacterMarshaller
+    extends AbstractMarshaller
+{
 
-public class CharacterMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return char.class == type || Character.class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return char.class == type || Character.class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( Character.class == propertyDescriptor.getType() )
+        {
+            if ( !writePossibleNull( value, dataOutput ) )
+            {
+                return;
+            }
+        }
 
-		if (Character.class == propertyDescriptor.getType()) {
-			if (!writePossibleNull(value, dataOutput)) {
-				return;
-			}
-		}
+        dataOutput.writeChar( (Character) value );
+    }
 
-		dataOutput.writeChar((Character) value);
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( Character.class == propertyDescriptor.getType() )
+        {
+            if ( isNull( dataInput ) )
+            {
+                return null;
+            }
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (Character.class == propertyDescriptor.getType()) {
-			if (isNull(dataInput)) {
-				return null;
-			}
-		}
-
-		return (V) Character.valueOf(dataInput.readChar());
-	}
+        return (V) Character.valueOf( dataInput.readChar() );
+    }
 }

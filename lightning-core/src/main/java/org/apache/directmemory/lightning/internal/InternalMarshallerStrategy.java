@@ -57,79 +57,92 @@ import org.apache.directmemory.lightning.internal.marshaller.StreamedMarshaller;
 import org.apache.directmemory.lightning.internal.marshaller.StringMarshaller;
 import org.apache.directmemory.lightning.internal.util.TypeUtil;
 
+public class InternalMarshallerStrategy
+    implements MarshallerStrategy
+{
 
-public class InternalMarshallerStrategy implements MarshallerStrategy {
+    public static final List<Marshaller> baseMarshaller;
 
-	public static final List<Marshaller> baseMarshaller;
+    static
+    {
+        List<Marshaller> marshallers = new ArrayList<Marshaller>();
+        marshallers.add( new StreamedMarshaller() );
+        marshallers.add( new ExternalizableMarshaller() );
+        marshallers.add( new BooleanMarshaller() );
+        marshallers.add( new ByteMarshaller() );
+        marshallers.add( new CharacterMarshaller() );
+        marshallers.add( new ShortMarshaller() );
+        marshallers.add( new IntegerMarshaller() );
+        marshallers.add( new LongMarshaller() );
+        marshallers.add( new FloatMarshaller() );
+        marshallers.add( new DoubleMarshaller() );
+        marshallers.add( new StringMarshaller() );
+        marshallers.add( new EnumMarshaller() );
+        marshallers.add( new ListMarshaller() );
+        marshallers.add( new SetMarshaller() );
+        marshallers.add( new MapMarshaller() );
+        marshallers.add( new BigIntegerMarshaller() );
+        marshallers.add( new BigDecimalMarshaller() );
+        marshallers.add( new BooleanArrayMarshaller() );
+        marshallers.add( new ByteArrayMarshaller() );
+        marshallers.add( new CharacterArrayMarshaller() );
+        marshallers.add( new ShortArrayMarshaller() );
+        marshallers.add( new IntegerArrayMarshaller() );
+        marshallers.add( new LongArrayMarshaller() );
+        marshallers.add( new FloatArrayMarshaller() );
+        marshallers.add( new DoubleArrayMarshaller() );
 
-	static {
-		List<Marshaller> marshallers = new ArrayList<Marshaller>();
-		marshallers.add(new StreamedMarshaller());
-		marshallers.add(new ExternalizableMarshaller());
-		marshallers.add(new BooleanMarshaller());
-		marshallers.add(new ByteMarshaller());
-		marshallers.add(new CharacterMarshaller());
-		marshallers.add(new ShortMarshaller());
-		marshallers.add(new IntegerMarshaller());
-		marshallers.add(new LongMarshaller());
-		marshallers.add(new FloatMarshaller());
-		marshallers.add(new DoubleMarshaller());
-		marshallers.add(new StringMarshaller());
-		marshallers.add(new EnumMarshaller());
-		marshallers.add(new ListMarshaller());
-		marshallers.add(new SetMarshaller());
-		marshallers.add(new MapMarshaller());
-		marshallers.add(new BigIntegerMarshaller());
-		marshallers.add(new BigDecimalMarshaller());
-		marshallers.add(new BooleanArrayMarshaller());
-		marshallers.add(new ByteArrayMarshaller());
-		marshallers.add(new CharacterArrayMarshaller());
-		marshallers.add(new ShortArrayMarshaller());
-		marshallers.add(new IntegerArrayMarshaller());
-		marshallers.add(new LongArrayMarshaller());
-		marshallers.add(new FloatArrayMarshaller());
-		marshallers.add(new DoubleArrayMarshaller());
+        baseMarshaller = Collections.unmodifiableList( marshallers );
+    }
 
-		baseMarshaller = Collections.unmodifiableList(marshallers);
-	}
+    private final Marshaller externalizableMarshaller = new ExternalizableMarshaller();
 
-	private final Marshaller externalizableMarshaller = new ExternalizableMarshaller();
-	private final Marshaller serializableMarshaller = new SerializableMarshaller();
-	private final Marshaller streamedMarshaller = new StreamedMarshaller();
+    private final Marshaller serializableMarshaller = new SerializableMarshaller();
 
-	@Override
-	public Marshaller getMarshaller(Type type, MarshallerContext marshallerContext) {
-		return getMarshaller(type, marshallerContext, false);
-	}
+    private final Marshaller streamedMarshaller = new StreamedMarshaller();
 
-	@Override
-	public Marshaller getMarshaller(Type type, MarshallerContext marshallerContext, boolean baseMarshallersOnly) {
-		Class<?> rawType = TypeUtil.getBaseType(type);
-		if (Streamed.class.isAssignableFrom(rawType)) {
-			return streamedMarshaller;
-		}
+    @Override
+    public Marshaller getMarshaller( Type type, MarshallerContext marshallerContext )
+    {
+        return getMarshaller( type, marshallerContext, false );
+    }
 
-		if (!baseMarshallersOnly && Externalizable.class.isAssignableFrom(rawType)) {
-			return externalizableMarshaller;
-		}
+    @Override
+    public Marshaller getMarshaller( Type type, MarshallerContext marshallerContext, boolean baseMarshallersOnly )
+    {
+        Class<?> rawType = TypeUtil.getBaseType( type );
+        if ( Streamed.class.isAssignableFrom( rawType ) )
+        {
+            return streamedMarshaller;
+        }
 
-		if (marshallerContext != null) {
-			Marshaller marshaller = marshallerContext.getMarshaller(type);
-			if (marshaller != null) {
-				return marshaller;
-			}
-		}
+        if ( !baseMarshallersOnly && Externalizable.class.isAssignableFrom( rawType ) )
+        {
+            return externalizableMarshaller;
+        }
 
-		for (Marshaller temp : baseMarshaller) {
-			if (temp.acceptType(rawType)) {
-				return temp;
-			}
-		}
+        if ( marshallerContext != null )
+        {
+            Marshaller marshaller = marshallerContext.getMarshaller( type );
+            if ( marshaller != null )
+            {
+                return marshaller;
+            }
+        }
 
-		if (!baseMarshallersOnly && Serializable.class.isAssignableFrom(rawType) && !rawType.isArray()) {
-			return serializableMarshaller;
-		}
+        for ( Marshaller temp : baseMarshaller )
+        {
+            if ( temp.acceptType( rawType ) )
+            {
+                return temp;
+            }
+        }
 
-		return null;
-	}
+        if ( !baseMarshallersOnly && Serializable.class.isAssignableFrom( rawType ) && !rawType.isArray() )
+        {
+            return serializableMarshaller;
+        }
+
+        return null;
+    }
 }

@@ -36,114 +36,148 @@ import org.apache.directmemory.lightning.internal.util.TypeUtil;
 import org.apache.directmemory.lightning.metadata.ClassDefinition;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class SetMarshaller
+    extends AbstractMarshaller
+    implements TypeBindableMarshaller
+{
 
-public class SetMarshaller extends AbstractMarshaller implements TypeBindableMarshaller {
+    private final Type setType;
 
-	private final Type setType;
+    private Marshaller setTypeMarshaller;
 
-	private Marshaller setTypeMarshaller;
+    public SetMarshaller()
+    {
+        this( null );
+    }
 
-	public SetMarshaller() {
-		this(null);
-	}
+    private SetMarshaller( Type setType )
+    {
+        this.setType = setType;
+    }
 
-	private SetMarshaller(Type setType) {
-		this.setType = setType;
-	}
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return Set.class.isAssignableFrom( type );
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return Set.class.isAssignableFrom(type);
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( writePossibleNull( value, dataOutput ) )
+        {
+            Set<?> set = (Set<?>) value;
+            dataOutput.writeInt( set.size() );
 
-		if (writePossibleNull(value, dataOutput)) {
-			Set<?> set = (Set<?>) value;
-			dataOutput.writeInt(set.size());
+            Marshaller marshaller = null;
+            ClassDefinition classDefinition = null;
+            PropertyDescriptor pd = null;
+            if ( setType != null )
+            {
+                ensureMarshallerInitialized( serializationContext );
+                marshaller = setTypeMarshaller;
+                Class<?> baseType = TypeUtil.getBaseType( setType );
+                classDefinition =
+                    serializationContext.getClassDefinitionContainer().getClassDefinitionByType( baseType );
+                pd = new CheatPropertyDescriptor( propertyDescriptor.getPropertyName() + "Set", baseType, marshaller );
+            }
 
-			Marshaller marshaller = null;
-			ClassDefinition classDefinition = null;
-			PropertyDescriptor pd = null;
-			if (setType != null) {
-				ensureMarshallerInitialized(serializationContext);
-				marshaller = setTypeMarshaller;
-				Class<?> baseType = TypeUtil.getBaseType(setType);
-				classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(baseType);
-				pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", baseType, marshaller);
-			}
+            for ( Object entry : set )
+            {
+                if ( writePossibleNull( entry, dataOutput ) )
+                {
+                    if ( setType == null )
+                    {
+                        marshaller = serializationContext.findMarshaller( entry.getClass() );
+                        classDefinition =
+                            serializationContext.getClassDefinitionContainer().getClassDefinitionByType( entry.getClass() );
+                        pd =
+                            new CheatPropertyDescriptor( propertyDescriptor.getPropertyName() + "Set",
+                                                         entry.getClass(), marshaller );
+                    }
 
-			for (Object entry : set) {
-				if (writePossibleNull(entry, dataOutput)) {
-					if (setType == null) {
-						marshaller = serializationContext.findMarshaller(entry.getClass());
-						classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionByType(entry.getClass());
-						pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", entry.getClass(), marshaller);
-					}
+                    dataOutput.writeLong( classDefinition.getId() );
+                    marshaller.marshall( entry, pd, dataOutput, serializationContext );
+                }
+            }
+        }
+    }
 
-					dataOutput.writeLong(classDefinition.getId());
-					marshaller.marshall(entry, pd, dataOutput, serializationContext);
-				}
-			}
-		}
-	}
+    @Override
+    @SuppressWarnings( { "rawtypes", "unchecked" } )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( isNull( dataInput ) )
+        {
+            return null;
+        }
 
-	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (isNull(dataInput)) {
-			return null;
-		}
+        int size = dataInput.readInt();
+        Set set = new HashSet( size );
+        if ( size > 0 )
+        {
+            for ( int i = 0; i < size; i++ )
+            {
+                if ( isNull( dataInput ) )
+                {
+                    set.add( null );
+                }
+                else
+                {
+                    long classId = dataInput.readLong();
+                    ClassDefinition classDefinition =
+                        serializationContext.getClassDefinitionContainer().getClassDefinitionById( classId );
 
-		int size = dataInput.readInt();
-		Set set = new HashSet(size);
-		if (size > 0) {
-			for (int i = 0; i < size; i++) {
-				if (isNull(dataInput)) {
-					set.add(null);
-				}
-				else {
-					long classId = dataInput.readLong();
-					ClassDefinition classDefinition = serializationContext.getClassDefinitionContainer().getClassDefinitionById(classId);
+                    Marshaller marshaller;
+                    if ( setType != null )
+                    {
+                        ensureMarshallerInitialized( serializationContext );
+                        marshaller = setTypeMarshaller;
+                    }
+                    else
+                    {
+                        marshaller = serializationContext.findMarshaller( classDefinition.getType() );
+                    }
 
-					Marshaller marshaller;
-					if (setType != null) {
-						ensureMarshallerInitialized(serializationContext);
-						marshaller = setTypeMarshaller;
-					}
-					else {
-						marshaller = serializationContext.findMarshaller(classDefinition.getType());
-					}
+                    PropertyDescriptor pd =
+                        new CheatPropertyDescriptor( propertyDescriptor.getPropertyName() + "Set",
+                                                     classDefinition.getType(), marshaller );
+                    set.add( marshaller.unmarshall( pd, dataInput, serializationContext ) );
+                }
+            }
+        }
 
-					PropertyDescriptor pd = new CheatPropertyDescriptor(propertyDescriptor.getPropertyName() + "Set", classDefinition.getType(), marshaller);
-					set.add(marshaller.unmarshall(pd, dataInput, serializationContext));
-				}
-			}
-		}
+        return (V) set;
+    }
 
-		return (V) set;
-	}
+    @Override
+    public Marshaller bindType( Type... bindingTypes )
+    {
+        if ( bindingTypes == null )
+        {
+            return new SetMarshaller();
+        }
 
-	@Override
-	public Marshaller bindType(Type... bindingTypes) {
-		if (bindingTypes == null) {
-			return new SetMarshaller();
-		}
+        if ( bindingTypes.length != 1 )
+        {
+            throw new SerializerExecutionException( "Set type binding has no single generic: "
+                + Arrays.toString( bindingTypes ) );
+        }
 
-		if (bindingTypes.length != 1) {
-			throw new SerializerExecutionException("Set type binding has no single generic: " + Arrays.toString(bindingTypes));
-		}
+        Type setType = bindingTypes[0];
+        return new SetMarshaller( setType );
+    }
 
-		Type setType = bindingTypes[0];
-		return new SetMarshaller(setType);
-	}
+    private void ensureMarshallerInitialized( SerializationContext serializationContext )
+    {
+        if ( setTypeMarshaller != null )
+            return;
 
-	private void ensureMarshallerInitialized(SerializationContext serializationContext) {
-		if (setTypeMarshaller != null)
-			return;
-
-		setTypeMarshaller = serializationContext.findMarshaller(setType);
-	}
+        setTypeMarshaller = serializationContext.findMarshaller( setType );
+    }
 }

@@ -26,36 +26,47 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class IntegerMarshaller
+    extends AbstractMarshaller
+{
 
-public class IntegerMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return int.class == type || Integer.class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return int.class == type || Integer.class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( Integer.class == propertyDescriptor.getType() )
+        {
+            if ( !writePossibleNull( value, dataOutput ) )
+            {
+                return;
+            }
+        }
 
-		if (Integer.class == propertyDescriptor.getType()) {
-			if (!writePossibleNull(value, dataOutput)) {
-				return;
-			}
-		}
+        dataOutput.writeInt( (Integer) value );
+    }
 
-		dataOutput.writeInt((Integer) value);
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( Integer.class == propertyDescriptor.getType() )
+        {
+            if ( isNull( dataInput ) )
+            {
+                return null;
+            }
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (Integer.class == propertyDescriptor.getType()) {
-			if (isNull(dataInput)) {
-				return null;
-			}
-		}
-
-		return (V) Integer.valueOf(dataInput.readInt());
-	}
+        return (V) Integer.valueOf( dataInput.readInt() );
+    }
 }

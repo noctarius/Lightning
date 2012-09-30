@@ -21,33 +21,41 @@ package org.apache.directmemory.lightning.internal.util;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public final class TypeUtil {
+public final class TypeUtil
+{
 
-	private TypeUtil() {
-	}
+    private TypeUtil()
+    {
+    }
 
-	public static Class<?> getBaseType(Type type) {
-		if (type instanceof Class) {
-			return (Class<?>) type;
-		}
+    public static Class<?> getBaseType( Type type )
+    {
+        if ( type instanceof Class )
+        {
+            return (Class<?>) type;
+        }
 
-		if (type instanceof ParameterizedType) {
-			return (Class<?>) ((ParameterizedType) type).getRawType();
-		}
+        if ( type instanceof ParameterizedType )
+        {
+            return (Class<?>) ( (ParameterizedType) type ).getRawType();
+        }
 
-		throw new IllegalStateException("The requested type is an generic array or wildcard which is not supported");
-	}
+        throw new IllegalStateException( "The requested type is an generic array or wildcard which is not supported" );
+    }
 
-	public static Type[] getTypeArgument(Type type) {
-		if (type instanceof Class) {
-			return null;
-		}
+    public static Type[] getTypeArgument( Type type )
+    {
+        if ( type instanceof Class )
+        {
+            return null;
+        }
 
-		if (type instanceof ParameterizedType) {
-			return ((ParameterizedType) type).getActualTypeArguments();
-		}
+        if ( type instanceof ParameterizedType )
+        {
+            return ( (ParameterizedType) type ).getActualTypeArguments();
+        }
 
-		throw new IllegalStateException("The requested type is an generic array or wildcard which is not supported");
-	}
+        throw new IllegalStateException( "The requested type is an generic array or wildcard which is not supported" );
+    }
 
 }

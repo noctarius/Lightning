@@ -24,27 +24,27 @@ import org.apache.directmemory.lightning.instantiator.ObjectInstantiatorFactory;
 import org.apache.directmemory.lightning.metadata.ClassDefinitionContainer;
 import org.apache.directmemory.lightning.metadata.ValueNullableEvaluator;
 
+public interface SerializationContext
+{
 
-public interface SerializationContext {
+    ClassDefinitionContainer getClassDefinitionContainer();
 
-	ClassDefinitionContainer getClassDefinitionContainer();
+    SerializationStrategy getSerializationStrategy();
 
-	SerializationStrategy getSerializationStrategy();
+    ObjectInstantiatorFactory getObjectInstantiatorFactory();
 
-	ObjectInstantiatorFactory getObjectInstantiatorFactory();
+    Marshaller findMarshaller( Type type );
 
-	Marshaller findMarshaller(Type type);
+    ValueNullableEvaluator getValueNullableEvaluator();
 
-	ValueNullableEvaluator getValueNullableEvaluator();
+    long findReferenceIdByObject( Object instance );
 
-	long findReferenceIdByObject(Object instance);
+    Object findObjectByReferenceId( long referenceId );
 
-	Object findObjectByReferenceId(long referenceId);
+    boolean containsReferenceId( long referenceId );
 
-	boolean containsReferenceId(long referenceId);
+    long putMarshalledInstance( Object instance );
 
-	long putMarshalledInstance(Object instance);
-
-	long putUnmarshalledInstance(long refrenceId, Object instance);
+    long putUnmarshalledInstance( long refrenceId, Object instance );
 
 }

@@ -20,10 +20,11 @@ package org.apache.directmemory.lightning.bindings;
 
 import org.apache.directmemory.lightning.Marshaller;
 
-public interface MarshallerBinder {
+public interface MarshallerBinder
+{
 
-	void using(Class<? extends Marshaller> marshaller);
+    void using( Class<? extends Marshaller> marshaller );
 
-	void using(Marshaller marshaller);
+    void using( Marshaller marshaller );
 
 }

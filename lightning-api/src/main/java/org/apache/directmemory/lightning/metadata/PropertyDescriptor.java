@@ -22,25 +22,26 @@ import java.lang.annotation.Annotation;
 
 import org.apache.directmemory.lightning.Marshaller;
 
+public interface PropertyDescriptor
+    extends Comparable<PropertyDescriptor>
+{
 
-public interface PropertyDescriptor extends Comparable<PropertyDescriptor> {
+    Annotation[] getAnnotations();
 
-	Annotation[] getAnnotations();
+    Class<?> getDefinedClass();
 
-	Class<?> getDefinedClass();
+    Class<?> getDeclaringClass();
 
-	Class<?> getDeclaringClass();
+    PropertyAccessor getPropertyAccessor();
 
-	PropertyAccessor getPropertyAccessor();
+    String getName();
 
-	String getName();
+    String getPropertyName();
 
-	String getPropertyName();
+    Class<?> getType();
 
-	Class<?> getType();
+    String getInternalSignature();
 
-	String getInternalSignature();
-
-	Marshaller getMarshaller();
+    Marshaller getMarshaller();
 
 }

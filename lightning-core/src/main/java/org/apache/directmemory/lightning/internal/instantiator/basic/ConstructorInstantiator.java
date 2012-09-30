@@ -23,35 +23,41 @@ import java.lang.reflect.Constructor;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
 import org.apache.directmemory.lightning.internal.instantiator.ObjenesisException;
 
-
 /**
- * Instantiates a class by grabbing the no args constructor and calling
- * Constructor.newInstance().
- * This can deal with default public constructors, but that's about it.
+ * Instantiates a class by grabbing the no args constructor and calling Constructor.newInstance(). This can deal with
+ * default public constructors, but that's about it.
  * 
  * @author Joe Walnes
  * @see ObjectInstantiator
  */
-public class ConstructorInstantiator implements ObjectInstantiator {
+public class ConstructorInstantiator
+    implements ObjectInstantiator
+{
 
-	protected Constructor<?> constructor;
+    protected Constructor<?> constructor;
 
-	public ConstructorInstantiator(Class<?> type) {
-		try {
-			constructor = type.getDeclaredConstructor((Class[]) null);
-		}
-		catch (Exception e) {
-			throw new ObjenesisException(e);
-		}
-	}
+    public ConstructorInstantiator( Class<?> type )
+    {
+        try
+        {
+            constructor = type.getDeclaredConstructor( (Class[]) null );
+        }
+        catch ( Exception e )
+        {
+            throw new ObjenesisException( e );
+        }
+    }
 
-	@Override
-	public Object newInstance() {
-		try {
-			return constructor.newInstance((Object[]) null);
-		}
-		catch (Exception e) {
-			throw new ObjenesisException(e);
-		}
-	}
+    @Override
+    public Object newInstance()
+    {
+        try
+        {
+            return constructor.newInstance( (Object[]) null );
+        }
+        catch ( Exception e )
+        {
+            throw new ObjenesisException( e );
+        }
+    }
 }

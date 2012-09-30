@@ -25,49 +25,59 @@ import org.apache.directmemory.lightning.internal.util.InternalUtil;
 import org.apache.directmemory.lightning.logging.Logger;
 import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 
+public class PropertyAccessorStrategy
+{
 
-public class PropertyAccessorStrategy {
+    private final PropertyAccessorFactory reflectionPropertyAccessorFactory = new ReflectionPropertyAccessorFactory();
 
-	private final PropertyAccessorFactory reflectionPropertyAccessorFactory = new ReflectionPropertyAccessorFactory();
-	private final PropertyAccessorFactory reflectASMPropertyAccessorFactory = new ReflectASMPropertyAccessorFactory();
-	private final PropertyAccessorFactory sunUnsafePropertyAccessorFactory;
+    private final PropertyAccessorFactory reflectASMPropertyAccessorFactory = new ReflectASMPropertyAccessorFactory();
 
-	private final Logger logger;
+    private final PropertyAccessorFactory sunUnsafePropertyAccessorFactory;
 
-	PropertyAccessorStrategy(Logger logger) {
-		this.logger = logger.getChildLogger(getClass());
+    private final Logger logger;
 
-		PropertyAccessorFactory factory = null;
-		if (InternalUtil.isUnsafeAvailable()) {
-			factory = InternalUtil.buildSunUnsafePropertyAccessor();
-			this.logger.trace("Found sun.misc.Unsafe");
-		}
-		sunUnsafePropertyAccessorFactory = factory;
-	}
+    PropertyAccessorStrategy( Logger logger )
+    {
+        this.logger = logger.getChildLogger( getClass() );
 
-	PropertyAccessor byField(Field field, Class<?> definedClass) {
-		PropertyAccessor propertyAccessor = null;
-		if (sunUnsafePropertyAccessorFactory != null) {
-			propertyAccessor = sunUnsafePropertyAccessorFactory.fieldAccess(field, definedClass);
-		}
+        PropertyAccessorFactory factory = null;
+        if ( InternalUtil.isUnsafeAvailable() )
+        {
+            factory = InternalUtil.buildSunUnsafePropertyAccessor();
+            this.logger.trace( "Found sun.misc.Unsafe" );
+        }
+        sunUnsafePropertyAccessorFactory = factory;
+    }
 
-		if (propertyAccessor == null) {
-			propertyAccessor = reflectASMPropertyAccessorFactory.fieldAccess(field, definedClass);
-		}
+    PropertyAccessor byField( Field field, Class<?> definedClass )
+    {
+        PropertyAccessor propertyAccessor = null;
+        if ( sunUnsafePropertyAccessorFactory != null )
+        {
+            propertyAccessor = sunUnsafePropertyAccessorFactory.fieldAccess( field, definedClass );
+        }
 
-		if (propertyAccessor != null) {
-			return propertyAccessor;
-		}
+        if ( propertyAccessor == null )
+        {
+            propertyAccessor = reflectASMPropertyAccessorFactory.fieldAccess( field, definedClass );
+        }
 
-		return reflectionPropertyAccessorFactory.fieldAccess(field, definedClass);
-	}
+        if ( propertyAccessor != null )
+        {
+            return propertyAccessor;
+        }
 
-	PropertyAccessor byMethod(Method method, Class<?> definedClass) {
-		PropertyAccessor propertyAccessor = reflectASMPropertyAccessorFactory.methodAccess(method, definedClass);
-		if (propertyAccessor != null) {
-			return propertyAccessor;
-		}
+        return reflectionPropertyAccessorFactory.fieldAccess( field, definedClass );
+    }
 
-		return reflectionPropertyAccessorFactory.methodAccess(method, definedClass);
-	}
+    PropertyAccessor byMethod( Method method, Class<?> definedClass )
+    {
+        PropertyAccessor propertyAccessor = reflectASMPropertyAccessorFactory.methodAccess( method, definedClass );
+        if ( propertyAccessor != null )
+        {
+            return propertyAccessor;
+        }
+
+        return reflectionPropertyAccessorFactory.methodAccess( method, definedClass );
+    }
 }

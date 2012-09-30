@@ -25,15 +25,10 @@ import org.apache.directmemory.lightning.internal.instantiator.perc.PercSerializ
 import org.apache.directmemory.lightning.internal.instantiator.sun.Sun13SerializationInstantiator;
 import org.apache.directmemory.lightning.internal.util.InternalUtil;
 
-
 /**
- * Guess the best serializing instantiator for a given class. The returned
- * instantiator will
- * instantiate classes like the genuine java serialization framework (the
- * constructor of the first
- * not serializable class will be called). Currently, the selection doesn't
- * depend on the class. It
- * relies on the
+ * Guess the best serializing instantiator for a given class. The returned instantiator will instantiate classes like
+ * the genuine java serialization framework (the constructor of the first not serializable class will be called).
+ * Currently, the selection doesn't depend on the class. It relies on the
  * <ul>
  * <li>JVM version</li>
  * <li>JVM vendor</li>
@@ -44,34 +39,40 @@ import org.apache.directmemory.lightning.internal.util.InternalUtil;
  * @author Henri Tremblay
  * @see ObjectInstantiator
  */
-public class SerializingInstantiatorStrategy extends BaseInstantiatorStrategy {
+public class SerializingInstantiatorStrategy
+    extends BaseInstantiatorStrategy
+{
 
-	/**
-	 * Return an {@link ObjectInstantiator} allowing to create instance
-	 * following the java
-	 * serialization framework specifications.
-	 * 
-	 * @param type
-	 *            Class to instantiate
-	 * @return The ObjectInstantiator for the class
-	 */
-	@Override
-	public ObjectInstantiator newInstantiatorOf(Class<?> type) {
-		if (JVM_NAME.startsWith(SUN)) {
-			if (VM_VERSION.startsWith("1.3")) {
-				return new Sun13SerializationInstantiator(type);
-			}
-			else if (InternalUtil.isUnsafeAvailable()) {
-				return InternalUtil.buildSunUnsafeInstantiator(type);
-			}
-		}
-		else if (JVM_NAME.startsWith(GNU)) {
-			return new GCJSerializationInstantiator(type);
-		}
-		else if (JVM_NAME.startsWith(PERC)) {
-			return new PercSerializationInstantiator(type);
-		}
+    /**
+     * Return an {@link ObjectInstantiator} allowing to create instance following the java serialization framework
+     * specifications.
+     * 
+     * @param type Class to instantiate
+     * @return The ObjectInstantiator for the class
+     */
+    @Override
+    public ObjectInstantiator newInstantiatorOf( Class<?> type )
+    {
+        if ( JVM_NAME.startsWith( SUN ) )
+        {
+            if ( VM_VERSION.startsWith( "1.3" ) )
+            {
+                return new Sun13SerializationInstantiator( type );
+            }
+            else if ( InternalUtil.isUnsafeAvailable() )
+            {
+                return InternalUtil.buildSunUnsafeInstantiator( type );
+            }
+        }
+        else if ( JVM_NAME.startsWith( GNU ) )
+        {
+            return new GCJSerializationInstantiator( type );
+        }
+        else if ( JVM_NAME.startsWith( PERC ) )
+        {
+            return new PercSerializationInstantiator( type );
+        }
 
-		return new ObjectStreamClassInstantiator(type);
-	}
+        return new ObjectStreamClassInstantiator( type );
+    }
 }

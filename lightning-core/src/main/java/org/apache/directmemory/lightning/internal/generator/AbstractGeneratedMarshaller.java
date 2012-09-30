@@ -37,187 +37,241 @@ import org.apache.directmemory.lightning.metadata.ClassDescriptor;
 import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public abstract class AbstractGeneratedMarshaller
+    implements Marshaller
+{
 
-public abstract class AbstractGeneratedMarshaller implements Marshaller {
+    private final Class<?> clazz;
 
-	private final Class<?> clazz;
-	private final Map<Class<?>, Marshaller> marshallers;
-	private final ClassDescriptor classDescriptor;
-	private final List<PropertyDescriptor> propertyDescriptors;
-	private final ObjectInstantiator objectInstantiator;
+    private final Map<Class<?>, Marshaller> marshallers;
 
-	public AbstractGeneratedMarshaller(Class<?> clazz, Map<Class<?>, Marshaller> marshallers, ClassDescriptorAwareSerializer serializer,
-			ObjectInstantiatorFactory objectInstantiatorFactory) {
+    private final ClassDescriptor classDescriptor;
 
-		this.clazz = clazz;
-		this.marshallers = marshallers;
-		this.classDescriptor = serializer.findClassDescriptor(clazz);
-		this.propertyDescriptors = Collections.unmodifiableList(classDescriptor.getPropertyDescriptors());
-		this.objectInstantiator = objectInstantiatorFactory.getInstantiatorOf(clazz);
-	}
+    private final List<PropertyDescriptor> propertyDescriptors;
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return clazz.isAssignableFrom(type);
-	}
+    private final ObjectInstantiator objectInstantiator;
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (serializationContext.getSerializationStrategy() == SerializationStrategy.SizeOptimized) {
-			if (ClassUtil.isReferenceCapable(propertyDescriptor.getType())) {
-				long referenceId = dataInput.readLong();
-				V instance;
-				if (containsReferenceId(referenceId, serializationContext)) {
-					instance = (V) findObjectByReferenceId(referenceId, serializationContext);
-				}
-				else {
-					// Instance not yet received, for first time deserialize it
-					instance = unmarshall((V) newInstance(), propertyDescriptor, dataInput, serializationContext);
-					cacheObjectForUnmarshall(referenceId, instance, serializationContext);
-				}
+    public AbstractGeneratedMarshaller( Class<?> clazz, Map<Class<?>, Marshaller> marshallers,
+                                        ClassDescriptorAwareSerializer serializer,
+                                        ObjectInstantiatorFactory objectInstantiatorFactory )
+    {
 
-				return instance;
-			}
-		}
+        this.clazz = clazz;
+        this.marshallers = marshallers;
+        this.classDescriptor = serializer.findClassDescriptor( clazz );
+        this.propertyDescriptors = Collections.unmodifiableList( classDescriptor.getPropertyDescriptors() );
+        this.objectInstantiator = objectInstantiatorFactory.getInstantiatorOf( clazz );
+    }
 
-		V value = null;
-		if (!propertyDescriptor.getType().isArray()) {
-			value = (V) newInstance();
-		}
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return clazz.isAssignableFrom( type );
+    }
 
-		return unmarshall(value, propertyDescriptor, dataInput, serializationContext);
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( serializationContext.getSerializationStrategy() == SerializationStrategy.SizeOptimized )
+        {
+            if ( ClassUtil.isReferenceCapable( propertyDescriptor.getType() ) )
+            {
+                long referenceId = dataInput.readLong();
+                V instance;
+                if ( containsReferenceId( referenceId, serializationContext ) )
+                {
+                    instance = (V) findObjectByReferenceId( referenceId, serializationContext );
+                }
+                else
+                {
+                    // Instance not yet received, for first time deserialize it
+                    instance = unmarshall( (V) newInstance(), propertyDescriptor, dataInput, serializationContext );
+                    cacheObjectForUnmarshall( referenceId, instance, serializationContext );
+                }
 
-	protected abstract <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext)
-			throws IOException;
+                return instance;
+            }
+        }
 
-	protected boolean isAlreadyMarshalled(Object value, Class<?> type, DataOutput dataOutput, SerializationContext serializationContext) throws IOException {
-		if (serializationContext.getSerializationStrategy() != SerializationStrategy.SizeOptimized) {
-			return false;
-		}
+        V value = null;
+        if ( !propertyDescriptor.getType().isArray() )
+        {
+            value = (V) newInstance();
+        }
 
-		if (!ClassUtil.isReferenceCapable(type)) {
-			return false;
-		}
+        return unmarshall( value, propertyDescriptor, dataInput, serializationContext );
+    }
 
-		long referenceId = findReferenceIdByObject(value, serializationContext);
-		if (referenceId == -1) {
-			referenceId = cacheObjectForMarshall(value, serializationContext);
-			dataOutput.writeLong(referenceId);
-			return false;
-		}
+    protected abstract <V> V unmarshall( V value, PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                                         SerializationContext serializationContext )
+        throws IOException;
 
-		dataOutput.writeLong(referenceId);
-		return true;
-	}
+    protected boolean isAlreadyMarshalled( Object value, Class<?> type, DataOutput dataOutput,
+                                           SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( serializationContext.getSerializationStrategy() != SerializationStrategy.SizeOptimized )
+        {
+            return false;
+        }
 
-	protected ClassDescriptor getClassDescriptor() {
-		return classDescriptor;
-	}
+        if ( !ClassUtil.isReferenceCapable( type ) )
+        {
+            return false;
+        }
 
-	protected Object newInstance() {
-		return objectInstantiator.newInstance();
-	}
+        long referenceId = findReferenceIdByObject( value, serializationContext );
+        if ( referenceId == -1 )
+        {
+            referenceId = cacheObjectForMarshall( value, serializationContext );
+            dataOutput.writeLong( referenceId );
+            return false;
+        }
 
-	protected PropertyDescriptor getPropertyDescriptor(String propertyName) {
-		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			if (propertyDescriptor.getPropertyName().equals(propertyName)) {
-				return propertyDescriptor;
-			}
-		}
+        dataOutput.writeLong( referenceId );
+        return true;
+    }
 
-		// This should never happen
-		return null;
-	}
+    protected ClassDescriptor getClassDescriptor()
+    {
+        return classDescriptor;
+    }
 
-	protected PropertyAccessor getPropertyAccessor(String propertyName) {
-		return getPropertyDescriptor(propertyName).getPropertyAccessor();
-	}
+    protected Object newInstance()
+    {
+        return objectInstantiator.newInstance();
+    }
 
-	protected Marshaller findMarshaller(PropertyDescriptor propertyDescriptor) {
-		if (propertyDescriptor.getMarshaller() != null) {
-			return propertyDescriptor.getMarshaller();
-		}
+    protected PropertyDescriptor getPropertyDescriptor( String propertyName )
+    {
+        for ( PropertyDescriptor propertyDescriptor : propertyDescriptors )
+        {
+            if ( propertyDescriptor.getPropertyName().equals( propertyName ) )
+            {
+                return propertyDescriptor;
+            }
+        }
 
-		Marshaller marshaller = marshallers.get(propertyDescriptor.getType());
-		if (marshaller != null) {
-			return marshaller;
-		}
+        // This should never happen
+        return null;
+    }
 
-		return new DelegatingMarshaller(propertyDescriptor);
-	}
+    protected PropertyAccessor getPropertyAccessor( String propertyName )
+    {
+        return getPropertyDescriptor( propertyName ).getPropertyAccessor();
+    }
 
-	protected long findReferenceIdByObject(Object instance, SerializationContext serializationContext) {
-		return serializationContext.findReferenceIdByObject(instance);
-	}
+    protected Marshaller findMarshaller( PropertyDescriptor propertyDescriptor )
+    {
+        if ( propertyDescriptor.getMarshaller() != null )
+        {
+            return propertyDescriptor.getMarshaller();
+        }
 
-	protected Object findObjectByReferenceId(long referenceId, SerializationContext serializationContext) {
-		return serializationContext.findObjectByReferenceId(referenceId);
-	}
+        Marshaller marshaller = marshallers.get( propertyDescriptor.getType() );
+        if ( marshaller != null )
+        {
+            return marshaller;
+        }
 
-	protected boolean containsReferenceId(long referenceId, SerializationContext serializationContext) {
-		return serializationContext.containsReferenceId(referenceId);
-	}
+        return new DelegatingMarshaller( propertyDescriptor );
+    }
 
-	protected long cacheObjectForMarshall(Object instance, SerializationContext serializationContext) {
-		return serializationContext.putMarshalledInstance(instance);
-	}
+    protected long findReferenceIdByObject( Object instance, SerializationContext serializationContext )
+    {
+        return serializationContext.findReferenceIdByObject( instance );
+    }
 
-	protected long cacheObjectForUnmarshall(long referenceId, Object instance, SerializationContext serializationContext) {
-		return serializationContext.putUnmarshalledInstance(referenceId, instance);
-	}
+    protected Object findObjectByReferenceId( long referenceId, SerializationContext serializationContext )
+    {
+        return serializationContext.findObjectByReferenceId( referenceId );
+    }
 
-	private class DelegatingMarshaller implements Marshaller {
+    protected boolean containsReferenceId( long referenceId, SerializationContext serializationContext )
+    {
+        return serializationContext.containsReferenceId( referenceId );
+    }
 
-		private final PropertyDescriptor marshalledProperty;
-		private Marshaller marshaller;
+    protected long cacheObjectForMarshall( Object instance, SerializationContext serializationContext )
+    {
+        return serializationContext.putMarshalledInstance( instance );
+    }
 
-		private DelegatingMarshaller(PropertyDescriptor marshalledProperty) {
-			this.marshalledProperty = marshalledProperty;
-		}
+    protected long cacheObjectForUnmarshall( long referenceId, Object instance,
+                                             SerializationContext serializationContext )
+    {
+        return serializationContext.putUnmarshalledInstance( referenceId, instance );
+    }
 
-		@Override
-		public boolean acceptType(Class<?> type) {
-			return marshalledProperty.getType().isAssignableFrom(type);
-		}
+    private class DelegatingMarshaller
+        implements Marshaller
+    {
 
-		@Override
-		public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-				throws IOException {
+        private final PropertyDescriptor marshalledProperty;
 
-			Marshaller marshaller = this.marshaller;
-			if (marshaller == null) {
-				marshaller = getMarshaller();
-			}
+        private Marshaller marshaller;
 
-			if (marshaller == null) {
-				throw new SerializerDefinitionException("No marshaller for property " + marshalledProperty + " found");
-			}
+        private DelegatingMarshaller( PropertyDescriptor marshalledProperty )
+        {
+            this.marshalledProperty = marshalledProperty;
+        }
 
-			marshaller.marshall(value, propertyDescriptor, dataOutput, serializationContext);
-		}
+        @Override
+        public boolean acceptType( Class<?> type )
+        {
+            return marshalledProperty.getType().isAssignableFrom( type );
+        }
 
-		@Override
-		public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-			Marshaller marshaller = this.marshaller;
-			if (marshaller == null) {
-				marshaller = getMarshaller();
-			}
+        @Override
+        public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                              SerializationContext serializationContext )
+            throws IOException
+        {
 
-			if (marshaller == null) {
-				throw new SerializerDefinitionException("No marshaller for property " + marshalledProperty + " found");
-			}
+            Marshaller marshaller = this.marshaller;
+            if ( marshaller == null )
+            {
+                marshaller = getMarshaller();
+            }
 
-			return marshaller.unmarshall(propertyDescriptor, dataInput, serializationContext);
-		}
+            if ( marshaller == null )
+            {
+                throw new SerializerDefinitionException( "No marshaller for property " + marshalledProperty + " found" );
+            }
 
-		private synchronized Marshaller getMarshaller() {
-			if (marshaller == null) {
-				marshaller = findMarshaller(marshalledProperty);
-			}
-			return marshaller;
-		}
+            marshaller.marshall( value, propertyDescriptor, dataOutput, serializationContext );
+        }
 
-	}
+        @Override
+        public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                                 SerializationContext serializationContext )
+            throws IOException
+        {
+            Marshaller marshaller = this.marshaller;
+            if ( marshaller == null )
+            {
+                marshaller = getMarshaller();
+            }
+
+            if ( marshaller == null )
+            {
+                throw new SerializerDefinitionException( "No marshaller for property " + marshalledProperty + " found" );
+            }
+
+            return marshaller.unmarshall( propertyDescriptor, dataInput, serializationContext );
+        }
+
+        private synchronized Marshaller getMarshaller()
+        {
+            if ( marshaller == null )
+            {
+                marshaller = findMarshaller( marshalledProperty );
+            }
+            return marshaller;
+        }
+
+    }
 }

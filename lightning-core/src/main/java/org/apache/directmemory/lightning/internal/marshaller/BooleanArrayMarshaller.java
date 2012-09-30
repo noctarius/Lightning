@@ -26,63 +26,80 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class BooleanArrayMarshaller
+    extends AbstractMarshaller
+{
 
-public class BooleanArrayMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return boolean[].class == type || Boolean[].class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return boolean[].class == type || Boolean[].class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( !writePossibleNull( value, dataOutput ) )
+        {
+            return;
+        }
 
-		if (!writePossibleNull(value, dataOutput)) {
-			return;
-		}
+        if ( boolean[].class == propertyDescriptor.getType() )
+        {
+            boolean[] array = (boolean[]) value;
+            dataOutput.writeInt( array.length );
 
-		if (boolean[].class == propertyDescriptor.getType()) {
-			boolean[] array = (boolean[]) value;
-			dataOutput.writeInt(array.length);
+            for ( boolean arrayValue : array )
+            {
+                dataOutput.writeBoolean( arrayValue );
+            }
+        }
+        else
+        {
+            Boolean[] array = (Boolean[]) value;
+            dataOutput.writeInt( array.length );
 
-			for (boolean arrayValue : array) {
-				dataOutput.writeBoolean(arrayValue);
-			}
-		}
-		else {
-			Boolean[] array = (Boolean[]) value;
-			dataOutput.writeInt(array.length);
+            for ( boolean arrayValue : array )
+            {
+                dataOutput.writeBoolean( arrayValue );
+            }
+        }
+    }
 
-			for (boolean arrayValue : array) {
-				dataOutput.writeBoolean(arrayValue);
-			}
-		}
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( isNull( dataInput ) )
+        {
+            return null;
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (isNull(dataInput)) {
-			return null;
-		}
+        int size = dataInput.readInt();
+        if ( boolean[].class == propertyDescriptor.getType() )
+        {
+            boolean[] array = new boolean[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readBoolean();
+            }
 
-		int size = dataInput.readInt();
-		if (boolean[].class == propertyDescriptor.getType()) {
-			boolean[] array = new boolean[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readBoolean();
-			}
+            return (V) array;
+        }
+        else
+        {
+            Boolean[] array = new Boolean[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readBoolean();
+            }
 
-			return (V) array;
-		}
-		else {
-			Boolean[] array = new Boolean[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readBoolean();
-			}
-
-			return (V) array;
-		}
-	}
+            return (V) array;
+        }
+    }
 }

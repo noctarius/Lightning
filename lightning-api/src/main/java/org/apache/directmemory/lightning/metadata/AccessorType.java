@@ -18,7 +18,7 @@
  */
 package org.apache.directmemory.lightning.metadata;
 
-public enum AccessorType {
-	Field,
-	Method
+public enum AccessorType
+{
+    Field, Method
 }

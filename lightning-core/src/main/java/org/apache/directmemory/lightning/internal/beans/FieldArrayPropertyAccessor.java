@@ -23,40 +23,49 @@ import java.lang.reflect.Field;
 import org.apache.directmemory.lightning.metadata.AccessorType;
 import org.apache.directmemory.lightning.metadata.ArrayPropertyAccessor;
 
+public abstract class FieldArrayPropertyAccessor
+    extends FieldValuePropertyAccessor
+    implements ArrayPropertyAccessor
+{
 
-public abstract class FieldArrayPropertyAccessor extends FieldValuePropertyAccessor implements ArrayPropertyAccessor {
+    private final Field field;
 
-	private final Field field;
-	private final Class<?> definedClass;
-	
-	protected FieldArrayPropertyAccessor(Field field, Class<?> definedClass) {
-		super(field, definedClass);
-		this.field = field;
-		this.definedClass = definedClass;
-	}
+    private final Class<?> definedClass;
 
-	@Override
-	public boolean isArrayType() {
-		return true;
-	}
+    protected FieldArrayPropertyAccessor( Field field, Class<?> definedClass )
+    {
+        super( field, definedClass );
+        this.field = field;
+        this.definedClass = definedClass;
+    }
 
-	@Override
-	public Class<?> getDefinedClass() {
-		return definedClass;
-	}
+    @Override
+    public boolean isArrayType()
+    {
+        return true;
+    }
 
-	@Override
-	public AccessorType getAccessorType() {
-		return AccessorType.Field;
-	}
+    @Override
+    public Class<?> getDefinedClass()
+    {
+        return definedClass;
+    }
 
-	@Override
-	public Class<?> getType() {
-		return field.getType();
-	}
+    @Override
+    public AccessorType getAccessorType()
+    {
+        return AccessorType.Field;
+    }
 
-	@Override
-	protected Field getField() {
-		return field;
-	}
+    @Override
+    public Class<?> getType()
+    {
+        return field.getType();
+    }
+
+    @Override
+    protected Field getField()
+    {
+        return field;
+    }
 }

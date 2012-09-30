@@ -36,152 +36,175 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+public class SourceMarshallerGenerator
+{
 
-public class SourceMarshallerGenerator {
+    private final VelocityEngine engine;
 
-	private final VelocityEngine engine;
-	private final Template marshallerTemplate;
-	private final Charset charset;
-	private final Logger logger;
+    private final Template marshallerTemplate;
 
-	public SourceMarshallerGenerator(Charset charset, Logger logger) throws IOException {
-		this.charset = charset;
-		this.logger = logger;
+    private final Charset charset;
 
-		Properties properties = new Properties();
-		InputStream stream = getClass().getClassLoader().getResourceAsStream("velocity.properties");
-		properties.load(stream);
-		engine = new VelocityEngine(properties);
+    private final Logger logger;
 
-		engine.init();
-		marshallerTemplate = engine.getTemplate("marshaller.vm", "UTF-8");
-	}
+    public SourceMarshallerGenerator( Charset charset, Logger logger )
+        throws IOException
+    {
+        this.charset = charset;
+        this.logger = logger;
 
-	public File generateMarshaller(Class<?> type, List<PropertyDescriptor> propertyDescriptors, SerializationStrategy serializationStrategy, File outputFolder)
-			throws IOException {
+        Properties properties = new Properties();
+        InputStream stream = getClass().getClassLoader().getResourceAsStream( "velocity.properties" );
+        properties.load( stream );
+        engine = new VelocityEngine( properties );
 
-		// Copy properties and sort them by name
-		List<PropertyDescriptor> propertyDescriptorsCopy = new ArrayList<PropertyDescriptor>(propertyDescriptors);
-		Collections.sort(propertyDescriptorsCopy);
+        engine.init();
+        marshallerTemplate = engine.getTemplate( "marshaller.vm", "UTF-8" );
+    }
 
-		String packageName = type.getPackage() != null ? type.getPackage().getName() : "lightning";
-		String className = type.getName().replace(packageName + ".", "") + "LightningGeneratedMarshaller";
+    public File generateMarshaller( Class<?> type, List<PropertyDescriptor> propertyDescriptors,
+                                    SerializationStrategy serializationStrategy, File outputFolder )
+        throws IOException
+    {
 
-		File packageFolder = new File(outputFolder, packageName.replace(".", "/"));
-		if (!packageFolder.exists()) {
-			packageFolder.mkdirs();
-		}
+        // Copy properties and sort them by name
+        List<PropertyDescriptor> propertyDescriptorsCopy = new ArrayList<PropertyDescriptor>( propertyDescriptors );
+        Collections.sort( propertyDescriptorsCopy );
 
-		File outputFile = new File(packageFolder, className + ".java");
+        String packageName = type.getPackage() != null ? type.getPackage().getName() : "lightning";
+        String className = type.getName().replace( packageName + ".", "" ) + "LightningGeneratedMarshaller";
 
-		logger.info("Generating source :" + outputFile.getAbsolutePath());
+        File packageFolder = new File( outputFolder, packageName.replace( ".", "/" ) );
+        if ( !packageFolder.exists() )
+        {
+            packageFolder.mkdirs();
+        }
 
-		FileOutputStream stream = new FileOutputStream(outputFile);
-		OutputStreamWriter writer = new OutputStreamWriter(stream, charset);
+        File outputFile = new File( packageFolder, className + ".java" );
 
-		VelocityContext context = new VelocityContext();
+        logger.info( "Generating source :" + outputFile.getAbsolutePath() );
 
-		context.put("support", new Support());
-		context.put("packageName", packageName);
-		context.put("className", className);
-		context.put("properties", propertyDescriptorsCopy);
-		context.put("strategy", serializationStrategy.name());
+        FileOutputStream stream = new FileOutputStream( outputFile );
+        OutputStreamWriter writer = new OutputStreamWriter( stream, charset );
 
-		marshallerTemplate.merge(context, writer);
+        VelocityContext context = new VelocityContext();
 
-		writer.flush();
-		writer.close();
+        context.put( "support", new Support() );
+        context.put( "packageName", packageName );
+        context.put( "className", className );
+        context.put( "properties", propertyDescriptorsCopy );
+        context.put( "strategy", serializationStrategy.name() );
 
-		return outputFile;
-	}
+        marshallerTemplate.merge( context, writer );
 
-	public static class Support {
+        writer.flush();
+        writer.close();
 
-		public String toFinalFieldName(String prefix, PropertyDescriptor propertyDescriptor) {
-			return new StringBuilder(prefix.toUpperCase()).append("_").append(propertyDescriptor.getPropertyName().toUpperCase()).append("_LIGHTNING")
-					.toString();
-		}
+        return outputFile;
+    }
 
-		public String generateWriter(PropertyDescriptor propertyDescriptor, String instanceName) {
-			StringBuilder sb = new StringBuilder(propertyDescriptor.getPropertyName()).append("PropertyAccessor.write");
-			Class<?> type = propertyDescriptor.getType();
-			if (type == boolean.class) {
-				sb.append("Boolean(").append(instanceName).append(", ((Boolean) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").booleanValue())");
-			}
-			else if (type == byte.class) {
-				sb.append("Byte(").append(instanceName).append(", ((Byte) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").byteValue())");
-			}
-			else if (type == char.class) {
-				sb.append("Char(").append(instanceName).append(", ((Character) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").charValue())");
-			}
-			else if (type == short.class) {
-				sb.append("Short(").append(instanceName).append(", ((Short) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").shortValue())");
-			}
-			else if (type == int.class) {
-				sb.append("Int(").append(instanceName).append(", ((Integer) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").intValue())");
-			}
-			else if (type == long.class) {
-				sb.append("Long(").append(instanceName).append(", ((Long) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").longValue())");
-			}
-			else if (type == float.class) {
-				sb.append("Float(").append(instanceName).append(", ((Float) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").floatValue())");
-			}
-			else if (type == double.class) {
-				sb.append("Double(").append(instanceName).append(", ((Double) ").append(propertyDescriptor.getPropertyName()).append("Value")
-						.append(").doubleValue())");
-			}
-			else {
-				sb.append("Object(").append(instanceName).append(", ").append(propertyDescriptor.getPropertyName()).append("Value").append(")");
-			}
+    public static class Support
+    {
 
-			return sb.append(";").toString();
-		}
+        public String toFinalFieldName( String prefix, PropertyDescriptor propertyDescriptor )
+        {
+            return new StringBuilder( prefix.toUpperCase() ).append( "_" ).append( propertyDescriptor.getPropertyName().toUpperCase() ).append( "_LIGHTNING" ).toString();
+        }
 
-		public String generateReader(PropertyDescriptor propertyDescriptor) {
-			StringBuilder sb = new StringBuilder();
-			Class<?> type = propertyDescriptor.getType();
-			if (type == boolean.class) {
-				sb.append("Boolean.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readBoolean(");
-			}
-			else if (type == byte.class) {
-				sb.append("Byte.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readByte(");
-			}
-			else if (type == char.class) {
-				sb.append("Character.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readChar(");
-			}
-			else if (type == short.class) {
-				sb.append("Short.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readShort(");
-			}
-			else if (type == int.class) {
-				sb.append("Integer.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readInt(");
-			}
-			else if (type == long.class) {
-				sb.append("Long.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readLong(");
-			}
-			else if (type == float.class) {
-				sb.append("Float.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readFloat(");
-			}
-			else if (type == double.class) {
-				sb.append("Double.valueOf(").append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readDouble(");
-			}
-			else {
-				sb.append(propertyDescriptor.getPropertyName()).append("PropertyAccessor").append(".readObject(");
-			}
+        public String generateWriter( PropertyDescriptor propertyDescriptor, String instanceName )
+        {
+            StringBuilder sb =
+                new StringBuilder( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor.write" );
+            Class<?> type = propertyDescriptor.getType();
+            if ( type == boolean.class )
+            {
+                sb.append( "Boolean(" ).append( instanceName ).append( ", ((Boolean) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").booleanValue())" );
+            }
+            else if ( type == byte.class )
+            {
+                sb.append( "Byte(" ).append( instanceName ).append( ", ((Byte) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").byteValue())" );
+            }
+            else if ( type == char.class )
+            {
+                sb.append( "Char(" ).append( instanceName ).append( ", ((Character) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").charValue())" );
+            }
+            else if ( type == short.class )
+            {
+                sb.append( "Short(" ).append( instanceName ).append( ", ((Short) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").shortValue())" );
+            }
+            else if ( type == int.class )
+            {
+                sb.append( "Int(" ).append( instanceName ).append( ", ((Integer) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").intValue())" );
+            }
+            else if ( type == long.class )
+            {
+                sb.append( "Long(" ).append( instanceName ).append( ", ((Long) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").longValue())" );
+            }
+            else if ( type == float.class )
+            {
+                sb.append( "Float(" ).append( instanceName ).append( ", ((Float) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").floatValue())" );
+            }
+            else if ( type == double.class )
+            {
+                sb.append( "Double(" ).append( instanceName ).append( ", ((Double) " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ").doubleValue())" );
+            }
+            else
+            {
+                sb.append( "Object(" ).append( instanceName ).append( ", " ).append( propertyDescriptor.getPropertyName() ).append( "Value" ).append( ")" );
+            }
 
-			sb.append("value)");
+            return sb.append( ";" ).toString();
+        }
 
-			if (type.isPrimitive()) {
-				sb.append(")");
-			}
+        public String generateReader( PropertyDescriptor propertyDescriptor )
+        {
+            StringBuilder sb = new StringBuilder();
+            Class<?> type = propertyDescriptor.getType();
+            if ( type == boolean.class )
+            {
+                sb.append( "Boolean.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readBoolean(" );
+            }
+            else if ( type == byte.class )
+            {
+                sb.append( "Byte.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readByte(" );
+            }
+            else if ( type == char.class )
+            {
+                sb.append( "Character.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readChar(" );
+            }
+            else if ( type == short.class )
+            {
+                sb.append( "Short.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readShort(" );
+            }
+            else if ( type == int.class )
+            {
+                sb.append( "Integer.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readInt(" );
+            }
+            else if ( type == long.class )
+            {
+                sb.append( "Long.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readLong(" );
+            }
+            else if ( type == float.class )
+            {
+                sb.append( "Float.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readFloat(" );
+            }
+            else if ( type == double.class )
+            {
+                sb.append( "Double.valueOf(" ).append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readDouble(" );
+            }
+            else
+            {
+                sb.append( propertyDescriptor.getPropertyName() ).append( "PropertyAccessor" ).append( ".readObject(" );
+            }
 
-			return sb.toString();
-		}
-	}
+            sb.append( "value)" );
+
+            if ( type.isPrimitive() )
+            {
+                sb.append( ")" );
+            }
+
+            return sb.toString();
+        }
+    }
 }

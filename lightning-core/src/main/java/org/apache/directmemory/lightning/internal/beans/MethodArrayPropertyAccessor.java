@@ -23,129 +23,157 @@ import java.lang.reflect.Method;
 import org.apache.directmemory.lightning.metadata.AccessorType;
 import org.apache.directmemory.lightning.metadata.ArrayPropertyAccessor;
 
+public abstract class MethodArrayPropertyAccessor
+    extends AbstractValuePropertyAccessor
+    implements ArrayPropertyAccessor
+{
 
-public abstract class MethodArrayPropertyAccessor extends AbstractValuePropertyAccessor implements ArrayPropertyAccessor {
+    private final Method setter;
 
-	private final Method setter;
-	private final Method getter;
-	private final Class<?> definedClass;
+    private final Method getter;
 
-	protected MethodArrayPropertyAccessor(Method setter, Method getter, Class<?> definedClass) {
-		this.setter = setter;
-		this.getter = getter;
-		this.definedClass = definedClass;
-	}
+    private final Class<?> definedClass;
 
-	@Override
-	public boolean isArrayType() {
-		return true;
-	}
+    protected MethodArrayPropertyAccessor( Method setter, Method getter, Class<?> definedClass )
+    {
+        this.setter = setter;
+        this.getter = getter;
+        this.definedClass = definedClass;
+    }
 
-	@Override
-	public Class<?> getDefinedClass() {
-		return definedClass;
-	}
+    @Override
+    public boolean isArrayType()
+    {
+        return true;
+    }
 
-	@Override
-	public Class<?> getDeclaringClass() {
-		return getter.getDeclaringClass();
-	}
+    @Override
+    public Class<?> getDefinedClass()
+    {
+        return definedClass;
+    }
 
-	@Override
-	public AccessorType getAccessorType() {
-		return AccessorType.Method;
-	}
+    @Override
+    public Class<?> getDeclaringClass()
+    {
+        return getter.getDeclaringClass();
+    }
 
-	@Override
-	public Class<?> getType() {
-		return getter.getReturnType();
-	}
+    @Override
+    public AccessorType getAccessorType()
+    {
+        return AccessorType.Method;
+    }
 
-	protected Method getGetterMethod() {
-		return getter;
-	}
+    @Override
+    public Class<?> getType()
+    {
+        return getter.getReturnType();
+    }
 
-	protected Method getSetterMethod() {
-		return setter;
-	}
+    protected Method getGetterMethod()
+    {
+        return getter;
+    }
 
-	@Override
-	public void writeBoolean(Object instance, int index, boolean value) {
-		writeObject(instance, index, value);
-	}
+    protected Method getSetterMethod()
+    {
+        return setter;
+    }
 
-	@Override
-	public boolean readBoolean(Object instance, int index) {
-		return (Boolean) readObject(instance, index);
-	}
+    @Override
+    public void writeBoolean( Object instance, int index, boolean value )
+    {
+        writeObject( instance, index, value );
+    }
 
-	@Override
-	public void writeByte(Object instance, int index, byte value) {
-		writeObject(instance, index, value);
-	}
+    @Override
+    public boolean readBoolean( Object instance, int index )
+    {
+        return (Boolean) readObject( instance, index );
+    }
 
-	@Override
-	public byte readByte(Object instance, int index) {
-		return (Byte) readObject(instance, index);
-	}
+    @Override
+    public void writeByte( Object instance, int index, byte value )
+    {
+        writeObject( instance, index, value );
+    }
 
-	@Override
-	public void writeChar(Object instance, int index, char value) {
-		writeObject(instance, index, value);
-	}
+    @Override
+    public byte readByte( Object instance, int index )
+    {
+        return (Byte) readObject( instance, index );
+    }
 
-	@Override
-	public char readChar(Object instance, int index) {
-		return (Character) readObject(instance, index);
-	}
+    @Override
+    public void writeChar( Object instance, int index, char value )
+    {
+        writeObject( instance, index, value );
+    }
 
-	@Override
-	public void writeShort(Object instance, int index, short value) {
-		writeObject(instance, index, value);
-	}
+    @Override
+    public char readChar( Object instance, int index )
+    {
+        return (Character) readObject( instance, index );
+    }
 
-	@Override
-	public short readShort(Object instance, int index) {
-		return (Short) readObject(instance, index);
-	}
+    @Override
+    public void writeShort( Object instance, int index, short value )
+    {
+        writeObject( instance, index, value );
+    }
 
-	@Override
-	public void writeInt(Object instance, int index, int value) {
-		writeObject(instance, index, value);
-	}
+    @Override
+    public short readShort( Object instance, int index )
+    {
+        return (Short) readObject( instance, index );
+    }
 
-	@Override
-	public int readInt(Object instance, int index) {
-		return (Integer) readObject(instance, index);
-	}
+    @Override
+    public void writeInt( Object instance, int index, int value )
+    {
+        writeObject( instance, index, value );
+    }
 
-	@Override
-	public void writeLong(Object instance, int index, long value) {
-		writeObject(instance, index, value);
-	}
+    @Override
+    public int readInt( Object instance, int index )
+    {
+        return (Integer) readObject( instance, index );
+    }
 
-	@Override
-	public long readLong(Object instance, int index) {
-		return (Long) readObject(instance, index);
-	}
+    @Override
+    public void writeLong( Object instance, int index, long value )
+    {
+        writeObject( instance, index, value );
+    }
 
-	@Override
-	public void writeFloat(Object instance, int index, float value) {
-		writeObject(instance, index, value);
-	}
+    @Override
+    public long readLong( Object instance, int index )
+    {
+        return (Long) readObject( instance, index );
+    }
 
-	@Override
-	public float readFloat(Object instance, int index) {
-		return (Float) readObject(instance, index);
-	}
+    @Override
+    public void writeFloat( Object instance, int index, float value )
+    {
+        writeObject( instance, index, value );
+    }
 
-	@Override
-	public void writeDouble(Object instance, int index, double value) {
-		writeObject(instance, index, value);
-	}
+    @Override
+    public float readFloat( Object instance, int index )
+    {
+        return (Float) readObject( instance, index );
+    }
 
-	@Override
-	public double readDouble(Object instance, int index) {
-		return (Double) readObject(instance, index);
-	}
+    @Override
+    public void writeDouble( Object instance, int index, double value )
+    {
+        writeObject( instance, index, value );
+    }
+
+    @Override
+    public double readDouble( Object instance, int index )
+    {
+        return (Double) readObject( instance, index );
+    }
 }

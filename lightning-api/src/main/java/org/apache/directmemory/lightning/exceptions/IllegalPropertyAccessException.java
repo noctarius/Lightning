@@ -18,22 +18,28 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings("serial")
-public class IllegalPropertyAccessException extends RuntimeException {
+@SuppressWarnings( "serial" )
+public class IllegalPropertyAccessException
+    extends RuntimeException
+{
 
-	public IllegalPropertyAccessException() {
-		super();
-	}
+    public IllegalPropertyAccessException()
+    {
+        super();
+    }
 
-	public IllegalPropertyAccessException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public IllegalPropertyAccessException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-	public IllegalPropertyAccessException(String message) {
-		super(message);
-	}
+    public IllegalPropertyAccessException( String message )
+    {
+        super( message );
+    }
 
-	public IllegalPropertyAccessException(Throwable cause) {
-		super(cause);
-	}
+    public IllegalPropertyAccessException( Throwable cause )
+    {
+        super( cause );
+    }
 }

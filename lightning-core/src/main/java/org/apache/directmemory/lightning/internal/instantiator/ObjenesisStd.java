@@ -22,33 +22,32 @@ import org.apache.directmemory.lightning.internal.instantiator.strategy.StdInsta
 
 /**
  * Objenesis implementation using the
- * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
- * .
+ * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.StdInstantiatorStrategy} .
  * 
  * @author Henri Tremblay
  */
-public class ObjenesisStd extends ObjenesisBase {
+public class ObjenesisStd
+    extends ObjenesisBase
+{
 
-	/**
-	 * Default constructor using the
-	 * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
-	 */
-	public ObjenesisStd() {
-		super(new StdInstantiatorStrategy());
-	}
+    /**
+     * Default constructor using the
+     * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
+     */
+    public ObjenesisStd()
+    {
+        super( new StdInstantiatorStrategy() );
+    }
 
-	/**
-	 * Instance using the
-	 * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.StdInstantiatorStrategy}
-	 * with or without
-	 * caching {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator}s
-	 * 
-	 * @param useCache
-	 *            If
-	 *            {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator} s
-	 *            should be cached
-	 */
-	public ObjenesisStd(boolean useCache) {
-		super(new StdInstantiatorStrategy(), useCache);
-	}
+    /**
+     * Instance using the
+     * {@link org.apache.directmemory.lightning.internal.instantiator.strategy.StdInstantiatorStrategy} with or without
+     * caching {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator}s
+     * 
+     * @param useCache If {@link org.apache.directmemory.lightning.instantiator.ObjectInstantiator} s should be cached
+     */
+    public ObjenesisStd( boolean useCache )
+    {
+        super( new StdInstantiatorStrategy(), useCache );
+    }
 }

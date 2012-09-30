@@ -21,11 +21,14 @@ package org.apache.directmemory.lightning.base;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 import org.apache.directmemory.lightning.metadata.ValueNullableEvaluator;
 
-public class DefaultValueNullableEvaluator implements ValueNullableEvaluator {
+public class DefaultValueNullableEvaluator
+    implements ValueNullableEvaluator
+{
 
-	@Override
-	public boolean isValueNullable(PropertyDescriptor propertyDescriptor) {
-		return !propertyDescriptor.getType().isPrimitive();
-	}
+    @Override
+    public boolean isValueNullable( PropertyDescriptor propertyDescriptor )
+    {
+        return !propertyDescriptor.getType().isPrimitive();
+    }
 
 }

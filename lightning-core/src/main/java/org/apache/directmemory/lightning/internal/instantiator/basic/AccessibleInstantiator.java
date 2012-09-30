@@ -19,21 +19,23 @@
 package org.apache.directmemory.lightning.internal.instantiator.basic;
 
 /**
- * Instantiates a class by grabbing the no-args constructor, making it
- * accessible and then calling
- * Constructor.newInstance(). Although this still requires no-arg constructors,
- * it can call
- * non-public constructors (if the security manager allows it).
+ * Instantiates a class by grabbing the no-args constructor, making it accessible and then calling
+ * Constructor.newInstance(). Although this still requires no-arg constructors, it can call non-public constructors (if
+ * the security manager allows it).
  * 
  * @author Joe Walnes
  * @see org.apache.directmemory.lightning.instantiator.ObjectInstantiator
  */
-public class AccessibleInstantiator extends ConstructorInstantiator {
+public class AccessibleInstantiator
+    extends ConstructorInstantiator
+{
 
-	public AccessibleInstantiator(Class<?> type) {
-		super(type);
-		if (constructor != null) {
-			constructor.setAccessible(true);
-		}
-	}
+    public AccessibleInstantiator( Class<?> type )
+    {
+        super( type );
+        if ( constructor != null )
+        {
+            constructor.setAccessible( true );
+        }
+    }
 }

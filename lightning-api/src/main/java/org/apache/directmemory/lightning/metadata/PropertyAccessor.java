@@ -18,16 +18,17 @@
  */
 package org.apache.directmemory.lightning.metadata;
 
-public interface PropertyAccessor {
+public interface PropertyAccessor
+{
 
-	Class<?> getDeclaringClass();
-	
-	Class<?> getDefinedClass();
+    Class<?> getDeclaringClass();
 
-	AccessorType getAccessorType();
+    Class<?> getDefinedClass();
 
-	Class<?> getType();
+    AccessorType getAccessorType();
 
-	boolean isArrayType();
+    Class<?> getType();
+
+    boolean isArrayType();
 
 }

@@ -18,42 +18,44 @@
  */
 package org.apache.directmemory.lightning.metadata;
 
-public interface ValuePropertyAccessor extends PropertyAccessor {
+public interface ValuePropertyAccessor
+    extends PropertyAccessor
+{
 
-	<T> void writeObject(Object instance, T value);
+    <T> void writeObject( Object instance, T value );
 
-	<T> T readObject(Object instance);
+    <T> T readObject( Object instance );
 
-	void writeBoolean(Object instance, boolean value);
+    void writeBoolean( Object instance, boolean value );
 
-	boolean readBoolean(Object instance);
+    boolean readBoolean( Object instance );
 
-	void writeByte(Object instance, byte value);
+    void writeByte( Object instance, byte value );
 
-	byte readByte(Object instance);
+    byte readByte( Object instance );
 
-	void writeChar(Object instance, char value);
+    void writeChar( Object instance, char value );
 
-	char readChar(Object instance);
+    char readChar( Object instance );
 
-	void writeShort(Object instance, short value);
+    void writeShort( Object instance, short value );
 
-	short readShort(Object instance);
+    short readShort( Object instance );
 
-	void writeInt(Object instance, int value);
+    void writeInt( Object instance, int value );
 
-	int readInt(Object instance);
+    int readInt( Object instance );
 
-	void writeLong(Object instance, long value);
+    void writeLong( Object instance, long value );
 
-	long readLong(Object instance);
+    long readLong( Object instance );
 
-	void writeFloat(Object instance, float value);
+    void writeFloat( Object instance, float value );
 
-	float readFloat(Object instance);
+    float readFloat( Object instance );
 
-	void writeDouble(Object instance, double value);
+    void writeDouble( Object instance, double value );
 
-	double readDouble(Object instance);
+    double readDouble( Object instance );
 
 }

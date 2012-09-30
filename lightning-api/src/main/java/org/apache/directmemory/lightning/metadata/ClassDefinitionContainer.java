@@ -20,16 +20,17 @@ package org.apache.directmemory.lightning.metadata;
 
 import java.util.Collection;
 
-public interface ClassDefinitionContainer {
+public interface ClassDefinitionContainer
+{
 
-	Collection<ClassDefinition> getClassDefinitions();
+    Collection<ClassDefinition> getClassDefinitions();
 
-	Class<?> getTypeById(long id);
+    Class<?> getTypeById( long id );
 
-	ClassDefinition getClassDefinitionByCanonicalName(String canonicalName);
+    ClassDefinition getClassDefinitionByCanonicalName( String canonicalName );
 
-	ClassDefinition getClassDefinitionById(long id);
+    ClassDefinition getClassDefinitionById( long id );
 
-	ClassDefinition getClassDefinitionByType(Class<?> type);
+    ClassDefinition getClassDefinitionByType( Class<?> type );
 
 }

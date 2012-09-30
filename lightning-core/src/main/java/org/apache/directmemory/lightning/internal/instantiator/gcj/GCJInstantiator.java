@@ -22,34 +22,40 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.directmemory.lightning.internal.instantiator.ObjenesisException;
 
-
 /**
- * Instantiates a class by making a call to internal GCJ private methods. It is
- * only supposed to
- * work on GCJ JVMs. This instantiator will not call any constructors.
+ * Instantiates a class by making a call to internal GCJ private methods. It is only supposed to work on GCJ JVMs. This
+ * instantiator will not call any constructors.
  * 
  * @author Leonardo Mesquita
  * @see org.apache.directmemory.lightning.instantiator.ObjectInstantiator
  */
-public class GCJInstantiator extends GCJInstantiatorBase {
+public class GCJInstantiator
+    extends GCJInstantiatorBase
+{
 
-	public GCJInstantiator(Class<?> type) {
-		super(type);
-	}
+    public GCJInstantiator( Class<?> type )
+    {
+        super( type );
+    }
 
-	@Override
-	public Object newInstance() {
-		try {
-			return newObjectMethod.invoke(dummyStream, new Object[] { type, Object.class });
-		}
-		catch (RuntimeException e) {
-			throw new ObjenesisException(e);
-		}
-		catch (IllegalAccessException e) {
-			throw new ObjenesisException(e);
-		}
-		catch (InvocationTargetException e) {
-			throw new ObjenesisException(e);
-		}
-	}
+    @Override
+    public Object newInstance()
+    {
+        try
+        {
+            return newObjectMethod.invoke( dummyStream, new Object[] { type, Object.class } );
+        }
+        catch ( RuntimeException e )
+        {
+            throw new ObjenesisException( e );
+        }
+        catch ( IllegalAccessException e )
+        {
+            throw new ObjenesisException( e );
+        }
+        catch ( InvocationTargetException e )
+        {
+            throw new ObjenesisException( e );
+        }
+    }
 }

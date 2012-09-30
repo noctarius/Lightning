@@ -31,31 +31,40 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractObjectMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class SerializableMarshaller
+    extends AbstractObjectMarshaller
+{
 
-public class SerializableMarshaller extends AbstractObjectMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return Serializable.class.isAssignableFrom( type );
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return Serializable.class.isAssignableFrom(type);
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        ObjectOutputStream stream = new ObjectOutputStream( (OutputStream) dataOutput );
+        stream.writeObject( value );
+    }
 
-		ObjectOutputStream stream = new ObjectOutputStream((OutputStream) dataOutput);
-		stream.writeObject(value);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		ObjectInputStream stream = new ObjectInputStream((InputStream) dataInput);
-		try {
-			return (V) stream.readObject();
-		}
-		catch (ClassNotFoundException e) {
-			throw new IOException("Error while deserialization", e);
-		}
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( V value, PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        ObjectInputStream stream = new ObjectInputStream( (InputStream) dataInput );
+        try
+        {
+            return (V) stream.readObject();
+        }
+        catch ( ClassNotFoundException e )
+        {
+            throw new IOException( "Error while deserialization", e );
+        }
+    }
 }

@@ -25,154 +25,184 @@ import org.apache.directmemory.lightning.metadata.AccessorType;
 import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class CheatPropertyDescriptor
+    implements PropertyDescriptor
+{
 
-public class CheatPropertyDescriptor implements PropertyDescriptor {
+    private final String name;
 
-	private final String name;
-	private final String propertyName;
-	private final String internalSignature;
-	private final String declaringCanonicalClassname;
+    private final String propertyName;
 
-	private final PropertyAccessor propertyAccessor;
-	private final Marshaller marshaller;
+    private final String internalSignature;
 
-	public CheatPropertyDescriptor(String propertyName, final Class<?> type, Marshaller marshaller) {
-		this.name = propertyName;
-		this.propertyName = propertyName;
-		this.marshaller = marshaller;
-		this.propertyAccessor = new PropertyAccessor() {
+    private final String declaringCanonicalClassname;
 
-			@Override
-			public boolean isArrayType() {
-				return type.isArray();
-			}
+    private final PropertyAccessor propertyAccessor;
 
-			@Override
-			public Class<?> getType() {
-				return type;
-			}
+    private final Marshaller marshaller;
 
-			@Override
-			public Class<?> getDefinedClass() {
-				return type;
-			}
+    public CheatPropertyDescriptor( String propertyName, final Class<?> type, Marshaller marshaller )
+    {
+        this.name = propertyName;
+        this.propertyName = propertyName;
+        this.marshaller = marshaller;
+        this.propertyAccessor = new PropertyAccessor()
+        {
 
-			@Override
-			public Class<?> getDeclaringClass() {
-				return type;
-			}
+            @Override
+            public boolean isArrayType()
+            {
+                return type.isArray();
+            }
 
-			@Override
-			public AccessorType getAccessorType() {
-				return AccessorType.Field;
-			}
-		};
+            @Override
+            public Class<?> getType()
+            {
+                return type;
+            }
 
-		this.declaringCanonicalClassname = null;
-		this.internalSignature = null;
-	}
+            @Override
+            public Class<?> getDefinedClass()
+            {
+                return type;
+            }
 
-	@Override
-	public int compareTo(PropertyDescriptor o) {
-		return propertyName.compareTo(o.getPropertyName());
-	}
+            @Override
+            public Class<?> getDeclaringClass()
+            {
+                return type;
+            }
 
-	@Override
-	public Annotation[] getAnnotations() {
-		return new Annotation[0];
-	}
+            @Override
+            public AccessorType getAccessorType()
+            {
+                return AccessorType.Field;
+            }
+        };
 
-	@Override
-	public Class<?> getDefinedClass() {
-		return propertyAccessor.getDefinedClass();
-	}
+        this.declaringCanonicalClassname = null;
+        this.internalSignature = null;
+    }
 
-	@Override
-	public Class<?> getDeclaringClass() {
-		return propertyAccessor.getDeclaringClass();
-	}
+    @Override
+    public int compareTo( PropertyDescriptor o )
+    {
+        return propertyName.compareTo( o.getPropertyName() );
+    }
 
-	@Override
-	public PropertyAccessor getPropertyAccessor() {
-		return propertyAccessor;
-	}
+    @Override
+    public Annotation[] getAnnotations()
+    {
+        return new Annotation[0];
+    }
 
-	@Override
-	public String getName() {
-		return name;
-	}
+    @Override
+    public Class<?> getDefinedClass()
+    {
+        return propertyAccessor.getDefinedClass();
+    }
 
-	@Override
-	public String getPropertyName() {
-		return propertyName;
-	}
+    @Override
+    public Class<?> getDeclaringClass()
+    {
+        return propertyAccessor.getDeclaringClass();
+    }
 
-	@Override
-	public Class<?> getType() {
-		return propertyAccessor.getType();
-	}
+    @Override
+    public PropertyAccessor getPropertyAccessor()
+    {
+        return propertyAccessor;
+    }
 
-	@Override
-	public String getInternalSignature() {
-		return internalSignature;
-	}
+    @Override
+    public String getName()
+    {
+        return name;
+    }
 
-	@Override
-	public Marshaller getMarshaller() {
-		return marshaller;
-	}
+    @Override
+    public String getPropertyName()
+    {
+        return propertyName;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((declaringCanonicalClassname == null) ? 0 : declaringCanonicalClassname.hashCode());
-		result = prime * result + ((internalSignature == null) ? 0 : internalSignature.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
-		return result;
-	}
+    @Override
+    public Class<?> getType()
+    {
+        return propertyAccessor.getType();
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		CheatPropertyDescriptor other = (CheatPropertyDescriptor) obj;
-		if (declaringCanonicalClassname == null) {
-			if (other.declaringCanonicalClassname != null)
-				return false;
-		}
-		else if (!declaringCanonicalClassname.equals(other.declaringCanonicalClassname))
-			return false;
-		if (internalSignature == null) {
-			if (other.internalSignature != null)
-				return false;
-		}
-		else if (!internalSignature.equals(other.internalSignature))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		}
-		else if (!name.equals(other.name))
-			return false;
-		if (propertyName == null) {
-			if (other.propertyName != null)
-				return false;
-		}
-		else if (!propertyName.equals(other.propertyName))
-			return false;
-		return true;
-	}
+    @Override
+    public String getInternalSignature()
+    {
+        return internalSignature;
+    }
 
-	@Override
-	public String toString() {
-		return "CheatingPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature=" + internalSignature
-				+ ", declaringCanonicalClassname=" + declaringCanonicalClassname + ", propertyAccessor=" + propertyAccessor + ", marshaller=" + marshaller
-				+ "]";
-	}
+    @Override
+    public Marshaller getMarshaller()
+    {
+        return marshaller;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result =
+            prime * result + ( ( declaringCanonicalClassname == null ) ? 0 : declaringCanonicalClassname.hashCode() );
+        result = prime * result + ( ( internalSignature == null ) ? 0 : internalSignature.hashCode() );
+        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        result = prime * result + ( ( propertyName == null ) ? 0 : propertyName.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        CheatPropertyDescriptor other = (CheatPropertyDescriptor) obj;
+        if ( declaringCanonicalClassname == null )
+        {
+            if ( other.declaringCanonicalClassname != null )
+                return false;
+        }
+        else if ( !declaringCanonicalClassname.equals( other.declaringCanonicalClassname ) )
+            return false;
+        if ( internalSignature == null )
+        {
+            if ( other.internalSignature != null )
+                return false;
+        }
+        else if ( !internalSignature.equals( other.internalSignature ) )
+            return false;
+        if ( name == null )
+        {
+            if ( other.name != null )
+                return false;
+        }
+        else if ( !name.equals( other.name ) )
+            return false;
+        if ( propertyName == null )
+        {
+            if ( other.propertyName != null )
+                return false;
+        }
+        else if ( !propertyName.equals( other.propertyName ) )
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CheatingPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature="
+            + internalSignature + ", declaringCanonicalClassname=" + declaringCanonicalClassname
+            + ", propertyAccessor=" + propertyAccessor + ", marshaller=" + marshaller + "]";
+    }
 }

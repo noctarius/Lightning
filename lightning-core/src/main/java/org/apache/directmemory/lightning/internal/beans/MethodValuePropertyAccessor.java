@@ -22,44 +22,54 @@ import java.lang.reflect.Method;
 
 import org.apache.directmemory.lightning.metadata.AccessorType;
 
+public abstract class MethodValuePropertyAccessor
+    extends AbstractValuePropertyAccessor
+{
 
-public abstract class MethodValuePropertyAccessor extends AbstractValuePropertyAccessor {
+    private final Method setter;
 
-	private final Method setter;
-	private final Method getter;
-	private final Class<?> definedClass;
+    private final Method getter;
 
-	protected MethodValuePropertyAccessor(Method setter, Method getter, Class<?> definedClass) {
-		this.setter = setter;
-		this.getter = getter;
-		this.definedClass = definedClass;
-	}
+    private final Class<?> definedClass;
 
-	@Override
-	public Class<?> getDefinedClass() {
-		return definedClass;
-	}
+    protected MethodValuePropertyAccessor( Method setter, Method getter, Class<?> definedClass )
+    {
+        this.setter = setter;
+        this.getter = getter;
+        this.definedClass = definedClass;
+    }
 
-	@Override
-	public Class<?> getDeclaringClass() {
-		return getter.getDeclaringClass();
-	}
+    @Override
+    public Class<?> getDefinedClass()
+    {
+        return definedClass;
+    }
 
-	@Override
-	public AccessorType getAccessorType() {
-		return AccessorType.Method;
-	}
+    @Override
+    public Class<?> getDeclaringClass()
+    {
+        return getter.getDeclaringClass();
+    }
 
-	@Override
-	public Class<?> getType() {
-		return getter.getReturnType();
-	}
+    @Override
+    public AccessorType getAccessorType()
+    {
+        return AccessorType.Method;
+    }
 
-	protected Method getGetterMethod() {
-		return getter;
-	}
+    @Override
+    public Class<?> getType()
+    {
+        return getter.getReturnType();
+    }
 
-	protected Method getSetterMethod() {
-		return setter;
-	}
+    protected Method getGetterMethod()
+    {
+        return getter;
+    }
+
+    protected Method getSetterMethod()
+    {
+        return setter;
+    }
 }

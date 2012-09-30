@@ -20,27 +20,32 @@ package org.apache.directmemory.lightning.maven.integration;
 
 import org.apache.directmemory.lightning.metadata.Attribute;
 
-public class Foo {
+public class Foo
+{
 
-	@Attribute
-	private String foo;
+    @Attribute
+    private String foo;
 
-	@Attribute
-	private int bar;
+    @Attribute
+    private int bar;
 
-	public String getFoo() {
-		return foo;
-	}
+    public String getFoo()
+    {
+        return foo;
+    }
 
-	public void setFoo(String foo) {
-		this.foo = foo;
-	}
+    public void setFoo( String foo )
+    {
+        this.foo = foo;
+    }
 
-	public int getBar() {
-		return bar;
-	}
+    public int getBar()
+    {
+        return bar;
+    }
 
-	public void setBar(int bar) {
-		this.bar = bar;
-	}
+    public void setBar( int bar )
+    {
+        this.bar = bar;
+    }
 }

@@ -25,19 +25,19 @@ import org.apache.directmemory.lightning.Marshaller;
 import org.apache.directmemory.lightning.configuration.SerializerDefinition;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public interface DefinitionVisitor
+{
 
-public interface DefinitionVisitor {
+    void visitSerializerDefinition( SerializerDefinition serializerDefinition );
 
-	void visitSerializerDefinition(SerializerDefinition serializerDefinition);
+    void visitAttributeAnnotation( Class<? extends Annotation> attributeAnnotation );
 
-	void visitAttributeAnnotation(Class<? extends Annotation> attributeAnnotation);
+    void visitClassDefine( Type type, Marshaller marshaller );
 
-	void visitClassDefine(Type type, Marshaller marshaller);
+    void visitAnnotatedAttribute( PropertyDescriptor propertyDescriptor, Marshaller marshaller );
 
-	void visitAnnotatedAttribute(PropertyDescriptor propertyDescriptor, Marshaller marshaller);
+    void visitPropertyDescriptor( PropertyDescriptor propertyDescriptor, Marshaller marshaller );
 
-	void visitPropertyDescriptor(PropertyDescriptor propertyDescriptor, Marshaller marshaller);
-
-	void visitFinalizeSerializerDefinition(SerializerDefinition serializerDefinition);
+    void visitFinalizeSerializerDefinition( SerializerDefinition serializerDefinition );
 
 }

@@ -18,22 +18,28 @@
  */
 package org.apache.directmemory.lightning.exceptions;
 
-@SuppressWarnings("serial")
-public class SerializerExecutionException extends RuntimeException {
+@SuppressWarnings( "serial" )
+public class SerializerExecutionException
+    extends RuntimeException
+{
 
-	public SerializerExecutionException() {
-		super();
-	}
+    public SerializerExecutionException()
+    {
+        super();
+    }
 
-	public SerializerExecutionException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public SerializerExecutionException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-	public SerializerExecutionException(String message) {
-		super(message);
-	}
+    public SerializerExecutionException( String message )
+    {
+        super( message );
+    }
 
-	public SerializerExecutionException(Throwable cause) {
-		super(cause);
-	}
+    public SerializerExecutionException( Throwable cause )
+    {
+        super( cause );
+    }
 }

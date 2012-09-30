@@ -26,39 +26,49 @@ import org.apache.directmemory.lightning.MarshallerContext;
 import com.carrotsearch.hppc.ObjectObjectMap;
 import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 
-public class InternalMarshallerContext implements MarshallerContext {
+public class InternalMarshallerContext
+    implements MarshallerContext
+{
 
-	private final MarshallerContext parentMarshallerContext;
-	private final ObjectObjectMap<Type, Marshaller> marshallers = new ObjectObjectOpenHashMap<Type, Marshaller>();
+    private final MarshallerContext parentMarshallerContext;
 
-	public InternalMarshallerContext() {
-		this(null);
-	}
+    private final ObjectObjectMap<Type, Marshaller> marshallers = new ObjectObjectOpenHashMap<Type, Marshaller>();
 
-	public InternalMarshallerContext(MarshallerContext parentMarshallerContext) {
-		this.parentMarshallerContext = parentMarshallerContext;
-	}
+    public InternalMarshallerContext()
+    {
+        this( null );
+    }
 
-	@Override
-	public Marshaller getMarshaller(Type type) {
-		Marshaller marshaller = marshallers.get(type);
-		if (marshaller != null) {
-			return marshaller;
-		}
+    public InternalMarshallerContext( MarshallerContext parentMarshallerContext )
+    {
+        this.parentMarshallerContext = parentMarshallerContext;
+    }
 
-		if (parentMarshallerContext != null) {
-			return parentMarshallerContext.getMarshaller(type);
-		}
+    @Override
+    public Marshaller getMarshaller( Type type )
+    {
+        Marshaller marshaller = marshallers.get( type );
+        if ( marshaller != null )
+        {
+            return marshaller;
+        }
 
-		return null;
-	}
+        if ( parentMarshallerContext != null )
+        {
+            return parentMarshallerContext.getMarshaller( type );
+        }
 
-	@Override
-	public void bindMarshaller(Type type, Marshaller marshaller) {
-		marshallers.put(type, marshaller);
-	}
+        return null;
+    }
 
-	public ObjectObjectMap<Type, Marshaller> getInternalMap() {
-		return marshallers;
-	}
+    @Override
+    public void bindMarshaller( Type type, Marshaller marshaller )
+    {
+        marshallers.put( type, marshaller );
+    }
+
+    public ObjectObjectMap<Type, Marshaller> getInternalMap()
+    {
+        return marshallers;
+    }
 }

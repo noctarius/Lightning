@@ -29,102 +29,118 @@ import org.apache.directmemory.lightning.metadata.ClassDefinition;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 import org.objectweb.asm.Type;
 
+class InternalClassDefinition
+    implements ClassDefinition, Comparable<ClassDefinition>
+{
 
-class InternalClassDefinition implements ClassDefinition, Comparable<ClassDefinition> {
+    private final String canonicalName;
 
-	private final String canonicalName;
-	private final Class<?> type;
-	private final byte[] checksum;
-	private final long serialVersionUID;
+    private final Class<?> type;
 
-	private long id;
+    private final byte[] checksum;
 
-	InternalClassDefinition(Class<?> type, List<PropertyDescriptor> propertyDescriptors, Logger logger) {
-		this.canonicalName = Type.getInternalName(type).replace("/", ".");
-		this.type = type;
+    private final long serialVersionUID;
 
-		byte[] classData = ClassUtil.getClassBytes(!type.isArray() ? type : type.getComponentType());
-		this.checksum = InternalUtil.getChecksum(propertyDescriptors, logger);
-		this.id = Crc64Util.checksum(classData);
-		this.serialVersionUID = ClassUtil.calculateSerialVersionUID(type);
-	}
+    private long id;
 
-	InternalClassDefinition(long id, Class<?> type, byte[] checksum, long serialVersionUID) {
-		this.canonicalName = Type.getInternalName(type).replace("/", ".");
-		this.type = type;
-		this.id = id;
-		this.checksum = checksum;
-		this.serialVersionUID = serialVersionUID;
-	}
+    InternalClassDefinition( Class<?> type, List<PropertyDescriptor> propertyDescriptors, Logger logger )
+    {
+        this.canonicalName = Type.getInternalName( type ).replace( "/", "." );
+        this.type = type;
 
-	@Override
-	public String getCanonicalName() {
-		return canonicalName;
-	}
+        byte[] classData = ClassUtil.getClassBytes( !type.isArray() ? type : type.getComponentType() );
+        this.checksum = InternalUtil.getChecksum( propertyDescriptors, logger );
+        this.id = Crc64Util.checksum( classData );
+        this.serialVersionUID = ClassUtil.calculateSerialVersionUID( type );
+    }
 
-	@Override
-	public Class<?> getType() {
-		return type;
-	}
+    InternalClassDefinition( long id, Class<?> type, byte[] checksum, long serialVersionUID )
+    {
+        this.canonicalName = Type.getInternalName( type ).replace( "/", "." );
+        this.type = type;
+        this.id = id;
+        this.checksum = checksum;
+        this.serialVersionUID = serialVersionUID;
+    }
 
-	@Override
-	public byte[] getChecksum() {
-		return Arrays.copyOf(checksum, checksum.length);
-	}
+    @Override
+    public String getCanonicalName()
+    {
+        return canonicalName;
+    }
 
-	@Override
-	public long getId() {
-		return id;
-	}
+    @Override
+    public Class<?> getType()
+    {
+        return type;
+    }
 
-	@Override
-	public long getSerialVersionUID() {
-		return serialVersionUID;
-	}
+    @Override
+    public byte[] getChecksum()
+    {
+        return Arrays.copyOf( checksum, checksum.length );
+    }
 
-	@Override
-	public int compareTo(ClassDefinition o) {
-		return canonicalName.compareTo(o.getCanonicalName());
-	}
+    @Override
+    public long getId()
+    {
+        return id;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((canonicalName == null) ? 0 : canonicalName.hashCode());
-		result = prime * result + Arrays.hashCode(checksum);
-		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + (int) (serialVersionUID ^ (serialVersionUID >>> 32));
-		return result;
-	}
+    @Override
+    public long getSerialVersionUID()
+    {
+        return serialVersionUID;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		InternalClassDefinition other = (InternalClassDefinition) obj;
-		if (canonicalName == null) {
-			if (other.canonicalName != null)
-				return false;
-		}
-		else if (!canonicalName.equals(other.canonicalName))
-			return false;
-		if (!Arrays.equals(checksum, other.checksum))
-			return false;
-		if (id != other.id)
-			return false;
-		if (serialVersionUID != other.serialVersionUID)
-			return false;
-		return true;
-	}
+    @Override
+    public int compareTo( ClassDefinition o )
+    {
+        return canonicalName.compareTo( o.getCanonicalName() );
+    }
 
-	@Override
-	public String toString() {
-		return "InternalClassDefinition [canonicalName=" + canonicalName + ", type=" + type + ", checksum=" + Arrays.toString(checksum) + ", serialVersionUID="
-				+ serialVersionUID + ", id=" + id + "]";
-	}
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( canonicalName == null ) ? 0 : canonicalName.hashCode() );
+        result = prime * result + Arrays.hashCode( checksum );
+        result = prime * result + (int) ( id ^ ( id >>> 32 ) );
+        result = prime * result + (int) ( serialVersionUID ^ ( serialVersionUID >>> 32 ) );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        InternalClassDefinition other = (InternalClassDefinition) obj;
+        if ( canonicalName == null )
+        {
+            if ( other.canonicalName != null )
+                return false;
+        }
+        else if ( !canonicalName.equals( other.canonicalName ) )
+            return false;
+        if ( !Arrays.equals( checksum, other.checksum ) )
+            return false;
+        if ( id != other.id )
+            return false;
+        if ( serialVersionUID != other.serialVersionUID )
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "InternalClassDefinition [canonicalName=" + canonicalName + ", type=" + type + ", checksum="
+            + Arrays.toString( checksum ) + ", serialVersionUID=" + serialVersionUID + ", id=" + id + "]";
+    }
 }

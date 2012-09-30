@@ -26,34 +26,38 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines a property (annotated field or method) as an attribute to be
- * serialized by Lightning.<br>
+ * Defines a property (annotated field or method) as an attribute to be serialized by Lightning.<br>
  * 
  * <pre>
  * 
- * public class MyEntity {
+ * public class MyEntity
+ * {
  * 
- * 	private long id;
+ *     private long id;
  * 
- * 	&#064;Attribute
- * 	private String name;
+ *     &#064;Attribute
+ *     private String name;
  * 
- * 	&#064;Attribute
- * 	public long getId() {
- * 		return id;
- * 	}
+ *     &#064;Attribute
+ *     public long getId()
+ *     {
+ *         return id;
+ *     }
  * 
- * 	public void setId(long id) {
- * 		this.id = id;
- * 	}
+ *     public void setId( long id )
+ *     {
+ *         this.id = id;
+ *     }
  * 
- * 	public String getName() {
- * 		return name;
- * 	}
+ *     public String getName()
+ *     {
+ *         return name;
+ *     }
  * 
- * 	public void setName(String name) {
- * 		this.name = name;
- * 	}
+ *     public void setName( String name )
+ *     {
+ *         this.name = name;
+ *     }
  * }
  * </pre>
  * 
@@ -61,23 +65,22 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD })
-public @interface Attribute {
+@Retention( RetentionPolicy.RUNTIME )
+@Target( { ElementType.FIELD, ElementType.METHOD } )
+public @interface Attribute
+{
 
-	public static final String NULL = "~~NULL~~";
+    public static final String NULL = "~~NULL~~";
 
-	/**
-	 * If a method is annotated this value defines a property name differs from
-	 * property name extracted from methodname.<br>
-	 * Means if method is "getFoo" property name defaults to "foo", but if the
-	 * method is annotated by @Attribute("bar") the property name will be
-	 * explicitly "bar".
-	 * 
-	 * @return the defined property name
-	 */
-	String property() default NULL;
+    /**
+     * If a method is annotated this value defines a property name differs from property name extracted from methodname.<br>
+     * Means if method is "getFoo" property name defaults to "foo", but if the method is annotated by @Attribute("bar")
+     * the property name will be explicitly "bar".
+     * 
+     * @return the defined property name
+     */
+    String property() default NULL;
 
-	boolean nullable() default false;
+    boolean nullable() default false;
 
 }

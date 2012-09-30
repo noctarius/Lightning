@@ -43,10 +43,9 @@ import org.codehaus.plexus.compiler.util.scan.SimpleSourceInclusionScanner;
 import org.codehaus.plexus.compiler.util.scan.SourceInclusionScanner;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 
-
 /**
- * Generates sourcecode of native marshallers for Lightning {@link Serializer}
- * by exploring all source {@link SerializerDefinition} files.
+ * Generates sourcecode of native marshallers for Lightning {@link Serializer} by exploring all source
+ * {@link SerializerDefinition} files.
  * 
  * @goal generate
  * @lifecycle process-classes
@@ -57,319 +56,382 @@ import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
  * @requiresProject true
  * @threadSafe true
  */
-public class LightningGeneratorMojo extends AbstractCompilerMojo {
+public class LightningGeneratorMojo
+    extends AbstractCompilerMojo
+{
 
-	/**
-	 * The current build session instance. This is used for
-	 * toolchain manager API calls.
-	 * 
-	 * @parameter default-value="${session}"
-	 * @required
-	 * @readonly
-	 */
-	private MavenSession session;
+    /**
+     * The current build session instance. This is used for toolchain manager API calls.
+     * 
+     * @parameter default-value="${session}"
+     * @required
+     * @readonly
+     */
+    private MavenSession session;
 
-	/**
-	 * The java generated-source directory.
-	 * 
-	 * @parameter
-	 *            default-value=
-	 *            "${project.build.directory}/generated-sources/lightning"
-	 */
-	private File generatedSourceDirectory;
+    /**
+     * The java generated-source directory.
+     * 
+     * @parameter default-value= "${project.build.directory}/generated-sources/lightning"
+     */
+    private File generatedSourceDirectory;
 
-	/**
-	 * The directory where compiled classes resist.
-	 * 
-	 * @parameter default-value="${project.build.directory}/classes"
-	 */
-	private File targetBuildDirectory;
+    /**
+     * The directory where compiled classes resist.
+     * 
+     * @parameter default-value="${project.build.directory}/classes"
+     */
+    private File targetBuildDirectory;
 
-	/**
-	 * Project classpath.
-	 * 
-	 * @parameter default-value="${project.compileClasspathElements}"
-	 * @required
-	 * @readonly
-	 */
-	private List<String> classpathElements;
+    /**
+     * Project classpath.
+     * 
+     * @parameter default-value="${project.compileClasspathElements}"
+     * @required
+     * @readonly
+     */
+    private List<String> classpathElements;
 
-	/**
-	 * The generator strategy.
-	 * 
-	 * @parameter default-value="speed"
-	 */
-	private String strategy;
+    /**
+     * The generator strategy.
+     * 
+     * @parameter default-value="speed"
+     */
+    private String strategy;
 
-	@Override
-	public void execute() throws MojoExecutionException, CompilationFailureException {
-		if (encoding == null) {
-			encoding = "UTF-8";
-		}
+    @Override
+    public void execute()
+        throws MojoExecutionException, CompilationFailureException
+    {
+        if ( encoding == null )
+        {
+            encoding = "UTF-8";
+        }
 
-		SerializationStrategy serializationStrategy = "size".equalsIgnoreCase(strategy) ? SerializationStrategy.SizeOptimized
-				: SerializationStrategy.SpeedOptimized;
+        SerializationStrategy serializationStrategy =
+            "size".equalsIgnoreCase( strategy ) ? SerializationStrategy.SizeOptimized
+                            : SerializationStrategy.SpeedOptimized;
 
-		MavenLoggerAdapter logger = new MavenLoggerAdapter(LightningGeneratorMojo.class.getCanonicalName());
-		getLog().info("Searching in path " + targetBuildDirectory.getAbsolutePath());
-		List<File> files = SupportUtil.recursiveGetAllJavaSources(targetBuildDirectory, new ArrayList<File>(), fileFilter);
+        MavenLoggerAdapter logger = new MavenLoggerAdapter( LightningGeneratorMojo.class.getCanonicalName() );
+        getLog().info( "Searching in path " + targetBuildDirectory.getAbsolutePath() );
+        List<File> files =
+            SupportUtil.recursiveGetAllJavaSources( targetBuildDirectory, new ArrayList<File>(), fileFilter );
 
-		List<URL> urlClasspathElements = new ArrayList<URL>();
-		if (getClasspathElements() != null) {
-			for (String classpathElement : getClasspathElements()) {
-				try {
-					URL url = new File(classpathElement).toURI().toURL();
-					urlClasspathElements.add(url);
-				}
-				catch (Exception e) {
-					// Intentionally left blank
-				}
-			}
-		}
-		ClassLoader classLoader = new URLClassLoader(urlClasspathElements.toArray(new URL[urlClasspathElements.size()]), getClass().getClassLoader());
+        List<URL> urlClasspathElements = new ArrayList<URL>();
+        if ( getClasspathElements() != null )
+        {
+            for ( String classpathElement : getClasspathElements() )
+            {
+                try
+                {
+                    URL url = new File( classpathElement ).toURI().toURL();
+                    urlClasspathElements.add( url );
+                }
+                catch ( Exception e )
+                {
+                    // Intentionally left blank
+                }
+            }
+        }
+        ClassLoader classLoader =
+            new URLClassLoader( urlClasspathElements.toArray( new URL[urlClasspathElements.size()] ),
+                                getClass().getClassLoader() );
 
-		for (File file : files) {
-			try {
-				String className = file.getAbsolutePath().replace(targetBuildDirectory.getAbsolutePath(), "");
-				if (className.startsWith("/") || className.startsWith("\\")) {
-					className = className.substring(1);
-				}
+        for ( File file : files )
+        {
+            try
+            {
+                String className = file.getAbsolutePath().replace( targetBuildDirectory.getAbsolutePath(), "" );
+                if ( className.startsWith( "/" ) || className.startsWith( "\\" ) )
+                {
+                    className = className.substring( 1 );
+                }
 
-				className = className.replace(".class", "").replace("/", ".").replace("\\", ".");
+                className = className.replace( ".class", "" ).replace( "/", "." ).replace( "\\", "." );
 
-				getLog().debug("Trying class " + className);
-				Class<?> clazz = classLoader.loadClass(className);
-				if (AbstractSerializerDefinition.class.isAssignableFrom(clazz)) {
-					getLog().debug("Found SerializerDefinition in class " + className);
+                getLog().debug( "Trying class " + className );
+                Class<?> clazz = classLoader.loadClass( className );
+                if ( AbstractSerializerDefinition.class.isAssignableFrom( clazz ) )
+                {
+                    getLog().debug( "Found SerializerDefinition in class " + className );
 
-					AbstractSerializerDefinition definition = (AbstractSerializerDefinition) clazz.newInstance();
+                    AbstractSerializerDefinition definition = (AbstractSerializerDefinition) clazz.newInstance();
 
-					SerializerDefinitionAnalyser analyser = new SerializerDefinitionAnalyser(logger);
-					analyser.analyse(definition);
-					analyser.build(generatedSourceDirectory, serializationStrategy, encoding);
-				}
-			}
-			catch (Exception e) {
-				logger.error("Could not generate Lightning source for file " + file.getName(), e);
-			}
-		}
+                    SerializerDefinitionAnalyser analyser = new SerializerDefinitionAnalyser( logger );
+                    analyser.analyse( definition );
+                    analyser.build( generatedSourceDirectory, serializationStrategy, encoding );
+                }
+            }
+            catch ( Exception e )
+            {
+                logger.error( "Could not generate Lightning source for file " + file.getName(), e );
+            }
+        }
 
-		super.execute();
+        super.execute();
 
-		// session.getCurrentProject().addCompileSourceRoot(generatedSourceDirectory.getAbsolutePath());
-	}
+        // session.getCurrentProject().addCompileSourceRoot(generatedSourceDirectory.getAbsolutePath());
+    }
 
-	@Override
-	protected SourceInclusionScanner getSourceInclusionScanner(int staleMillis) {
-		return new StaleSourceScanner(staleMillis);
-	}
+    @Override
+    protected SourceInclusionScanner getSourceInclusionScanner( int staleMillis )
+    {
+        return new StaleSourceScanner( staleMillis );
+    }
 
-	@Override
-	protected SourceInclusionScanner getSourceInclusionScanner(String inputFileEnding) {
-		return new SimpleSourceInclusionScanner(Collections.singleton("**/*.java"), Collections.EMPTY_SET);
-	}
+    @Override
+    protected SourceInclusionScanner getSourceInclusionScanner( String inputFileEnding )
+    {
+        return new SimpleSourceInclusionScanner( Collections.singleton( "**/*.java" ), Collections.EMPTY_SET );
+    }
 
-	@Override
-	protected List<String> getClasspathElements() {
-		return classpathElements;
-	}
+    @Override
+    protected List<String> getClasspathElements()
+    {
+        return classpathElements;
+    }
 
-	@Override
-	protected List<String> getCompileSourceRoots() {
-		return Collections.singletonList(generatedSourceDirectory.getAbsolutePath());
-	}
+    @Override
+    protected List<String> getCompileSourceRoots()
+    {
+        return Collections.singletonList( generatedSourceDirectory.getAbsolutePath() );
+    }
 
-	@Override
-	protected File getOutputDirectory() {
-		return targetBuildDirectory;
-	}
+    @Override
+    protected File getOutputDirectory()
+    {
+        return targetBuildDirectory;
+    }
 
-	@Override
-	protected String getSource() {
-		return source;
-	}
+    @Override
+    protected String getSource()
+    {
+        return source;
+    }
 
-	@Override
-	protected String getTarget() {
-		return target;
-	}
+    @Override
+    protected String getTarget()
+    {
+        return target;
+    }
 
-	@Override
-	protected String getCompilerArgument() {
-		return compilerArgument;
-	}
+    @Override
+    protected String getCompilerArgument()
+    {
+        return compilerArgument;
+    }
 
-	@Override
-	protected Map<String, String> getCompilerArguments() {
-		return compilerArguments;
-	}
+    @Override
+    protected Map<String, String> getCompilerArguments()
+    {
+        return compilerArguments;
+    }
 
-	@Override
-	protected File getGeneratedSourcesDirectory() {
-		return generatedSourceDirectory;
-	}
+    @Override
+    protected File getGeneratedSourcesDirectory()
+    {
+        return generatedSourceDirectory;
+    }
 
-	private final FileFilter fileFilter = new FileFilter() {
+    private final FileFilter fileFilter = new FileFilter()
+    {
 
-		@Override
-		public boolean accept(File file) {
-			return file.isDirectory() || file.getName().endsWith(".class");
-		}
-	};
+        @Override
+        public boolean accept( File file )
+        {
+            return file.isDirectory() || file.getName().endsWith( ".class" );
+        }
+    };
 
-	private class FileObject extends SimpleJavaFileObject {
+    private class FileObject
+        extends SimpleJavaFileObject
+    {
 
-		private final Charset charset;
-		private final File file;
+        private final Charset charset;
 
-		private FileObject(File file, Charset charset) {
-			super(file.toURI(), Kind.SOURCE);
-			this.charset = charset;
-			this.file = file;
-		}
+        private final File file;
 
-		@Override
-		public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
-			return SupportUtil.readAllText(file, charset);
-		}
-	}
+        private FileObject( File file, Charset charset )
+        {
+            super( file.toURI(), Kind.SOURCE );
+            this.charset = charset;
+            this.file = file;
+        }
 
-	private class MavenLoggerAdapter implements Logger {
+        @Override
+        public CharSequence getCharContent( boolean ignoreEncodingErrors )
+            throws IOException
+        {
+            return SupportUtil.readAllText( file, charset );
+        }
+    }
 
-		private final String name;
+    private class MavenLoggerAdapter
+        implements Logger
+    {
 
-		private MavenLoggerAdapter(String name) {
-			this.name = name;
-		}
+        private final String name;
 
-		@Override
-		public Logger getChildLogger(Class<?> clazz) {
-			return getChildLogger(clazz.getCanonicalName());
-		}
+        private MavenLoggerAdapter( String name )
+        {
+            this.name = name;
+        }
 
-		@Override
-		public Logger getChildLogger(String name) {
-			return new MavenLoggerAdapter(name);
-		}
+        @Override
+        public Logger getChildLogger( Class<?> clazz )
+        {
+            return getChildLogger( clazz.getCanonicalName() );
+        }
 
-		@Override
-		public String getName() {
-			return name;
-		}
+        @Override
+        public Logger getChildLogger( String name )
+        {
+            return new MavenLoggerAdapter( name );
+        }
 
-		@Override
-		public boolean isLogLevelEnabled(LogLevel logLevel) {
-			if (logLevel == LogLevel.Debug) {
-				return getLog().isDebugEnabled();
-			}
+        @Override
+        public String getName()
+        {
+            return name;
+        }
 
-			if (logLevel == LogLevel.Error) {
-				return getLog().isErrorEnabled();
-			}
+        @Override
+        public boolean isLogLevelEnabled( LogLevel logLevel )
+        {
+            if ( logLevel == LogLevel.Debug )
+            {
+                return getLog().isDebugEnabled();
+            }
 
-			if (logLevel == LogLevel.Fatal) {
-				return getLog().isErrorEnabled();
-			}
+            if ( logLevel == LogLevel.Error )
+            {
+                return getLog().isErrorEnabled();
+            }
 
-			if (logLevel == LogLevel.Trace) {
-				return getLog().isDebugEnabled();
-			}
+            if ( logLevel == LogLevel.Fatal )
+            {
+                return getLog().isErrorEnabled();
+            }
 
-			if (logLevel == LogLevel.Warn) {
-				return getLog().isWarnEnabled();
-			}
+            if ( logLevel == LogLevel.Trace )
+            {
+                return getLog().isDebugEnabled();
+            }
 
-			return getLog().isInfoEnabled();
-		}
+            if ( logLevel == LogLevel.Warn )
+            {
+                return getLog().isWarnEnabled();
+            }
 
-		@Override
-		public boolean isTraceEnabled() {
-			return isLogLevelEnabled(LogLevel.Trace);
-		}
+            return getLog().isInfoEnabled();
+        }
 
-		@Override
-		public boolean isDebugEnabled() {
-			return isLogLevelEnabled(LogLevel.Debug);
-		}
+        @Override
+        public boolean isTraceEnabled()
+        {
+            return isLogLevelEnabled( LogLevel.Trace );
+        }
 
-		@Override
-		public boolean isInfoEnabled() {
-			return isLogLevelEnabled(LogLevel.Info);
-		}
+        @Override
+        public boolean isDebugEnabled()
+        {
+            return isLogLevelEnabled( LogLevel.Debug );
+        }
 
-		@Override
-		public boolean isWarnEnabled() {
-			return isLogLevelEnabled(LogLevel.Warn);
-		}
+        @Override
+        public boolean isInfoEnabled()
+        {
+            return isLogLevelEnabled( LogLevel.Info );
+        }
 
-		@Override
-		public boolean isErrorEnabled() {
-			return isLogLevelEnabled(LogLevel.Error);
-		}
+        @Override
+        public boolean isWarnEnabled()
+        {
+            return isLogLevelEnabled( LogLevel.Warn );
+        }
 
-		@Override
-		public boolean isFatalEnabled() {
-			return isLogLevelEnabled(LogLevel.Fatal);
-		}
+        @Override
+        public boolean isErrorEnabled()
+        {
+            return isLogLevelEnabled( LogLevel.Error );
+        }
 
-		@Override
-		public void trace(String message) {
-			trace(message, null);
-		}
+        @Override
+        public boolean isFatalEnabled()
+        {
+            return isLogLevelEnabled( LogLevel.Fatal );
+        }
 
-		@Override
-		public void trace(String message, Throwable throwable) {
-			debug(message, throwable);
-		}
+        @Override
+        public void trace( String message )
+        {
+            trace( message, null );
+        }
 
-		@Override
-		public void debug(String message) {
-			debug(message, null);
-		}
+        @Override
+        public void trace( String message, Throwable throwable )
+        {
+            debug( message, throwable );
+        }
 
-		@Override
-		public void debug(String message, Throwable throwable) {
-			getLog().debug(message, throwable);
-		}
+        @Override
+        public void debug( String message )
+        {
+            debug( message, null );
+        }
 
-		@Override
-		public void info(String message) {
-			info(message, null);
-		}
+        @Override
+        public void debug( String message, Throwable throwable )
+        {
+            getLog().debug( message, throwable );
+        }
 
-		@Override
-		public void info(String message, Throwable throwable) {
-			getLog().info(message, throwable);
-		}
+        @Override
+        public void info( String message )
+        {
+            info( message, null );
+        }
 
-		@Override
-		public void warn(String message) {
-			warn(message, null);
-		}
+        @Override
+        public void info( String message, Throwable throwable )
+        {
+            getLog().info( message, throwable );
+        }
 
-		@Override
-		public void warn(String message, Throwable throwable) {
-			getLog().warn(message, throwable);
-		}
+        @Override
+        public void warn( String message )
+        {
+            warn( message, null );
+        }
 
-		@Override
-		public void error(String message) {
-			error(message, null);
-		}
+        @Override
+        public void warn( String message, Throwable throwable )
+        {
+            getLog().warn( message, throwable );
+        }
 
-		@Override
-		public void error(String message, Throwable throwable) {
-			getLog().error(message, throwable);
-		}
+        @Override
+        public void error( String message )
+        {
+            error( message, null );
+        }
 
-		@Override
-		public void fatal(String message) {
-			fatal(message, null);
-		}
+        @Override
+        public void error( String message, Throwable throwable )
+        {
+            getLog().error( message, throwable );
+        }
 
-		@Override
-		public void fatal(String message, Throwable throwable) {
-			error(message, throwable);
-		}
-	}
+        @Override
+        public void fatal( String message )
+        {
+            fatal( message, null );
+        }
+
+        @Override
+        public void fatal( String message, Throwable throwable )
+        {
+            error( message, throwable );
+        }
+    }
 }

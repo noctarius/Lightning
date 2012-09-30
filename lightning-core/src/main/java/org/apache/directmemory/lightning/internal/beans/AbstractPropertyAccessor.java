@@ -20,5 +20,7 @@ package org.apache.directmemory.lightning.internal.beans;
 
 import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 
-abstract class AbstractPropertyAccessor implements PropertyAccessor {
+abstract class AbstractPropertyAccessor
+    implements PropertyAccessor
+{
 }

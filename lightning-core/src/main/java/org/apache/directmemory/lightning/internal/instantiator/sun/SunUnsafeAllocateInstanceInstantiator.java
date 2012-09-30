@@ -21,28 +21,33 @@ package org.apache.directmemory.lightning.internal.instantiator.sun;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
 import org.apache.directmemory.lightning.internal.util.UnsafeUtil;
 
+@SuppressWarnings( "restriction" )
+public class SunUnsafeAllocateInstanceInstantiator
+    implements ObjectInstantiator
+{
 
-@SuppressWarnings("restriction")
-public class SunUnsafeAllocateInstanceInstantiator implements ObjectInstantiator {
+    private static final sun.misc.Unsafe UNSAFE = UnsafeUtil.getUnsafe();
 
-	private static final sun.misc.Unsafe UNSAFE = UnsafeUtil.getUnsafe();
+    protected final Class<?> type;
 
-	protected final Class<?> type;
+    public SunUnsafeAllocateInstanceInstantiator( Class<?> type )
+    {
+        this.type = type;
+    }
 
-	public SunUnsafeAllocateInstanceInstantiator(Class<?> type) {
-		this.type = type;
-	}
+    @Override
+    public Object newInstance()
+    {
+        try
+        {
+            if ( UNSAFE != null )
+                return UNSAFE.allocateInstance( type );
+        }
+        catch ( Exception e )
+        {
+            // ignore and return null
+        }
 
-	@Override
-	public Object newInstance() {
-		try {
-			if (UNSAFE != null)
-				return UNSAFE.allocateInstance(type);
-		}
-		catch (Exception e) {
-			// ignore and return null
-		}
-
-		return null;
-	}
+        return null;
+    }
 }

@@ -22,13 +22,16 @@ import org.apache.directmemory.lightning.maven.LightningGeneratorMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
+public class GeneratorTestCase
+    extends AbstractMojoTestCase
+{
 
-public class GeneratorTestCase extends AbstractMojoTestCase {
-
-	@Test
-	public void testGeneration() throws Exception {
-		URL url = getClass().getClassLoader().getResource("generate-pom.xml");
-		LightningGeneratorMojo mojo = (LightningGeneratorMojo) lookupMojo("generate", new File(url.toURI()));
-		mojo.execute();
-	}
+    @Test
+    public void testGeneration()
+        throws Exception
+    {
+        URL url = getClass().getClassLoader().getResource( "generate-pom.xml" );
+        LightningGeneratorMojo mojo = (LightningGeneratorMojo) lookupMojo( "generate", new File( url.toURI() ) );
+        mojo.execute();
+    }
 }

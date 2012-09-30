@@ -29,163 +29,193 @@ import org.apache.directmemory.lightning.Lightning;
 import org.apache.directmemory.lightning.Serializer;
 import org.apache.directmemory.lightning.base.AbstractSerializerDefinition;
 import org.apache.directmemory.lightning.exceptions.ClassDefinitionInconsistentException;
+import org.apache.directmemory.lightning.internal.util.DebugLogger;
 import org.apache.directmemory.lightning.metadata.Attribute;
 import org.apache.directmemory.lightning.metadata.ClassDefinitionContainer;
-import org.apache.directmemory.lightning.testing.utils.DebugLogger;
 import org.junit.Test;
 
+public class ClassDefinitionContainerTestCase
+{
 
-public class ClassDefinitionContainerTestCase {
+    @Test
+    public void testLightningChecksum()
+        throws Exception
+    {
+        Serializer serializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).debugCacheDirectory( new File( "target" ) ).serializerDefinitions( new SerializerDefinition() ).build();
 
-	@Test
-	public void testLightningChecksum() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).debugCacheDirectory(new File("target"))
-				.serializerDefinitions(new SerializerDefinition()).build();
+        ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+        Serializer remoteSerializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).serializerDefinitions( new SerializerDefinition() ).build();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new SerializerDefinition()).build();
+        remoteSerializer.setClassDefinitionContainer( container );
+    }
 
-		remoteSerializer.setClassDefinitionContainer(container);
-	}
+    @Test( expected = ClassDefinitionInconsistentException.class )
+    public void testLightningChecksumFailing()
+        throws Exception
+    {
+        Serializer serializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).serializerDefinitions( new SerializerDefinition() ).build();
 
-	@Test(expected = ClassDefinitionInconsistentException.class)
-	public void testLightningChecksumFailing() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new SerializerDefinition()).build();
+        ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+        Serializer remoteSerializer = Lightning.newBuilder().logger( new DebugLogger() ).build();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).build();
+        remoteSerializer.setClassDefinitionContainer( container );
+    }
 
-		remoteSerializer.setClassDefinitionContainer(container);
-	}
+    @Test
+    public void testSerialVersionUID()
+        throws Exception
+    {
+        Serializer serializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).classComparisonStrategy( ClassComparisonStrategy.SerialVersionUID ).serializerDefinitions( new SerializerDefinition() ).build();
 
-	@Test
-	public void testSerialVersionUID() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).classComparisonStrategy(ClassComparisonStrategy.SerialVersionUID)
-				.serializerDefinitions(new SerializerDefinition()).build();
+        ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+        Serializer remoteSerializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).serializerDefinitions( new SerializerDefinition() ).build();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new SerializerDefinition()).build();
+        remoteSerializer.setClassDefinitionContainer( container );
+    }
 
-		remoteSerializer.setClassDefinitionContainer(container);
-	}
+    @Test( expected = ClassDefinitionInconsistentException.class )
+    public void testSerialVersionUIDFailing()
+        throws Exception
+    {
+        Serializer serializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).classComparisonStrategy( ClassComparisonStrategy.SerialVersionUID ).serializerDefinitions( new SerializerDefinition() ).build();
 
-	@Test(expected = ClassDefinitionInconsistentException.class)
-	public void testSerialVersionUIDFailing() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).classComparisonStrategy(ClassComparisonStrategy.SerialVersionUID)
-				.serializerDefinitions(new SerializerDefinition()).build();
+        ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+        Serializer remoteSerializer = Lightning.newBuilder().logger( new DebugLogger() ).build();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).build();
+        remoteSerializer.setClassDefinitionContainer( container );
+    }
 
-		remoteSerializer.setClassDefinitionContainer(container);
-	}
+    @Test
+    public void testClassDefinitionContainerTransportLightningChecksum()
+        throws Exception
+    {
+        Serializer serializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).serializerDefinitions( new SerializerDefinition() ).build();
 
-	@Test
-	public void testClassDefinitionContainerTransportLightningChecksum() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new SerializerDefinition()).build();
+        ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream( baos );
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(baos);
+        out.writeObject( container );
+        byte[] data = baos.toByteArray();
 
-		out.writeObject(container);
-		byte[] data = baos.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream( data );
+        ObjectInputStream in = new ObjectInputStream( bais );
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		ObjectInputStream in = new ObjectInputStream(bais);
+        ClassDefinitionContainer remoteContainer = (ClassDefinitionContainer) in.readObject();
 
-		ClassDefinitionContainer remoteContainer = (ClassDefinitionContainer) in.readObject();
+        Serializer remoteSerializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).serializerDefinitions( new SerializerDefinition() ).build();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).serializerDefinitions(new SerializerDefinition()).build();
+        remoteSerializer.setClassDefinitionContainer( remoteContainer );
+    }
 
-		remoteSerializer.setClassDefinitionContainer(remoteContainer);
-	}
+    @Test
+    public void testClassDefinitionContainerTransportSerialVersionUID()
+        throws Exception
+    {
+        Serializer serializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).classComparisonStrategy( ClassComparisonStrategy.SerialVersionUID ).serializerDefinitions( new SerializerDefinition() ).build();
 
-	@Test
-	public void testClassDefinitionContainerTransportSerialVersionUID() throws Exception {
-		Serializer serializer = Lightning.newBuilder().logger(new DebugLogger()).classComparisonStrategy(ClassComparisonStrategy.SerialVersionUID)
-				.serializerDefinitions(new SerializerDefinition()).build();
+        ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
 
-		ClassDefinitionContainer container = serializer.getClassDefinitionContainer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream( baos );
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(baos);
+        out.writeObject( container );
+        byte[] data = baos.toByteArray();
 
-		out.writeObject(container);
-		byte[] data = baos.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream( data );
+        ObjectInputStream in = new ObjectInputStream( bais );
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		ObjectInputStream in = new ObjectInputStream(bais);
+        ClassDefinitionContainer remoteContainer = (ClassDefinitionContainer) in.readObject();
 
-		ClassDefinitionContainer remoteContainer = (ClassDefinitionContainer) in.readObject();
+        Serializer remoteSerializer =
+            Lightning.newBuilder().logger( new DebugLogger() ).classComparisonStrategy( ClassComparisonStrategy.SerialVersionUID ).serializerDefinitions( new SerializerDefinition() ).build();
 
-		Serializer remoteSerializer = Lightning.newBuilder().logger(new DebugLogger()).classComparisonStrategy(ClassComparisonStrategy.SerialVersionUID)
-				.serializerDefinitions(new SerializerDefinition()).build();
+        remoteSerializer.setClassDefinitionContainer( remoteContainer );
+    }
 
-		remoteSerializer.setClassDefinitionContainer(remoteContainer);
-	}
+    public static class SerializerDefinition
+        extends AbstractSerializerDefinition
+    {
 
-	public static class SerializerDefinition extends AbstractSerializerDefinition {
+        @Override
+        protected void configure()
+        {
+            serialize( Foo.class ).attributes();
+            serialize( Bar.class ).attributes();
+        }
+    }
 
-		@Override
-		protected void configure() {
-			serialize(Foo.class).attributes();
-			serialize(Bar.class).attributes();
-		}
-	}
+    public static class Foo
+    {
 
-	public static class Foo {
+        @Attribute
+        private int id;
 
-		@Attribute
-		private int id;
+        @Attribute
+        private String name;
 
-		@Attribute
-		private String name;
+        public int getId()
+        {
+            return id;
+        }
 
-		public int getId() {
-			return id;
-		}
+        public void setId( int id )
+        {
+            this.id = id;
+        }
 
-		public void setId(int id) {
-			this.id = id;
-		}
+        public String getName()
+        {
+            return name;
+        }
 
-		public String getName() {
-			return name;
-		}
+        public void setName( String name )
+        {
+            this.name = name;
+        }
+    }
 
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
+    public static class Bar
+    {
 
-	public static class Bar {
+        @Attribute
+        private int id;
 
-		@Attribute
-		private int id;
+        @Attribute
+        private String name;
 
-		@Attribute
-		private String name;
+        public int getId()
+        {
+            return id;
+        }
 
-		public int getId() {
-			return id;
-		}
+        public void setId( int id )
+        {
+            this.id = id;
+        }
 
-		public void setId(int id) {
-			this.id = id;
-		}
+        public String getName()
+        {
+            return name;
+        }
 
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
+        public void setName( String name )
+        {
+            this.name = name;
+        }
+    }
 }

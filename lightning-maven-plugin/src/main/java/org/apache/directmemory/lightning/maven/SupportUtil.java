@@ -27,35 +27,45 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SupportUtil {
+public final class SupportUtil
+{
 
-	private SupportUtil() {
-	}
+    private SupportUtil()
+    {
+    }
 
-	public static List<File> recursiveGetAllJavaSources(File file, ArrayList<File> list, FileFilter fileFilter) {
-		if (file.isDirectory()) {
-			for (File f : file.listFiles(fileFilter)) {
-				recursiveGetAllJavaSources(f, list, fileFilter);
-			}
-		}
-		else {
-			list.add(file);
-		}
-		return list;
-	}
+    public static List<File> recursiveGetAllJavaSources( File file, ArrayList<File> list, FileFilter fileFilter )
+    {
+        if ( file.isDirectory() )
+        {
+            for ( File f : file.listFiles( fileFilter ) )
+            {
+                recursiveGetAllJavaSources( f, list, fileFilter );
+            }
+        }
+        else
+        {
+            list.add( file );
+        }
+        return list;
+    }
 
-	public static String readAllText(File file, Charset charset) {
-		try {
-			StringBuilder sb = new StringBuilder();
-			LineNumberReader reader = new LineNumberReader(new FileReader(file));
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line);
-			}
-			return sb.toString();
-		}
-		catch (IOException e) {
-			return null;
-		}
-	}
+    public static String readAllText( File file, Charset charset )
+    {
+        try
+        {
+            StringBuilder sb = new StringBuilder();
+            LineNumberReader reader = new LineNumberReader( new FileReader( file ) );
+            String line = null;
+            while ( ( line = reader.readLine() ) != null )
+            {
+                sb.append( line );
+            }
+            return sb.toString();
+        }
+        catch ( IOException e )
+        {
+            return null;
+        }
+    }
 }

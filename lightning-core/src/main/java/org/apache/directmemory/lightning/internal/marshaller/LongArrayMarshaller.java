@@ -26,63 +26,80 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class LongArrayMarshaller
+    extends AbstractMarshaller
+{
 
-public class LongArrayMarshaller extends AbstractMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return long[].class == type || Long[].class == type;
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return long[].class == type || Long[].class == type;
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        if ( !writePossibleNull( value, dataOutput ) )
+        {
+            return;
+        }
 
-		if (!writePossibleNull(value, dataOutput)) {
-			return;
-		}
+        if ( long[].class == propertyDescriptor.getType() )
+        {
+            long[] array = (long[]) value;
+            dataOutput.writeInt( array.length );
 
-		if (long[].class == propertyDescriptor.getType()) {
-			long[] array = (long[]) value;
-			dataOutput.writeInt(array.length);
+            for ( long arrayValue : array )
+            {
+                dataOutput.writeLong( arrayValue );
+            }
+        }
+        else
+        {
+            Long[] array = (Long[]) value;
+            dataOutput.writeInt( array.length );
 
-			for (long arrayValue : array) {
-				dataOutput.writeLong(arrayValue);
-			}
-		}
-		else {
-			Long[] array = (Long[]) value;
-			dataOutput.writeInt(array.length);
+            for ( long arrayValue : array )
+            {
+                dataOutput.writeLong( arrayValue );
+            }
+        }
+    }
 
-			for (long arrayValue : array) {
-				dataOutput.writeLong(arrayValue);
-			}
-		}
-	}
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <V> V unmarshall( PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        if ( isNull( dataInput ) )
+        {
+            return null;
+        }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V> V unmarshall(PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		if (isNull(dataInput)) {
-			return null;
-		}
+        int size = dataInput.readInt();
+        if ( long[].class == propertyDescriptor.getType() )
+        {
+            long[] array = new long[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readLong();
+            }
 
-		int size = dataInput.readInt();
-		if (long[].class == propertyDescriptor.getType()) {
-			long[] array = new long[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readLong();
-			}
+            return (V) array;
+        }
+        else
+        {
+            Long[] array = new Long[size];
+            for ( int i = 0; i < size; i++ )
+            {
+                array[i] = dataInput.readLong();
+            }
 
-			return (V) array;
-		}
-		else {
-			Long[] array = new Long[size];
-			for (int i = 0; i < size; i++) {
-				array[i] = dataInput.readLong();
-			}
-
-			return (V) array;
-		}
-	}
+            return (V) array;
+        }
+    }
 }

@@ -25,13 +25,9 @@ import org.apache.directmemory.lightning.internal.instantiator.sun.Sun13Instanti
 import org.apache.directmemory.lightning.internal.instantiator.sun.SunReflectionFactoryInstantiator;
 import org.apache.directmemory.lightning.internal.util.InternalUtil;
 
-
 /**
- * Guess the best instantiator for a given class. The instantiator will
- * instantiate the class
- * without calling any constructor. Currently, the selection doesn't depend on
- * the class. It relies
- * on the
+ * Guess the best instantiator for a given class. The instantiator will instantiate the class without calling any
+ * constructor. Currently, the selection doesn't depend on the class. It relies on the
  * <ul>
  * <li>JVM version</li>
  * <li>JVM vendor</li>
@@ -42,48 +38,56 @@ import org.apache.directmemory.lightning.internal.util.InternalUtil;
  * @author Henri Tremblay
  * @see ObjectInstantiator
  */
-public class StdInstantiatorStrategy extends BaseInstantiatorStrategy {
+public class StdInstantiatorStrategy
+    extends BaseInstantiatorStrategy
+{
 
-	/**
-	 * Return an {@link ObjectInstantiator} allowing to create instance without
-	 * any constructor being
-	 * called.
-	 * 
-	 * @param type
-	 *            Class to instantiate
-	 * @return The ObjectInstantiator for the class
-	 */
-	@Override
-	public ObjectInstantiator newInstantiatorOf(Class<?> type) {
+    /**
+     * Return an {@link ObjectInstantiator} allowing to create instance without any constructor being called.
+     * 
+     * @param type Class to instantiate
+     * @return The ObjectInstantiator for the class
+     */
+    @Override
+    public ObjectInstantiator newInstantiatorOf( Class<?> type )
+    {
 
-		if (JVM_NAME.startsWith(SUN)) {
-			if (VM_VERSION.startsWith("1.3")) {
-				return new Sun13Instantiator(type);
-			}
-			else if (InternalUtil.isUnsafeAvailable()) {
-				return InternalUtil.buildSunUnsafeInstantiator(type);
-			}
-		}
-		else if (JVM_NAME.startsWith(ORACLE_JROCKIT)) {
-			if (!VENDOR_VERSION.startsWith("R")) {
-				// Beginning with R25.1 sun.misc.Unsafe should work.
-				if (InternalUtil.isUnsafeAvailable()) {
-					return InternalUtil.buildSunUnsafeInstantiator(type);
-				}
-			}
-		}
-		else if (JVM_NAME.startsWith(GNU)) {
-			return new GCJInstantiator(type);
-		}
-		else if (JVM_NAME.startsWith(PERC)) {
-			return new PercInstantiator(type);
-		}
+        if ( JVM_NAME.startsWith( SUN ) )
+        {
+            if ( VM_VERSION.startsWith( "1.3" ) )
+            {
+                return new Sun13Instantiator( type );
+            }
+            else if ( InternalUtil.isUnsafeAvailable() )
+            {
+                return InternalUtil.buildSunUnsafeInstantiator( type );
+            }
+        }
+        else if ( JVM_NAME.startsWith( ORACLE_JROCKIT ) )
+        {
+            if ( !VENDOR_VERSION.startsWith( "R" ) )
+            {
+                // Beginning with R25.1 sun.misc.Unsafe should work.
+                if ( InternalUtil.isUnsafeAvailable() )
+                {
+                    return InternalUtil.buildSunUnsafeInstantiator( type );
+                }
+            }
+        }
+        else if ( JVM_NAME.startsWith( GNU ) )
+        {
+            return new GCJInstantiator( type );
+        }
+        else if ( JVM_NAME.startsWith( PERC ) )
+        {
+            return new PercInstantiator( type );
+        }
 
-		// Fallback instantiator, should work with:
-		// - Java Hotspot version 1.4 and higher
-		// - JRockit 1.4-R26 and higher
-		// - IBM and Hitachi JVMs
-		// ... might works for others so we just give it a try
-		return new SunReflectionFactoryInstantiator(type);
-	}
+        // Fallback instantiator, should work with:
+        // - Java Hotspot version 1.4 and higher
+        // - JRockit 1.4-R26 and higher
+        // - IBM and Hitachi JVMs
+        // ... might works for others so we just give it a try
+        return new SunReflectionFactoryInstantiator( type );
+    }
 }

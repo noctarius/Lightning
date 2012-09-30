@@ -18,50 +18,51 @@
  */
 package org.apache.directmemory.lightning.logging;
 
-public interface Logger {
+public interface Logger
+{
 
-	Logger getChildLogger(Class<?> clazz);
+    Logger getChildLogger( Class<?> clazz );
 
-	Logger getChildLogger(String name);
+    Logger getChildLogger( String name );
 
-	String getName();
+    String getName();
 
-	boolean isLogLevelEnabled(LogLevel logLevel);
+    boolean isLogLevelEnabled( LogLevel logLevel );
 
-	boolean isTraceEnabled();
+    boolean isTraceEnabled();
 
-	boolean isDebugEnabled();
+    boolean isDebugEnabled();
 
-	boolean isInfoEnabled();
+    boolean isInfoEnabled();
 
-	boolean isWarnEnabled();
+    boolean isWarnEnabled();
 
-	boolean isErrorEnabled();
+    boolean isErrorEnabled();
 
-	boolean isFatalEnabled();
+    boolean isFatalEnabled();
 
-	void trace(String message);
+    void trace( String message );
 
-	void trace(String message, Throwable throwable);
+    void trace( String message, Throwable throwable );
 
-	void debug(String message);
+    void debug( String message );
 
-	void debug(String message, Throwable throwable);
+    void debug( String message, Throwable throwable );
 
-	void info(String message);
+    void info( String message );
 
-	void info(String message, Throwable throwable);
+    void info( String message, Throwable throwable );
 
-	void warn(String message);
+    void warn( String message );
 
-	void warn(String message, Throwable throwable);
+    void warn( String message, Throwable throwable );
 
-	void error(String message);
+    void error( String message );
 
-	void error(String message, Throwable throwable);
+    void error( String message, Throwable throwable );
 
-	void fatal(String message);
+    void fatal( String message );
 
-	void fatal(String message, Throwable throwable);
+    void fatal( String message, Throwable throwable );
 
 }

@@ -18,8 +18,9 @@
  */
 package org.apache.directmemory.lightning.metadata;
 
-public interface ValueNullableEvaluator {
+public interface ValueNullableEvaluator
+{
 
-	boolean isValueNullable(PropertyDescriptor propertyDescriptor);
+    boolean isValueNullable( PropertyDescriptor propertyDescriptor );
 
 }

@@ -24,66 +24,80 @@ import java.io.Writer;
 
 /* ------------------------------------------------------------ */
 /**
- * Wrap a Writer as an OutputStream.
- * When all you have is a Writer and only an OutputStream will do.
- * Try not to use this as it indicates that your design is a dogs
- * breakfast (JSP made me write it).
+ * Wrap a Writer as an OutputStream. When all you have is a Writer and only an OutputStream will do. Try not to use this
+ * as it indicates that your design is a dogs breakfast (JSP made me write it).
  * 
  * @author Greg Wilkins (gregw) - Mort Bay Consulting Pty. Ltd.
  */
-public class WriterOutputStream extends OutputStream {
+public class WriterOutputStream
+    extends OutputStream
+{
 
-	protected Writer _writer;
-	protected String _encoding;
-	private byte[] _buf = new byte[1];
+    protected Writer _writer;
 
-	/* ------------------------------------------------------------ */
-	public WriterOutputStream(Writer writer, String encoding) {
-		_writer = writer;
-		_encoding = encoding;
-	}
+    protected String _encoding;
 
-	/* ------------------------------------------------------------ */
-	public WriterOutputStream(Writer writer) {
-		_writer = writer;
-	}
+    private byte[] _buf = new byte[1];
 
-	/* ------------------------------------------------------------ */
-	@Override
-	public void close() throws IOException {
-		_writer.close();
-		_writer = null;
-		_encoding = null;
-	}
+    /* ------------------------------------------------------------ */
+    public WriterOutputStream( Writer writer, String encoding )
+    {
+        _writer = writer;
+        _encoding = encoding;
+    }
 
-	/* ------------------------------------------------------------ */
-	@Override
-	public void flush() throws IOException {
-		_writer.flush();
-	}
+    /* ------------------------------------------------------------ */
+    public WriterOutputStream( Writer writer )
+    {
+        _writer = writer;
+    }
 
-	/* ------------------------------------------------------------ */
-	@Override
-	public void write(byte[] b) throws IOException {
-		if (_encoding == null)
-			_writer.write(new String(b));
-		else
-			_writer.write(new String(b, _encoding));
-	}
+    /* ------------------------------------------------------------ */
+    @Override
+    public void close()
+        throws IOException
+    {
+        _writer.close();
+        _writer = null;
+        _encoding = null;
+    }
 
-	/* ------------------------------------------------------------ */
-	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
-		if (_encoding == null)
-			_writer.write(new String(b, off, len));
-		else
-			_writer.write(new String(b, off, len, _encoding));
-	}
+    /* ------------------------------------------------------------ */
+    @Override
+    public void flush()
+        throws IOException
+    {
+        _writer.flush();
+    }
 
-	/* ------------------------------------------------------------ */
-	@Override
-	public synchronized void write(int b) throws IOException {
-		_buf[0] = (byte) b;
-		write(_buf);
-	}
+    /* ------------------------------------------------------------ */
+    @Override
+    public void write( byte[] b )
+        throws IOException
+    {
+        if ( _encoding == null )
+            _writer.write( new String( b ) );
+        else
+            _writer.write( new String( b, _encoding ) );
+    }
+
+    /* ------------------------------------------------------------ */
+    @Override
+    public void write( byte[] b, int off, int len )
+        throws IOException
+    {
+        if ( _encoding == null )
+            _writer.write( new String( b, off, len ) );
+        else
+            _writer.write( new String( b, off, len, _encoding ) );
+    }
+
+    /* ------------------------------------------------------------ */
+    @Override
+    public synchronized void write( int b )
+        throws IOException
+    {
+        _buf[0] = (byte) b;
+        write( _buf );
+    }
 }

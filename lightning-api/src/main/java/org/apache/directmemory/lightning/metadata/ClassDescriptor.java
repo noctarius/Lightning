@@ -22,15 +22,15 @@ import java.util.List;
 
 import org.apache.directmemory.lightning.Marshaller;
 
+public interface ClassDescriptor
+{
 
-public interface ClassDescriptor {
+    ClassDefinition getClassDefinition();
 
-	ClassDefinition getClassDefinition();
+    Class<?> getType();
 
-	Class<?> getType();
+    List<PropertyDescriptor> getPropertyDescriptors();
 
-	List<PropertyDescriptor> getPropertyDescriptors();
-
-	Marshaller getMarshaller();
+    Marshaller getMarshaller();
 
 }

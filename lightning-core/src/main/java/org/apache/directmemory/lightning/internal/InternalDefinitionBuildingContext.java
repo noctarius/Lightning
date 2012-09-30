@@ -22,23 +22,30 @@ import org.apache.directmemory.lightning.MarshallerStrategy;
 import org.apache.directmemory.lightning.generator.DefinitionBuildingContext;
 import org.apache.directmemory.lightning.generator.PropertyDescriptorFactory;
 
-public class InternalDefinitionBuildingContext implements DefinitionBuildingContext {
+public class InternalDefinitionBuildingContext
+    implements DefinitionBuildingContext
+{
 
-	private final PropertyDescriptorFactory propertyDescriptorFactory;
-	private final MarshallerStrategy marshallerStrategy;
+    private final PropertyDescriptorFactory propertyDescriptorFactory;
 
-	public InternalDefinitionBuildingContext(MarshallerStrategy marshallerStrategy, PropertyDescriptorFactory propertyDescriptorFactory) {
-		this.marshallerStrategy = marshallerStrategy;
-		this.propertyDescriptorFactory = propertyDescriptorFactory;
-	}
+    private final MarshallerStrategy marshallerStrategy;
 
-	@Override
-	public PropertyDescriptorFactory getPropertyDescriptorFactory() {
-		return propertyDescriptorFactory;
-	}
+    public InternalDefinitionBuildingContext( MarshallerStrategy marshallerStrategy,
+                                              PropertyDescriptorFactory propertyDescriptorFactory )
+    {
+        this.marshallerStrategy = marshallerStrategy;
+        this.propertyDescriptorFactory = propertyDescriptorFactory;
+    }
 
-	@Override
-	public MarshallerStrategy getMarshallerStrategy() {
-		return marshallerStrategy;
-	}
+    @Override
+    public PropertyDescriptorFactory getPropertyDescriptorFactory()
+    {
+        return propertyDescriptorFactory;
+    }
+
+    @Override
+    public MarshallerStrategy getMarshallerStrategy()
+    {
+        return marshallerStrategy;
+    }
 }

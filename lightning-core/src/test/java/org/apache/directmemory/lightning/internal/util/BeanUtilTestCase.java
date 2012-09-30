@@ -23,25 +23,28 @@ import static org.junit.Assert.assertEquals;
 import org.apache.directmemory.lightning.internal.util.BeanUtil;
 import org.junit.Test;
 
-public class BeanUtilTestCase {
+public class BeanUtilTestCase
+{
 
-	@Test
-	public void testPropertyNameCreation() throws Exception {
-		String methodName = "isDefined";
-		String result = BeanUtil.buildPropertyName(methodName);
-		assertEquals("defined", result);
+    @Test
+    public void testPropertyNameCreation()
+        throws Exception
+    {
+        String methodName = "isDefined";
+        String result = BeanUtil.buildPropertyName( methodName );
+        assertEquals( "defined", result );
 
-		methodName = "getDefined";
-		result = BeanUtil.buildPropertyName(methodName);
-		assertEquals("defined", result);
+        methodName = "getDefined";
+        result = BeanUtil.buildPropertyName( methodName );
+        assertEquals( "defined", result );
 
-		methodName = "setDefined";
-		result = BeanUtil.buildPropertyName(methodName);
-		assertEquals("defined", result);
+        methodName = "setDefined";
+        result = BeanUtil.buildPropertyName( methodName );
+        assertEquals( "defined", result );
 
-		methodName = "doneDefined";
-		result = BeanUtil.buildPropertyName(methodName);
-		assertEquals("doneDefined", result);
-	}
+        methodName = "doneDefined";
+        result = BeanUtil.buildPropertyName( methodName );
+        assertEquals( "doneDefined", result );
+    }
 
 }

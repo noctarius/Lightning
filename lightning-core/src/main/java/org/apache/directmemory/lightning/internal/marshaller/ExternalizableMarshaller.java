@@ -29,29 +29,38 @@ import org.apache.directmemory.lightning.SerializationContext;
 import org.apache.directmemory.lightning.base.AbstractObjectMarshaller;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+public class ExternalizableMarshaller
+    extends AbstractObjectMarshaller
+{
 
-public class ExternalizableMarshaller extends AbstractObjectMarshaller {
+    @Override
+    public boolean acceptType( Class<?> type )
+    {
+        return Externalizable.class.isAssignableFrom( type );
+    }
 
-	@Override
-	public boolean acceptType(Class<?> type) {
-		return Externalizable.class.isAssignableFrom(type);
-	}
+    @Override
+    public void marshall( Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput,
+                          SerializationContext serializationContext )
+        throws IOException
+    {
 
-	@Override
-	public void marshall(Object value, PropertyDescriptor propertyDescriptor, DataOutput dataOutput, SerializationContext serializationContext)
-			throws IOException {
+        ( (Externalizable) value ).writeExternal( (ObjectOutput) dataOutput );
+    }
 
-		((Externalizable) value).writeExternal((ObjectOutput) dataOutput);
-	}
-
-	@Override
-	public <V> V unmarshall(V value, PropertyDescriptor propertyDescriptor, DataInput dataInput, SerializationContext serializationContext) throws IOException {
-		try {
-			((Externalizable) value).readExternal((ObjectInput) dataInput);
-			return value;
-		}
-		catch (ClassNotFoundException e) {
-			throw new IOException("Error while deserialization", e);
-		}
-	}
+    @Override
+    public <V> V unmarshall( V value, PropertyDescriptor propertyDescriptor, DataInput dataInput,
+                             SerializationContext serializationContext )
+        throws IOException
+    {
+        try
+        {
+            ( (Externalizable) value ).readExternal( (ObjectInput) dataInput );
+            return value;
+        }
+        catch ( ClassNotFoundException e )
+        {
+            throw new IOException( "Error while deserialization", e );
+        }
+    }
 }

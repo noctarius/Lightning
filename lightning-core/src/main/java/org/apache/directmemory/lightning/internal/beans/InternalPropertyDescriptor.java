@@ -27,150 +27,181 @@ import org.apache.directmemory.lightning.internal.util.StringUtil;
 import org.apache.directmemory.lightning.metadata.PropertyAccessor;
 import org.apache.directmemory.lightning.metadata.PropertyDescriptor;
 
+class InternalPropertyDescriptor
+    implements PropertyDescriptor
+{
 
-class InternalPropertyDescriptor implements PropertyDescriptor {
+    private final String name;
 
-	private final String name;
-	private final String propertyName;
-	private final String internalSignature;
-	private final String declaringCanonicalClassname;
-	private final Class<?> definedClass;
-	private final Class<?> declaringClass;
+    private final String propertyName;
 
-	private final PropertyAccessor propertyAccessor;
-	private final Annotation[] annotations;
-	private final Marshaller marshaller;
+    private final String internalSignature;
 
-	InternalPropertyDescriptor(String propertyName, Marshaller marshaller, Annotation[] annotations, PropertyAccessor propertyAccessor) {
-		this.name = StringUtil.toUpperCamelCase(propertyName);
-		this.propertyName = propertyName;
-		this.propertyAccessor = propertyAccessor;
-		this.marshaller = marshaller;
-		this.declaringCanonicalClassname = propertyAccessor.getType().getCanonicalName();
-		this.internalSignature = BeanUtil.buildInternalSignature(propertyName, propertyAccessor);
-		this.annotations = Arrays.copyOf(annotations, annotations.length);
-		this.definedClass = propertyAccessor.getDefinedClass();
-		this.declaringClass = propertyAccessor.getDeclaringClass();
-	}
+    private final String declaringCanonicalClassname;
 
-	@Override
-	public Class<?> getDefinedClass() {
-		return definedClass;
-	}
+    private final Class<?> definedClass;
 
-	@Override
-	public Class<?> getDeclaringClass() {
-		return declaringClass;
-	}
+    private final Class<?> declaringClass;
 
-	@Override
-	public PropertyAccessor getPropertyAccessor() {
-		return propertyAccessor;
-	}
+    private final PropertyAccessor propertyAccessor;
 
-	@Override
-	public Annotation[] getAnnotations() {
-		return Arrays.copyOf(annotations, annotations.length);
-	}
+    private final Annotation[] annotations;
 
-	@Override
-	public String getName() {
-		return name;
-	}
+    private final Marshaller marshaller;
 
-	@Override
-	public String getPropertyName() {
-		return propertyName;
-	}
+    InternalPropertyDescriptor( String propertyName, Marshaller marshaller, Annotation[] annotations,
+                                PropertyAccessor propertyAccessor )
+    {
+        this.name = StringUtil.toUpperCamelCase( propertyName );
+        this.propertyName = propertyName;
+        this.propertyAccessor = propertyAccessor;
+        this.marshaller = marshaller;
+        this.declaringCanonicalClassname = propertyAccessor.getType().getCanonicalName();
+        this.internalSignature = BeanUtil.buildInternalSignature( propertyName, propertyAccessor );
+        this.annotations = Arrays.copyOf( annotations, annotations.length );
+        this.definedClass = propertyAccessor.getDefinedClass();
+        this.declaringClass = propertyAccessor.getDeclaringClass();
+    }
 
-	@Override
-	public Class<?> getType() {
-		return propertyAccessor.getType();
-	}
+    @Override
+    public Class<?> getDefinedClass()
+    {
+        return definedClass;
+    }
 
-	@Override
-	public String getInternalSignature() {
-		return internalSignature;
-	}
+    @Override
+    public Class<?> getDeclaringClass()
+    {
+        return declaringClass;
+    }
 
-	@Override
-	public Marshaller getMarshaller() {
-		return marshaller;
-	}
+    @Override
+    public PropertyAccessor getPropertyAccessor()
+    {
+        return propertyAccessor;
+    }
 
-	@Override
-	public int compareTo(PropertyDescriptor o) {
-		return propertyName.compareTo(o.getPropertyName());
-	}
+    @Override
+    public Annotation[] getAnnotations()
+    {
+        return Arrays.copyOf( annotations, annotations.length );
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.hashCode(annotations);
-		result = prime * result + ((declaringCanonicalClassname == null) ? 0 : declaringCanonicalClassname.hashCode());
-		result = prime * result + ((declaringClass == null) ? 0 : declaringClass.hashCode());
-		result = prime * result + ((definedClass == null) ? 0 : definedClass.hashCode());
-		result = prime * result + ((internalSignature == null) ? 0 : internalSignature.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
-		return result;
-	}
+    @Override
+    public String getName()
+    {
+        return name;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		InternalPropertyDescriptor other = (InternalPropertyDescriptor) obj;
-		if (!Arrays.equals(annotations, other.annotations))
-			return false;
-		if (declaringCanonicalClassname == null) {
-			if (other.declaringCanonicalClassname != null)
-				return false;
-		}
-		else if (!declaringCanonicalClassname.equals(other.declaringCanonicalClassname))
-			return false;
-		if (declaringClass == null) {
-			if (other.declaringClass != null)
-				return false;
-		}
-		else if (!declaringClass.equals(other.declaringClass))
-			return false;
-		if (definedClass == null) {
-			if (other.definedClass != null)
-				return false;
-		}
-		else if (!definedClass.equals(other.definedClass))
-			return false;
-		if (internalSignature == null) {
-			if (other.internalSignature != null)
-				return false;
-		}
-		else if (!internalSignature.equals(other.internalSignature))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		}
-		else if (!name.equals(other.name))
-			return false;
-		if (propertyName == null) {
-			if (other.propertyName != null)
-				return false;
-		}
-		else if (!propertyName.equals(other.propertyName))
-			return false;
-		return true;
-	}
+    @Override
+    public String getPropertyName()
+    {
+        return propertyName;
+    }
 
-	@Override
-	public String toString() {
-		return "InternalPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature=" + internalSignature
-				+ ", declaringCanonicalClassname=" + declaringCanonicalClassname + ", definedClass=" + definedClass + ", declaringClass=" + declaringClass
-				+ ", propertyAccessor=" + propertyAccessor + ", annotations=" + Arrays.toString(annotations) + ", marshaller=" + marshaller + "]";
-	}
+    @Override
+    public Class<?> getType()
+    {
+        return propertyAccessor.getType();
+    }
+
+    @Override
+    public String getInternalSignature()
+    {
+        return internalSignature;
+    }
+
+    @Override
+    public Marshaller getMarshaller()
+    {
+        return marshaller;
+    }
+
+    @Override
+    public int compareTo( PropertyDescriptor o )
+    {
+        return propertyName.compareTo( o.getPropertyName() );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode( annotations );
+        result =
+            prime * result + ( ( declaringCanonicalClassname == null ) ? 0 : declaringCanonicalClassname.hashCode() );
+        result = prime * result + ( ( declaringClass == null ) ? 0 : declaringClass.hashCode() );
+        result = prime * result + ( ( definedClass == null ) ? 0 : definedClass.hashCode() );
+        result = prime * result + ( ( internalSignature == null ) ? 0 : internalSignature.hashCode() );
+        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        result = prime * result + ( ( propertyName == null ) ? 0 : propertyName.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        InternalPropertyDescriptor other = (InternalPropertyDescriptor) obj;
+        if ( !Arrays.equals( annotations, other.annotations ) )
+            return false;
+        if ( declaringCanonicalClassname == null )
+        {
+            if ( other.declaringCanonicalClassname != null )
+                return false;
+        }
+        else if ( !declaringCanonicalClassname.equals( other.declaringCanonicalClassname ) )
+            return false;
+        if ( declaringClass == null )
+        {
+            if ( other.declaringClass != null )
+                return false;
+        }
+        else if ( !declaringClass.equals( other.declaringClass ) )
+            return false;
+        if ( definedClass == null )
+        {
+            if ( other.definedClass != null )
+                return false;
+        }
+        else if ( !definedClass.equals( other.definedClass ) )
+            return false;
+        if ( internalSignature == null )
+        {
+            if ( other.internalSignature != null )
+                return false;
+        }
+        else if ( !internalSignature.equals( other.internalSignature ) )
+            return false;
+        if ( name == null )
+        {
+            if ( other.name != null )
+                return false;
+        }
+        else if ( !name.equals( other.name ) )
+            return false;
+        if ( propertyName == null )
+        {
+            if ( other.propertyName != null )
+                return false;
+        }
+        else if ( !propertyName.equals( other.propertyName ) )
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "InternalPropertyDescriptor [name=" + name + ", propertyName=" + propertyName + ", internalSignature="
+            + internalSignature + ", declaringCanonicalClassname=" + declaringCanonicalClassname + ", definedClass="
+            + definedClass + ", declaringClass=" + declaringClass + ", propertyAccessor=" + propertyAccessor
+            + ", annotations=" + Arrays.toString( annotations ) + ", marshaller=" + marshaller + "]";
+    }
 }

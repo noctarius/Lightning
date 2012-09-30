@@ -18,41 +18,43 @@
  */
 package org.apache.directmemory.lightning.metadata;
 
-public interface ArrayPropertyAccessor extends ValuePropertyAccessor {
+public interface ArrayPropertyAccessor
+    extends ValuePropertyAccessor
+{
 
-	<T> void writeObject(Object instance, int index, T value);
+    <T> void writeObject( Object instance, int index, T value );
 
-	<T> T readObject(Object instance, int index);
+    <T> T readObject( Object instance, int index );
 
-	void writeBoolean(Object instance, int index, boolean value);
+    void writeBoolean( Object instance, int index, boolean value );
 
-	boolean readBoolean(Object instance, int index);
+    boolean readBoolean( Object instance, int index );
 
-	void writeByte(Object instance, int index, byte value);
+    void writeByte( Object instance, int index, byte value );
 
-	byte readByte(Object instance, int index);
+    byte readByte( Object instance, int index );
 
-	void writeChar(Object instance, int index, char value);
+    void writeChar( Object instance, int index, char value );
 
-	char readChar(Object instance, int index);
+    char readChar( Object instance, int index );
 
-	void writeShort(Object instance, int index, short value);
+    void writeShort( Object instance, int index, short value );
 
-	short readShort(Object instance, int index);
+    short readShort( Object instance, int index );
 
-	void writeInt(Object instance, int index, int value);
+    void writeInt( Object instance, int index, int value );
 
-	int readInt(Object instance, int index);
+    int readInt( Object instance, int index );
 
-	void writeLong(Object instance, int index, long value);
+    void writeLong( Object instance, int index, long value );
 
-	long readLong(Object instance, int index);
+    long readLong( Object instance, int index );
 
-	void writeFloat(Object instance, int index, float value);
+    void writeFloat( Object instance, int index, float value );
 
-	float readFloat(Object instance, int index);
+    float readFloat( Object instance, int index );
 
-	void writeDouble(Object instance, int index, double value);
+    void writeDouble( Object instance, int index, double value );
 
-	double readDouble(Object instance, int index);
+    double readDouble( Object instance, int index );
 }

@@ -24,41 +24,49 @@ import java.lang.reflect.Method;
 import org.apache.directmemory.lightning.instantiator.ObjectInstantiator;
 import org.apache.directmemory.lightning.internal.instantiator.ObjenesisException;
 
-
 /**
- * Base class for Sun 1.3 based instantiators. It initializes reflection access
- * to static method
+ * Base class for Sun 1.3 based instantiators. It initializes reflection access to static method
  * ObjectInputStream.allocateNewObject.
  * 
  * @author Leonardo Mesquita
  */
-public abstract class Sun13InstantiatorBase implements ObjectInstantiator {
+public abstract class Sun13InstantiatorBase
+    implements ObjectInstantiator
+{
 
-	protected static Method allocateNewObjectMethod = null;
+    protected static Method allocateNewObjectMethod = null;
 
-	private static void initialize() {
-		if (allocateNewObjectMethod == null) {
-			try {
-				allocateNewObjectMethod = ObjectInputStream.class.getDeclaredMethod("allocateNewObject", new Class[] { Class.class, Class.class });
-				allocateNewObjectMethod.setAccessible(true);
-			}
-			catch (RuntimeException e) {
-				throw new ObjenesisException(e);
-			}
-			catch (NoSuchMethodException e) {
-				throw new ObjenesisException(e);
-			}
-		}
-	}
+    private static void initialize()
+    {
+        if ( allocateNewObjectMethod == null )
+        {
+            try
+            {
+                allocateNewObjectMethod =
+                    ObjectInputStream.class.getDeclaredMethod( "allocateNewObject", new Class[] { Class.class,
+                        Class.class } );
+                allocateNewObjectMethod.setAccessible( true );
+            }
+            catch ( RuntimeException e )
+            {
+                throw new ObjenesisException( e );
+            }
+            catch ( NoSuchMethodException e )
+            {
+                throw new ObjenesisException( e );
+            }
+        }
+    }
 
-	protected final Class<?> type;
+    protected final Class<?> type;
 
-	public Sun13InstantiatorBase(Class<?> type) {
-		this.type = type;
-		initialize();
-	}
+    public Sun13InstantiatorBase( Class<?> type )
+    {
+        this.type = type;
+        initialize();
+    }
 
-	@Override
-	public abstract Object newInstance();
+    @Override
+    public abstract Object newInstance();
 
 }
