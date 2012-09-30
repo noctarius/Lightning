@@ -16,7 +16,6 @@
 package com.github.lightning.io;
 
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
@@ -24,7 +23,14 @@ import java.io.OutputStream;
 
 import com.github.lightning.Serializer;
 
+/**
+ * Parts of this class taken from Hazelcast project
+ * 
+ * @author noctarius
+ */
 public class SerializerOutputStream extends FilterOutputStream implements ObjectOutput {
+
+	static final int STRING_CHUNK_SIZE = 16 * 1024;
 
 	private final Serializer serializer;
 	private int written = 0;
@@ -132,54 +138,66 @@ public class SerializerOutputStream extends FilterOutputStream implements Object
 
 	@Override
 	public void writeUTF(String s) throws IOException {
-		if (value == null) {
-			writeByte(0x80); // 0 means null, bit 8 means UTF8.
+		boolean isNull = (s == null);
+		writeBoolean(isNull);
+		if (isNull)
 			return;
+		int length = s.length();
+		writeInt(length);
+		int chunkSize = length / STRING_CHUNK_SIZE + 1;
+		for (int i = 0; i < chunkSize; i++) {
+			int beginIndex = Math.max(0, i * STRING_CHUNK_SIZE - 1);
+			int endIndex = Math.min((i + 1) * STRING_CHUNK_SIZE - 1, length);
+			writeShortUTF(s.substring(beginIndex, endIndex));
 		}
-		int charCount = value.length();
-		if (charCount == 0) {
-			writeByte(1 | 0x80); // 1 means empty string, bit 8 means UTF8.
-			return;
-		}
-		// Detect ASCII.
-		boolean ascii = false;
-		if (charCount > 1 && charCount < 64) {
-			ascii = true;
-			for (int i = 0; i < charCount; i++) {
-				int c = value.charAt(i);
-				if (c > 127) {
-					ascii = false;
-					break;
-				}
+	}
+
+	private final void writeShortUTF(final String str) throws IOException {
+		final int strlen = str.length();
+		int utflen = 0;
+		int c, count = 0;
+		/* use charAt instead of copying String to char array */
+		for (int i = 0; i < strlen; i++) {
+			c = str.charAt(i);
+			if ((c >= 0x0001) && (c <= 0x007F)) {
+				utflen++;
 			}
-		}
-		if (ascii) {
-			if (capacity - position < charCount)
-				writeAscii_slow(value, charCount);
+			else if (c > 0x07FF) {
+				utflen += 3;
+			}
 			else {
-				value.getBytes(0, charCount, buffer, position);
-				position += charCount;
+				utflen += 2;
 			}
-			buffer[position - 1] |= 0x80;
 		}
-		else {
-			writeUtf8Length(charCount + 1);
-			int charIndex = 0;
-			if (capacity - position >= charCount) {
-				// Try to write 8 bit chars.
-				byte[] buffer = this.buffer;
-				int position = this.position;
-				for (; charIndex < charCount; charIndex++) {
-					int c = value.charAt(charIndex);
-					if (c > 127)
-						break;
-					buffer[position++] = (byte) c;
-				}
-				this.position = position;
+		// if (utflen > 65535)
+		// throw new UTFDataFormatException("encoded string too long: " + utflen
+		// + " bytes");
+		final byte[] bytearr = new byte[utflen + 2];
+		bytearr[count++] = (byte) ((utflen >>> 8) & 0xFF);
+		bytearr[count++] = (byte) ((utflen) & 0xFF);
+		int i;
+		for (i = 0; i < strlen; i++) {
+			c = str.charAt(i);
+			if (!((c >= 0x0001) && (c <= 0x007F)))
+				break;
+			bytearr[count++] = (byte) c;
+		}
+		for (; i < strlen; i++) {
+			c = str.charAt(i);
+			if ((c >= 0x0001) && (c <= 0x007F)) {
+				bytearr[count++] = (byte) c;
 			}
-			if (charIndex < charCount)
-				writeString_slow(value, charCount, charIndex);
+			else if (c > 0x07FF) {
+				bytearr[count++] = (byte) (0xE0 | ((c >> 12) & 0x0F));
+				bytearr[count++] = (byte) (0x80 | ((c >> 6) & 0x3F));
+				bytearr[count++] = (byte) (0x80 | ((c) & 0x3F));
+			}
+			else {
+				bytearr[count++] = (byte) (0xC0 | ((c >> 6) & 0x1F));
+				bytearr[count++] = (byte) (0x80 | ((c) & 0x3F));
+			}
 		}
+		write(bytearr, 0, utflen + 2);
 	}
 
 	public int size() {

@@ -61,7 +61,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		Standard result = in.readObject();
+		Standard result = (Standard) in.readObject();
 
 		assertEquals(standard, result);
 	}
@@ -93,7 +93,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		Standard result = in.readObject();
+		Standard result = (Standard) in.readObject();
 
 		assertEquals(standard, result);
 	}
@@ -125,7 +125,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		Standard result = in.readObject();
+		Standard result = (Standard) in.readObject();
 
 		assertEquals(standard, result);
 	}
@@ -157,7 +157,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		Standard result = in.readObject();
+		Standard result = (Standard) in.readObject();
 
 		assertNull("value1 must not be set", result.getValue1());
 		assertEquals(standard.getValue2(), result.getValue2());
@@ -192,7 +192,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		Inherted result = in.readObject();
+		Inherted result = (Inherted) in.readObject();
 
 		assertNull("value1 must not be set", result.getValue1());
 		assertEquals(result.getValue2(), 0);
@@ -229,7 +229,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		Standard result = in.readObject();
+		Standard result = (Standard) in.readObject();
 
 		assertEquals(inherted, result);
 	}
@@ -259,7 +259,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		Composed result = in.readObject();
+		Composed result = (Composed) in.readObject();
 
 		assertEquals(composed, result);
 	}
@@ -292,7 +292,7 @@ public class PropertyFinderTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		ComposedInherted result = in.readObject();
+		ComposedInherted result = (ComposedInherted) in.readObject();
 
 		assertEquals(composedInherted, result);
 	}

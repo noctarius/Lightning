@@ -64,7 +64,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		BooleanArray result = in.readObject();
+		BooleanArray result = (BooleanArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -97,7 +97,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		ByteArray result = in.readObject();
+		ByteArray result = (ByteArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -130,7 +130,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		CharArray result = in.readObject();
+		CharArray result = (CharArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -163,7 +163,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		ShortArray result = in.readObject();
+		ShortArray result = (ShortArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -196,7 +196,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		IntArray result = in.readObject();
+		IntArray result = (IntArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -229,7 +229,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		LongArray result = in.readObject();
+		LongArray result = (LongArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -262,7 +262,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		FloatArray result = in.readObject();
+		FloatArray result = (FloatArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -295,7 +295,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		DoubleArray result = in.readObject();
+		DoubleArray result = (DoubleArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -328,7 +328,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		ObjectArray result = in.readObject();
+		ObjectArray result = (ObjectArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
@@ -368,7 +368,7 @@ public class ArrayMarshallerTestCase {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		SerializerInputStream in = new SerializerInputStream(bais, serializer);
 
-		DeepObjectArray result = in.readObject();
+		DeepObjectArray result = (DeepObjectArray) in.readObject();
 
 		assertNotNull(result);
 		assertEquals(test, result);
