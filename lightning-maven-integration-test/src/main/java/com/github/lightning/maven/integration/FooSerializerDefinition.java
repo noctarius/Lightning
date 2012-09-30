@@ -21,6 +21,6 @@ public class FooSerializerDefinition extends AbstractSerializerDefinition {
 
 	@Override
 	protected void configure() {
-		bind(Foo.class).attributes();
+		serialize(Foo.class).attributes();
 	}
 }
